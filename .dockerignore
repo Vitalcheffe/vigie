@@ -1,0 +1,71 @@
+# Git
+.git
+.gitignore
+.gitattributes
+.github
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Env
+.env
+.env.local
+.env.*.local
+*.env
+
+# Logs
+logs/
+*.log
+*.pid
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+vigie_cache.db
+
+# Project
+download/
+tonton/
+POINT.md
+POINT.D.md
+worklog.md
+tool-results/
+upload/
+scripts/clean_markers.py
+
+# Docs (don't ship in image)
+docs/
+*.md
+!README.md
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
