@@ -40,11 +40,26 @@ def build_quick_checkin_modal(
 
     info_text = f"*{beneficiary_name}*"
     if age:
-        info_text += f" ({age} yrs old)"
+        info_text += f" ({age} years old)"
     if sector:
-        info_text += f" — sector {sector}"
+        info_text += f"\n:round_pushpin: Sector {sector}"
     if phone:
         info_text += f"\n:telephone: `{phone}`"
+
+    # Add a personal note if available
+    import json as _json
+    try:
+        from pathlib import Path
+        b_path = Path(__file__).resolve().parent.parent.parent / "mcp_server" / "data" / "beneficiaries.json"
+        beneficiaries = _json.loads(b_path.read_text())
+        for b in beneficiaries:
+            if b.get("id") == beneficiary_id:
+                backstory = b.get("backstory", "")
+                if backstory:
+                    info_text += f"\n\n:house: {backstory}"
+                break
+    except Exception:
+        pass
 
     return {
         "type": "modal",

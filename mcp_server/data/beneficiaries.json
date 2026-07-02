@@ -40,10 +40,16 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": "B001: All good, no issues",
-    "last_checkin_at": "2026-07-02T22:03:25.865352+00:00",
+    "last_checkin_at": "2026-07-02T22:11:50.172803+00:00",
     "status": "ok",
     "registration_date": "2026-02-07",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former schoolteacher. Lives alone since husband passed in 2021. Loves classical music.",
+    "living_situation": "Lives with elderly spouse (also vulnerable)",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Hélène I. — 79 years old"
   },
   {
     "id": "B002",
@@ -86,10 +92,17 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": "B002: Tired, requests medication",
-    "last_checkin_at": "2026-07-02T22:03:27.070621+00:00",
+    "last_checkin_at": "2026-07-02T22:11:51.376261+00:00",
     "status": "ok",
     "registration_date": "2026-04-21",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired postal worker. Has a cat named Minou. Daughter calls once a month from Lyon.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Yvonne D. — 74 years old"
   },
   {
     "id": "B003",
@@ -125,10 +138,18 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": "B003: No answer after 3 calls",
-    "last_checkin_at": "2026-07-02T22:03:46.619423+00:00",
+    "last_checkin_at": "2026-07-02T22:11:57.202299+00:00",
     "status": "escalated",
     "registration_date": "2026-05-23",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-baker. Knee surgery last year, walks with a cane. Refuses to use air conditioning ('it's not natural').",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "Jeanne L. — 83 years old"
   },
   {
     "id": "B004",
@@ -171,10 +192,16 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.777837+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.028863+00:00",
     "status": "being_checked",
     "registration_date": "2026-04-20",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former nurse. Knows everyone in the building. Hasn't been outside since March.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Georges P. — 84 years old"
   },
   {
     "id": "B005",
@@ -211,11 +238,18 @@
     "vulnerability_score": 74,
     "isolation_level": "high",
     "language": "fr",
-    "notes": "Escalated to level 3 at 2026-07-02T22:03:50.399247+00:00: On the ground, unconscious",
-    "last_checkin_at": "2026-07-02T22:03:50.399247+00:00",
+    "notes": "Escalated to level 3 at 2026-07-02T22:12:01.089015+00:00: On the ground, unconscious",
+    "last_checkin_at": "2026-07-02T22:12:01.089015+00:00",
     "status": "critical",
     "registration_date": "2026-02-18",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired taxi driver. Watches TV all day. Only eats if someone reminds him.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Andrée I. — 89 years old"
   },
   {
     "id": "B006",
@@ -249,10 +283,18 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.781025+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.032304+00:00",
     "status": "being_checked",
     "registration_date": "2026-04-18",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former seamstress. Arthritis in both hands. Can't open jars anymore. Proud, never asks for help.",
+    "living_situation": "Lives with elderly spouse (also vulnerable)",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "Andrée A. — 91 years old"
   },
   {
     "id": "B007",
@@ -296,10 +338,16 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.782553+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.035301+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-16",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-civil servant. Lives in a 4th floor walk-up with no elevator. Heat rises.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Lucien V. — 85 years old"
   },
   {
     "id": "B008",
@@ -334,10 +382,17 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.784148+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.037091+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-15",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired chef. Cooks for neighbors sometimes. Diabetic, needs regular meals.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "André T. — 90 years old"
   },
   {
     "id": "B009",
@@ -385,10 +440,18 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.787007+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.038801+00:00",
     "status": "being_checked",
     "registration_date": "2026-02-10",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former librarian. Has 3,000 books. Doesn't drink enough water — 'I forget'.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "André I. — 86 years old"
   },
   {
     "id": "B010",
@@ -428,10 +491,16 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.788532+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.040469+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-20",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired mechanic. Widowed 5 years. Son lives in Canada. Only visitor is the mail carrier.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Henri T. — 89 years old"
   },
   {
     "id": "B011",
@@ -475,10 +544,17 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.790243+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.042250+00:00",
     "status": "being_checked",
     "registration_date": "2026-02-15",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-school principal. Strict, independent. Would never admit to being hot or thirsty.",
+    "living_situation": "Lives with elderly spouse (also vulnerable)",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Georges T. — 90 years old"
   },
   {
     "id": "B012",
@@ -523,10 +599,18 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.791812+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.043922+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-02",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former farmer. Moved to Paris after wife died. Misses the countryside. Doesn't know his neighbors.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "Monique J. — 91 years old"
   },
   {
     "id": "B013",
@@ -570,10 +654,16 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.793419+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.045842+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-12",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired pharmacist. Knows her medications perfectly. Hip fracture in January, recovering.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Édouard E. — 92 years old"
   },
   {
     "id": "B014",
@@ -624,10 +714,17 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.794941+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.047631+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-12",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-musician. Plays piano every evening. Deaf in one ear. Lives in a top-floor apartment.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Thérèse N. — 91 years old"
   },
   {
     "id": "B015",
@@ -671,10 +768,18 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.796463+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.049312+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-11",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former factory worker. Emphysema. Oxygen tank at home. Can't tolerate heat at all.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "Georgette S. — 82 years old"
   },
   {
     "id": "B016",
@@ -717,10 +822,16 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.798042+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.051096+00:00",
     "status": "being_checked",
     "registration_date": "2026-04-26",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired accountant. Methodical, keeps a journal. Lives across from a park but never goes.",
+    "living_situation": "Lives with elderly spouse (also vulnerable)",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Solenne D. — 81 years old"
   },
   {
     "id": "B017",
@@ -756,10 +867,17 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.799547+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.052909+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-19",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-hotel concierge. Knows Paris by heart. Alone since partner died in 2019.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Renée F. — 93 years old"
   },
   {
     "id": "B018",
@@ -802,10 +920,18 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.801201+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.054605+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-15",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former midwife. Delivered half the neighborhood. Now nobody visits her.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "Marcel M. — 87 years old"
   },
   {
     "id": "B019",
@@ -848,10 +974,16 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.802683+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.056275+00:00",
     "status": "being_checked",
     "registration_date": "2026-04-02",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired gardener. Has a balcony garden. Waters her plants but forgets to drink water herself.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Monique P. — 86 years old"
   },
   {
     "id": "B020",
@@ -894,10 +1026,17 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.804228+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.058028+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-18",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-firefighter. Stubbornly independent. Refused help during the 2019 heatwave too.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Émile M. — 90 years old"
   },
   {
     "id": "B021",
@@ -932,10 +1071,18 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.805769+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.059684+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-18",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former telephone operator. Talks to the TV. Loneliest in the evenings.",
+    "living_situation": "Lives with elderly spouse (also vulnerable)",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "Émile T. — 90 years old"
   },
   {
     "id": "B022",
@@ -980,10 +1127,16 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.807279+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.061442+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-22",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired architect. Lives in the building she designed. Proud of it. Lives alone.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Gaston H. — 92 years old"
   },
   {
     "id": "B023",
@@ -1032,10 +1185,17 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.808786+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.063127+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-20",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-restaurant owner. Feeds pigeons in the park. Diabetes type 2, manages with difficulty.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Georgette M. — 94 years old"
   },
   {
     "id": "B024",
@@ -1071,10 +1231,18 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.810332+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.064791+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-11",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former post office clerk. Has a bird feeder on her window. Knows every bird species.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "Andrée P. — 86 years old"
   },
   {
     "id": "B025",
@@ -1109,10 +1277,16 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.811850+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.066483+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-17",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired university professor. Reads every day. Forgets to eat when absorbed in a book.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Victor I. — 89 years old"
   },
   {
     "id": "B026",
@@ -1146,10 +1320,17 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.813375+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.068206+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-27",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-milliner. Makes hats for fun. Lives in a tiny studio, very hot in summer.",
+    "living_situation": "Lives with elderly spouse (also vulnerable)",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Marcel S. — 82 years old"
   },
   {
     "id": "B027",
@@ -1190,10 +1371,18 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.814951+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.069855+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-21",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former train conductor. Has a model railway in his living room. Widowed 8 years.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "Robert L. — 77 years old"
   },
   {
     "id": "B028",
@@ -1237,10 +1426,16 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.816496+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.071763+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-14",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired florist. Balcony full of flowers. Allergic to heat, gets dizzy easily.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Jeanne E. — 90 years old"
   },
   {
     "id": "B029",
@@ -1279,10 +1474,17 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.818053+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.073576+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-20",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-barber. Cut hair for 50 years at the same shop. Shop closed, he stayed upstairs alone.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Lucienne P. — 81 years old"
   },
   {
     "id": "B030",
@@ -1324,10 +1526,18 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.819621+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.075221+00:00",
     "status": "being_checked",
     "registration_date": "2026-02-16",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former nurse anesthetist. Lives with chronic pain. Doesn't complain, ever.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "Lucienne J. — 86 years old"
   },
   {
     "id": "B031",
@@ -1377,10 +1587,16 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.821289+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.076864+00:00",
     "status": "being_checked",
     "registration_date": "2026-02-17",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired judge. Lives by routine. Lunch at noon, walk at 3pm, bed at 9pm. Alone.",
+    "living_situation": "Lives with elderly spouse (also vulnerable)",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Paulette I. — 77 years old"
   },
   {
     "id": "B032",
@@ -1428,10 +1644,17 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.822810+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.078535+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-09",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-tailor. Sews masks for the neighborhood. Arthritic fingers but won't stop.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Renée P. — 92 years old"
   },
   {
     "id": "B033",
@@ -1473,10 +1696,18 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.824456+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.080325+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-13",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former office manager. Organized everything. Now her apartment is chaos. Early Alzheimer's.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "Paulette P. — 79 years old"
   },
   {
     "id": "B034",
@@ -1523,10 +1754,16 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.826093+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.082022+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-20",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired electrician. Fixes neighbors' lamps for free. Can't fix his own loneliness.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Yvonne G. — 94 years old"
   },
   {
     "id": "B035",
@@ -1570,10 +1807,17 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.827731+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.083745+00:00",
     "status": "being_checked",
     "registration_date": "2026-04-05",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-bank teller. Counts coins for fun. Lives on a small pension. Eats bread and butter mostly.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Solenne C. — 82 years old"
   },
   {
     "id": "B036",
@@ -1621,10 +1865,18 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.829375+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.085452+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-07",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former PE teacher. Was a marathon runner. Now uses a walker. Doesn't complain.",
+    "living_situation": "Lives with elderly spouse (also vulnerable)",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "Émile T. — 93 years old"
   },
   {
     "id": "B037",
@@ -1672,10 +1924,16 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.830918+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.087220+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-02",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired translator. Speaks 4 languages. Talks to herself in all of them.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Thérèse P. — 75 years old"
   },
   {
     "id": "B038",
@@ -1722,10 +1980,17 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.832504+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.088900+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-26",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-printer operator. Has a collection of vintage posters. Apartment has no ventilation.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Fernand B. — 90 years old"
   },
   {
     "id": "B039",
@@ -1761,10 +2026,18 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.834100+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.090634+00:00",
     "status": "being_checked",
     "registration_date": "2026-02-02",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former midwife. Delivered over 2,000 babies. Lives alone, never married.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "Suzanne S. — 75 years old"
   },
   {
     "id": "B040",
@@ -1805,10 +2078,16 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.836396+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.092439+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-12",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired city planner. Designed the bike lanes he can no longer ride. Stroke survivor.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Suzanne P. — 75 years old"
   },
   {
     "id": "B041",
@@ -1851,10 +2130,17 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.837982+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.094138+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-09",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-photographer. Has boxes of photos of people he doesn't see anymore.",
+    "living_situation": "Lives with elderly spouse (also vulnerable)",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Solenne L. — 73 years old"
   },
   {
     "id": "B042",
@@ -1888,10 +2174,18 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.839546+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.095841+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-17",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former bus driver. Knows every route. Can't walk to the bus stop now.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "Jeanne E. — 89 years old"
   },
   {
     "id": "B043",
@@ -1935,10 +2229,16 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.841197+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.097585+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-20",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired accountant. Balances her checkbook to the centime. Forgets to drink water.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Paulette R. — 79 years old"
   },
   {
     "id": "B044",
@@ -1974,10 +2274,17 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.842749+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.099436+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-03",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-hairdresser. Gives free haircuts at the senior center. COPD, heat-sensitive.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Renée D. — 92 years old"
   },
   {
     "id": "B045",
@@ -2013,10 +2320,18 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.844337+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.101214+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-12",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former librarian. Reads aloud to herself. Lives behind thick curtains, doesn't open them.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "Monique L. — 76 years old"
   },
   {
     "id": "B046",
@@ -2067,10 +2382,16 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.845865+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.103012+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-06",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired dockworker. Strong hands, gentle voice. Wife was everything. Now silence.",
+    "living_situation": "Lives with elderly spouse (also vulnerable)",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Yvonne D. — 80 years old"
   },
   {
     "id": "B047",
@@ -2105,10 +2426,17 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.847410+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.104723+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-22",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-factory foreman. Whistles old songs. Only companion is the radio.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Monique K. — 90 years old"
   },
   {
     "id": "B048",
@@ -2155,10 +2483,18 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.849097+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.106395+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-28",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Former teacher's aide. Helps neighborhood kids with homework. Can't help herself.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast",
+      "Watches morning news"
+    ],
+    "photo_description": "Andrée J. — 73 years old"
   },
   {
     "id": "B049",
@@ -2206,10 +2542,16 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.850637+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.108072+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-17",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Retired pharmacist. Knows every drug interaction. Forgets to take her own medication.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM"
+    ],
+    "photo_description": "Émile T. — 84 years old"
   },
   {
     "id": "B050",
@@ -2251,9 +2593,16 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:03:17.852150+00:00",
+    "last_checkin_at": "2026-07-02T22:11:42.109688+00:00",
     "status": "being_checked",
     "registration_date": "2026-04-15",
-    "disclaimer": "SIMULATED — no real beneficiary data"
+    "disclaimer": "SIMULATED — no real beneficiary data",
+    "backstory": "Ex-military. Served 25 years. Disciplined. Would never call for help, even if dying.",
+    "living_situation": "Lives alone",
+    "daily_routine": [
+      "Wakes around 7 AM",
+      "Has coffee and bread for breakfast"
+    ],
+    "photo_description": "Édouard L. — 83 years old"
   }
 ]

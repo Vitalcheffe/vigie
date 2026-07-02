@@ -215,19 +215,26 @@ def build_volunteer_dm(
         conditions = b.get("medical_conditions") or []
         meds = b.get("medications") or []
         bid = b.get("id", "")
+        backstory = b.get("backstory", "")
+
+        # Build a human description, not a data sheet
+        desc_parts = [f"*{name}* ({age} yrs old)"]
+        if backstory:
+            desc_parts.append(f"\n:house: {backstory}")
+        desc_parts.append(f"\n:telephone: `{phone}`")
+        if vuln >= 70:
+            desc_parts.append(f"\n:warning: *High vulnerability* ({vuln}/100)")
+        elif vuln >= 40:
+            desc_parts.append(f"\n:heart: Vulnerability: {vuln}/100")
+        if conditions:
+            desc_parts.append(f"\n:pill: {', '.join(conditions)}")
 
         blocks.append(
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": (
-                        f"*{name}* ({age} yrs, sector {sector})\n"
-                        f":telephone: `{phone}`\n"
-                        f":heart: Vulnerability: *{vuln}/100*"
-                        + (f" — Conditions: {', '.join(conditions)}" if conditions else "")
-                        + (f"\n:pill: Treatments: {', '.join(meds)}" if meds else "")
-                    ),
+                    "text": "".join(desc_parts),
                 },
                 "accessory": {
                     "type": "button",
