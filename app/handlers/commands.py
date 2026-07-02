@@ -52,6 +52,8 @@ def register(app: AsyncApp) -> None:
             await _cmd_help(respond)
         elif subcommand == "start":
             await _cmd_start(respond, user_id)
+        elif subcommand == "demo":
+            await _cmd_demo(respond, user_id)
         elif subcommand == "status":
             await _cmd_status(respond)
         elif subcommand == "report":
@@ -182,6 +184,7 @@ async def _cmd_help(respond: AsyncRespond) -> None:
                     "text": (
                         "*Available commands:*\n\n"
                         "• `/vigie start` — Trigger the heatwave scenario\n"
+                        "• `/vigie demo` — Run the FULL demo (scenario + check-in + escalation + report)\n"
                         "• `/vigie status` — State of the crisis cell\n"
                         "• `/vigie report` — Generate the daily report\n"
                         "• `/vigie reset` — Reset the simulation (admin)\n"
@@ -227,6 +230,91 @@ async def _cmd_start(respond: AsyncRespond, user_id: str) -> None:
         )
     else:
         await respond(f":warning: Error: {result.get('message', result)}")
+
+
+async def _cmd_demo(respond: AsyncRespond, user_id: str) -> None:
+    """Run the FULL Vigie demo in one command.
+
+    Executes the entire flow:
+    1. Reset state
+    2. Start heatwave scenario (alert + DM assignments)
+    3. Process a simulated volunteer check-in (B023: medication request)
+    4. Trigger a critical SAMU escalation (B003: on the ground)
+    5. Generate the daily report
+
+    This is the one-command demo for judges.
+    """
+    import asyncio
+
+    log.info("vigie.command.demo", user=user_id)
+    await respond(":movie_camera: *Starting full Vigie demo...* This will take ~15 seconds.")
+
+    orch = _get_orchestrator()
+
+    # Step 1: Reset
+    await orch.reset_scenario(triggered_by=user_id)
+    await asyncio.sleep(1)
+
+    # Step 2: Start heatwave scenario
+    await respond(":one: Starting heatwave scenario...")
+    result = await orch.start_heatwave(triggered_by=user_id, force_alert=True)
+    if result.get("status") != "ok":
+        await respond(f":warning: Scenario failed: {result.get('message', result)}")
+        return
+
+    await respond(
+        f":white_check_mark: Scenario started — {result.get('total_beneficiaries', 0)} beneficiaries, "
+        f"{result.get('volunteers_notified', 0)} DMs sent. Check #cellule-crise for the alert."
+    )
+    await asyncio.sleep(3)
+
+    # Step 3: Simulated check-in
+    await respond(":two: Processing a volunteer check-in (B023: medication request)...")
+    result = await orch.process_volunteer_message(
+        volunteer_id=user_id,
+        text="B023: Mrs Dupont tired, requests medication renewal antihypertensive",
+    )
+    if result.get("status") == "ok":
+        await respond(
+            f":white_check_mark: Check-in processed — anomaly level {result.get('anomaly_level')} "
+            f"(1=weak signal). Check #secteur-11 for the structured message with pharmacy lookup."
+        )
+    await asyncio.sleep(3)
+
+    # Step 4: Critical escalation
+    await respond(":three: Triggering a critical SAMU escalation (B003: on the ground, unconscious)...")
+    result = await orch.trigger_escalation(
+        beneficiary_id="B003",
+        level=3,
+        triggered_by=user_id,
+        reason="On the ground, unconscious",
+    )
+    if result.get("status") == "ok":
+        await respond(
+            f":white_check_mark: SAMU escalation triggered — check #cellule-crise for the "
+            f"red alert with context summary and SAMU button."
+        )
+    await asyncio.sleep(3)
+
+    # Step 5: Daily report
+    await respond(":four: Generating the daily report...")
+    result = await orch.generate_daily_report()
+    if result.get("status") == "ok":
+        await respond(":white_check_mark: Daily report posted in #cellule-crise with KPIs + health directives.")
+    elif result.get("status") == "no_scenario":
+        await respond(":warning: No active scenario — run /vigie demo first.")
+
+    # Summary
+    await respond(
+        ":tada: *Demo complete!*\n\n"
+        "Check these channels:\n"
+        "• *#cellule-crise* — alert banner, SAMU escalation, daily report\n"
+        "• *#secteur-11* — check-in message with pharmacy lookup\n"
+        "• *Your DMs* — volunteer assignment lists\n\n"
+        "Type `/vigie status` to see live metrics.\n"
+        "Type `/vigie reset` to start over.\n\n"
+        "_Vigie — So the heatwave no longer kills in silence._"
+    )
 
 
 async def _cmd_status(respond: AsyncRespond) -> None:
