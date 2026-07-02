@@ -1,5 +1,5 @@
 # ============================================================
-# VIGIE — Slack App Manifest (English, validated)
+# VIGIE — Slack App Manifest (minimal, validated)
 # ============================================================
 # Create the app at https://api.slack.com/apps
 # Choose "Create New App" -> "From an app manifest"
@@ -15,21 +15,18 @@ display_information:
 features:
   bot_user:
     display_name: Vigie
-    first_name: Vigie
-    last_name: ""
-    always_online: true
   app_home:
     home_tab_enabled: true
     messages_tab_enabled: true
   shortcuts:
-    - name: "Report an anomaly"
+    - name: Report an anomaly
       type: message
       callback_id: vigie_signal_anomaly
-      description: "Report an anomaly on a beneficiary from any message"
-    - name: "Reassign this beneficiary"
+      description: Report an anomaly on a beneficiary
+    - name: Reassign this beneficiary
       type: message
       callback_id: vigie_reassign
-      description: "Reassign the mentioned beneficiary to another volunteer"
+      description: Reassign the beneficiary to another volunteer
 
 oauth_config:
   scopes:
@@ -86,21 +83,21 @@ settings:
   token_rotation_enabled: false
   slash_commands:
     - command: /vigie
-      description: "Main Vigie command"
+      description: Main Vigie command
       should_escape: false
-      usage_hint: "/vigie [start|status|report|reset|help]"
+      usage_hint: /vigie [start|status|report|reset|help]
     - command: /vigie-checkin
-      description: "Start or update a volunteer check-in"
+      description: Start a volunteer check-in
       should_escape: false
-      usage_hint: "/vigie-checkin [beneficiary_id]"
+      usage_hint: /vigie-checkin [beneficiary_id]
     - command: /vigie-escalate
-      description: "Trigger a manual escalation"
+      description: Trigger a manual escalation
       should_escape: false
-      usage_hint: "/vigie-escalate [beneficiary_id] [1|2|3]"
+      usage_hint: /vigie-escalate [beneficiary_id] [1|2|3]
     - command: /vigie-report
-      description: "Generate the daily report now"
+      description: Generate the daily report
       should_escape: false
     - command: /vigie-simulate
-      description: "Run the canicule simulation scenario (demo)"
+      description: Run the canicule simulation
       should_escape: false
-      usage_hint: "/vigie-simulate [scenario_name]"
+      usage_hint: /vigie-simulate [scenario_name]
