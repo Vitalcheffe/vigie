@@ -1,7 +1,7 @@
 [
   {
     "id": "V01",
-    "slack_user_id": null,
+    "slack_user_id": "U0BER72AD4L",
     "name": "Julien Roux",
     "first_name": "Julien",
     "last_name": "Roux",
@@ -28,7 +28,7 @@
   },
   {
     "id": "V02",
-    "slack_user_id": null,
+    "slack_user_id": "U0BER72AD4L",
     "name": "Camille Rousseau",
     "first_name": "Camille",
     "last_name": "Rousseau",
@@ -55,7 +55,7 @@
   },
   {
     "id": "V03",
-    "slack_user_id": null,
+    "slack_user_id": "U0BER72AD4L",
     "name": "Marie Nguyen",
     "first_name": "Marie",
     "last_name": "Nguyen",
@@ -82,7 +82,7 @@
   },
   {
     "id": "V04",
-    "slack_user_id": null,
+    "slack_user_id": "U0BER72AD4L",
     "name": "Rachid Henry",
     "first_name": "Rachid",
     "last_name": "Henry",
@@ -108,7 +108,7 @@
   },
   {
     "id": "V05",
-    "slack_user_id": null,
+    "slack_user_id": "U0BER72AD4L",
     "name": "Emma Dupont",
     "first_name": "Emma",
     "last_name": "Dupont",
@@ -134,7 +134,7 @@
   },
   {
     "id": "V06",
-    "slack_user_id": null,
+    "slack_user_id": "U0BER72AD4L",
     "name": "Hugo Moreau",
     "first_name": "Hugo",
     "last_name": "Moreau",
@@ -161,7 +161,7 @@
   },
   {
     "id": "V07",
-    "slack_user_id": null,
+    "slack_user_id": "U0BER72AD4L",
     "name": "Lucas Traoré",
     "first_name": "Lucas",
     "last_name": "Traoré",
@@ -187,7 +187,7 @@
   },
   {
     "id": "V08",
-    "slack_user_id": null,
+    "slack_user_id": "U0BER72AD4L",
     "name": "Léa Garcia",
     "first_name": "Léa",
     "last_name": "Garcia",
@@ -214,7 +214,7 @@
   },
   {
     "id": "V09",
-    "slack_user_id": null,
+    "slack_user_id": "U0BER72AD4L",
     "name": "Rachid Rousseau",
     "first_name": "Rachid",
     "last_name": "Rousseau",
@@ -240,7 +240,7 @@
   },
   {
     "id": "V10",
-    "slack_user_id": null,
+    "slack_user_id": "U0BER72AD4L",
     "name": "Camille Nguyen",
     "first_name": "Camille",
     "last_name": "Nguyen",
@@ -266,7 +266,7 @@
   },
   {
     "id": "V11",
-    "slack_user_id": null,
+    "slack_user_id": "U0BER72AD4L",
     "name": "Nadia Lefevre",
     "first_name": "Nadia",
     "last_name": "Lefevre",
@@ -294,7 +294,7 @@
   },
   {
     "id": "V12",
-    "slack_user_id": null,
+    "slack_user_id": "U0BER72AD4L",
     "name": "Aïcha Henry",
     "first_name": "Aïcha",
     "last_name": "Henry",
@@ -320,7 +320,7 @@
   },
   {
     "id": "MC01",
-    "slack_user_id": null,
+    "slack_user_id": "U0BER72AD4L",
     "name": "Dr Sarah Faure",
     "first_name": "Sarah",
     "last_name": "Faure",
@@ -337,7 +337,7 @@
   },
   {
     "id": "MC02",
-    "slack_user_id": null,
+    "slack_user_id": "U0BER72AD4L",
     "name": "Dr Julien Henry",
     "first_name": "Julien",
     "last_name": "Henry",

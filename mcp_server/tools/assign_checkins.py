@@ -124,7 +124,7 @@ async def assign_checkins(
 
         assignments.append(
             {
-                "volunteer_id": vol["id"],
+                "volunteer_id": vol.get("slack_user_id") or vol["id"],
                 "volunteer_name": vol["name"],
                 "sector": vol.get("sector"),
                 "beneficiaries": [
