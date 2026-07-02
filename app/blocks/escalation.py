@@ -166,7 +166,6 @@ def build_escalation_message(
                 "style": "danger",
                 "action_id": "vigie_call_samu",
                 "value": json.dumps({"beneficiary_id": beneficiary.get("id"), "escalation_id": escalation_id or ""}),
-                "url": "tel:15",
             }
         )
 
