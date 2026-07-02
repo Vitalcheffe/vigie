@@ -1,37 +1,42 @@
 # ============================================================
-# VIGIE — Slack App Manifest
+# VIGIE — Slack App Manifest (English, validated)
 # ============================================================
-# This manifest is imported when creating the Slack app at
-# https://api.slack.com/apps -> "Create from manifest"
-#
-# It defines:
-#   - App metadata
-#   - OAuth scopes (Bot Token Scopes)
-#   - Event subscriptions
-#   - Slash commands
-#   - Interactivity (Block Kit actions + modal submissions)
-#   - App Home
+# Create the app at https://api.slack.com/apps
+# Choose "Create New App" -> "From an app manifest"
+# Paste this YAML, click Create.
 # ============================================================
 
 display_information:
   name: Vigie
-  description: "Agent de veille pour les réseaux de bénévoles pendant les canicules. Pour que la canicule ne tue plus en silence."
+  description: "Slack agent for heatwave elder watch networks."
   background_color: "#4A154B"
-  long_description: |-
-    Vigie est un agent Slack qui transforme n'importe quel workspace d'ONG ou de collectivité en centre de veille augmenté pendant les canicules. Il détecte les alertes Météo-France, affecte automatiquement les check-in téléphoniques aux bénévoles, transcrit et analyse sémantiquement leurs retours en temps réel, et déclenche des escalades critiques en moins de 5 minutes — contre 45 minutes sans lui.
+  long_description: "Vigie is a Slack agent that turns any nonprofit or local-government workspace into an augmented watch center during heatwaves. It detects Meteo-France alerts, assigns phone check-ins to volunteers automatically, transcribes and semantically analyzes their returns in real time, and triggers critical escalations in under 5 minutes."
 
-    Stack : Slack AI + MCP server + Real-Time Search API.
+features:
+  bot_user:
+    display_name: Vigie
+    first_name: Vigie
+    last_name: ""
+    always_online: true
+  app_home:
+    home_tab_enabled: true
+    messages_tab_enabled: true
+  shortcuts:
+    - name: "Report an anomaly"
+      type: message
+      callback_id: vigie_signal_anomaly
+      description: "Report an anomaly on a beneficiary from any message"
+    - name: "Reassign this beneficiary"
+      type: message
+      callback_id: vigie_reassign
+      description: "Reassign the mentioned beneficiary to another volunteer"
 
-    Pour que la canicule ne tue plus en silence.
 oauth_config:
   scopes:
     bot:
-      # Basic messaging
       - chat:write
       - chat:write.public
       - chat:write.customize
-
-      # Read channels and history
       - channels:read
       - channels:history
       - groups:read
@@ -41,158 +46,61 @@ oauth_config:
       - im:write
       - mpim:history
       - mpim:read
-
-      # User info
       - users:read
       - users.profile:read
-
-      # Slash commands
       - commands
-
-      # App mentions and reactions
       - app_mentions:read
       - reactions:read
       - reactions:write
-
-      # Files (for voice notes / reports)
       - files:read
       - files:write
-
-      # Block Kit interactions
-      - interactive:read
-
-      # Slack AI capabilities
       - assistant:write
-      - ai:read
-
-      # Canvas (cellule de crise real-time view)
-      - canvas:read
-      - canvas:write
-
-      # Lists (check-in assignments)
-      - lists:read
-      - lists:write
-
-      # Bookmarks (sandbox info)
-      - bookmarks:read
-      - bookmarks:write
-
-      # Workflows (optional, for future Workflow Builder integration)
-      - workflows:read
-
-      # Pins (cellule de crise critical info)
       - pins:read
       - pins:write
-
-      # Usergroups (volunteer groups)
       - usergroups:read
       - usergroups:write
-
-      # Email (optional, for invite flows)
       - team:read
+      - workflows:read
 
 settings:
   event_subscriptions:
-    request_url: ""  # Filled after deployment: https://your-domain.com/slack/events
     bot_events:
-      # Messages
       - message.channels
       - message.im
       - message.mpim
       - message.groups
-
-      # App interactions
       - app_mention
       - app_home_opened
       - app_uninstalled
       - team_join
-
-      # Reactions (could be used for quick check-in OK)
       - reaction_added
       - reaction_removed
-
-      # File shares (voice notes)
       - file_shared
-
-      # User changes (status updates)
       - user_change
-
-      # Channel events
       - channel_created
       - member_joined_channel
-
   interactivity:
     is_enabled: true
-    request_url: ""  # Filled after deployment: https://your-domain.com/slack/interactivity
-    message_menu_options:
-      is_enabled: false
-
   org_deploy_enabled: false
-
-  socket_mode_enabled: true  # Use Socket Mode for development
-
+  socket_mode_enabled: true
   token_rotation_enabled: false
-
   slash_commands:
     - command: /vigie
-      description: "Commande principale Vigie (start, status, report, help)"
+      description: "Main Vigie command"
       should_escape: false
       usage_hint: "/vigie [start|status|report|reset|help]"
-
     - command: /vigie-checkin
-      description: "Démarrer ou mettre à jour un check-in bénévole"
+      description: "Start or update a volunteer check-in"
       should_escape: false
       usage_hint: "/vigie-checkin [beneficiary_id]"
-
     - command: /vigie-escalate
-      description: "Déclencher une escalade manuelle"
+      description: "Trigger a manual escalation"
       should_escape: false
-      usage_hint: "/vigie-escalate [beneficiary_id] [level:1|2|3]"
-
+      usage_hint: "/vigie-escalate [beneficiary_id] [1|2|3]"
     - command: /vigie-report
-      description: "Générer le rapport quotidien maintenant"
+      description: "Generate the daily report now"
       should_escape: false
-
     - command: /vigie-simulate
-      description: "Lancer le scénario de simulation canicule (démo)"
+      description: "Run the canicule simulation scenario (demo)"
       should_escape: false
       usage_hint: "/vigie-simulate [scenario_name]"
-
-features:
-  app_home:
-    home_tab_enabled: true
-    messages_tab_enabled: true
-    bot_user:
-      display_name: Vigie
-      first_name: Vigie
-      last_name: ""
-      always_online: true  # The watch never sleeps
-
-  bot_user:
-    display_name: Vigie
-    first_name: Vigie
-    last_name: ""
-
-  shortcuts:
-    - name: Signaler une anomalie
-      type: message
-      callback_id: vigie_signal_anomaly
-      description: "Signaler une anomalie sur un bénéficiaire depuis n'importe quel message"
-
-    - name: Réassigner ce bénéficiaire
-      type: message
-      callback_id: vigie_reassign
-      description: "Réassigner le bénéficiaire mentionné à un autre bénévole"
-
-  unfurl_domains:
-    - meteo-france.fr
-    - data.gouv.fr
-    - openstreetmap.org
-
-  workflow_steps:
-    - callback_id: vigie_workflow_checkin
-      name: "Vigie — Assigner un check-in"
-
-metadata:
-  major_version: 1
-  minor_version: 1
