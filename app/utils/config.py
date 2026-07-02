@@ -106,6 +106,14 @@ class LoggingSettings(BaseSettings):
     format: Literal["json", "text"] = Field("json", alias="LOG_FORMAT")
     file: Path | None = Field(None, alias="LOG_FILE")
 
+    @field_validator("file", mode="before")
+    @classmethod
+    def empty_to_none(cls, v):
+        """Treat empty string as None (Slack .env files often have empty values)."""
+        if v is None or (isinstance(v, str) and not v.strip()) or (isinstance(v, Path) and not str(v).strip()):
+            return None
+        return v
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 

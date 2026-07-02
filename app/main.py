@@ -53,12 +53,9 @@ def create_app() -> AsyncApp:
     app = AsyncApp(
         token=cfg.slack.bot_token.get_secret_value(),
         signing_secret=cfg.slack.signing_secret.get_secret_value(),
-        token_verification_enabled=True,
-        request_verification_enabled=True,
         ignoring_self_events_enabled=True,
         ssl_check_enabled=True,
         url_verification_enabled=True,
-        process_before_response=False,
         raise_error_for_unhandled_request=False,
     )
 

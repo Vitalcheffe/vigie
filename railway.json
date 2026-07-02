@@ -1,0 +1,6 @@
+[phases]
+install = "pip install -e ."
+build = "echo 'No build step needed'"
+
+[start]
+cmd = "python -m app.main"

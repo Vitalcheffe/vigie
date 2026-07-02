@@ -1,18 +1,16 @@
 """
-Vigie — MCP server HTTP client.
+Vigie — MCP server client (HTTP or in-process).
 
-The Bolt app uses this module to call the MCP server (which runs as a
-separate process / container). All MCP tool invocations go through here
-so we have a single place for auth, retries, and error handling.
-
-The MCP server exposes a JSON-RPC 2.0 interface over streamable-http.
-This client wraps the three Vigie tools (assign_checkins, record_checkin,
-escalate) and provides typed Python return values.
+Two modes:
+  - External mode (default): HTTP client to a separate MCP server process
+  - In-process mode (MCP_IN_PROCESS=true): calls the MCP tool functions
+    directly, no HTTP. Used by Railway to run everything in one process.
 """
 
 from __future__ import annotations
 
 import json
+import os
 from typing import Any
 
 import httpx
@@ -21,6 +19,11 @@ from app.utils.config import get_config
 from app.utils.logging import get_logger
 
 log = get_logger("vigie.services.mcp_client")
+
+
+def _is_in_process_mode() -> bool:
+    """Check if we should bypass HTTP and call MCP functions directly."""
+    return os.environ.get("MCP_IN_PROCESS", "false").lower() in ("true", "1", "yes")
 
 
 class MCPClientError(Exception):
@@ -33,24 +36,28 @@ class MCPClientError(Exception):
 
 
 class MCPClient:
-    """HTTP client for the Vigie MCP server."""
+    """HTTP client for the Vigie MCP server (or in-process bypass)."""
 
     def __init__(self, base_url: str | None = None, token: str | None = None) -> None:
         cfg = get_config()
         self.base_url = (base_url or f"http://{cfg.mcp.host}:{cfg.mcp.port}").rstrip("/")
         self.token = token or cfg.mcp.server_token.get_secret_value()
         self._client: httpx.AsyncClient | None = None
+        self.in_process = _is_in_process_mode()
+        if self.in_process:
+            log.info("mcp_client.using_in_process_mode")
 
-    async def __aenter__(self) -> MCPClient:
-        self._client = httpx.AsyncClient(
-            base_url=self.base_url,
-            headers={
-                "Authorization": f"Bearer {self.token}",
-                "Content-Type": "application/json",
-                "Accept": "application/json, text/event-stream",
-            },
-            timeout=httpx.Timeout(30.0, connect=5.0),
-        )
+    async def __aenter__(self) -> "MCPClient":
+        if not self.in_process:
+            self._client = httpx.AsyncClient(
+                base_url=self.base_url,
+                headers={
+                    "Authorization": f"Bearer {self.token}",
+                    "Content-Type": "application/json",
+                    "Accept": "application/json, text/event-stream",
+                },
+                timeout=httpx.Timeout(30.0, connect=5.0),
+            )
         return self
 
     async def __aexit__(self, exc_type, exc, tb) -> None:
@@ -59,7 +66,13 @@ class MCPClient:
             self._client = None
 
     async def _call_tool(self, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
-        """Invoke an MCP tool via JSON-RPC and return the parsed result."""
+        """Invoke an MCP tool. Routes to in-process or HTTP based on config."""
+        if self.in_process:
+            return await self._call_tool_in_process(tool_name, arguments)
+        return await self._call_tool_http(tool_name, arguments)
+
+    async def _call_tool_http(self, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+        """Invoke an MCP tool via HTTP JSON-RPC."""
         if self._client is None:
             raise MCPClientError("client not opened — use async with")
 
@@ -84,7 +97,6 @@ class MCPClient:
                 payload={"body": resp.text[:500]},
             )
 
-        # MCP streamable-http returns SSE; the final "data:" line carries the JSON-RPC response.
         body = resp.text
         rpc_response = _extract_sse_payload(body) if "data:" in body else json.loads(body)
 
@@ -93,19 +105,33 @@ class MCPClient:
             log.warning("mcp.rpc_error", tool=tool_name, error=err)
             raise MCPClientError(f"RPC error from {tool_name}: {err.get('message', err)}", payload=err)
 
-        # The result is wrapped in {result: {content: [{type: "text", text: "..."}]}}
         result = rpc_response.get("result", {})
         content = result.get("content", [])
         if not content:
             return result
 
-        # Concatenate text parts (Vigie tools return a single JSON-encoded text part)
         text_parts = [c.get("text", "") for c in content if c.get("type") == "text"]
         joined = "\n".join(text_parts)
         try:
             return json.loads(joined)
         except json.JSONDecodeError:
             return {"raw": joined}
+
+    async def _call_tool_in_process(self, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+        """Call the MCP tool function directly (no HTTP, no JSON-RPC)."""
+        log.debug("mcp.in_process_call", tool=tool_name, args=list(arguments.keys()))
+
+        if tool_name == "assign_checkins":
+            from mcp_server.tools.assign_checkins import assign_checkins
+            return await assign_checkins(**arguments)
+        elif tool_name == "record_checkin":
+            from mcp_server.tools.record_checkin import record_checkin
+            return await record_checkin(**arguments)
+        elif tool_name == "escalate":
+            from mcp_server.tools.escalate import escalate
+            return await escalate(**arguments)
+        else:
+            raise MCPClientError(f"unknown tool: {tool_name}")
 
     # ============================================================
     # Vigie tool wrappers
@@ -186,11 +212,17 @@ class MCPClient:
 
     async def list_beneficiaries(self) -> list[dict[str, Any]]:
         """Read the full beneficiary registry."""
+        if self.in_process:
+            from mcp_server.resources.beneficiary_registry import get_registry
+            return get_registry()
         result = await self._call_resource("vigie://beneficiary-registry")
         return result.get("beneficiaries", [])
 
     async def get_beneficiary(self, beneficiary_id: str) -> dict[str, Any] | None:
         """Read a single beneficiary by ID."""
+        if self.in_process:
+            from mcp_server.resources.beneficiary_registry import get_beneficiary_by_id
+            return get_beneficiary_by_id(beneficiary_id)
         result = await self._call_resource(f"vigie://beneficiary-registry/{beneficiary_id}")
         if "error" in result:
             return None
@@ -198,17 +230,20 @@ class MCPClient:
 
     async def list_weather_alerts(self) -> list[dict[str, Any]]:
         """Read active weather alerts."""
+        if self.in_process:
+            from mcp_server.resources.weather_alerts import get_active_alerts
+            return await get_active_alerts()
         result = await self._call_resource("vigie://weather-alerts")
         return result.get("alerts", [])
 
     async def _call_resource(self, uri: str) -> dict[str, Any]:
-        """Read an MCP resource by URI."""
+        """Read an MCP resource by URI (HTTP only)."""
         if self._client is None:
             raise MCPClientError("client not opened — use async with")
 
         payload = {
             "jsonrpc": "2.0",
-            "id": "vigie-resource",
+            "id": f"vigie-resource",
             "method": "resources/read",
             "params": {"uri": uri},
         }

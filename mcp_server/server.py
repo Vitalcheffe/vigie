@@ -97,11 +97,14 @@ def main() -> None:
     if cfg.mcp.transport == "stdio":
         mcp.run(transport="stdio")
     elif cfg.mcp.transport in ("sse", "streamable-http"):
-        mcp.run(
-            transport=cfg.mcp.transport,
-            host=cfg.mcp.host,
-            port=cfg.mcp.port,
-        )
+        # FastMCP 1.28+ takes host/port in the constructor, not in run()
+        # We need to recreate the server with the right host/port
+        from mcp.server.fastmcp import FastMCP
+        # Reuse the existing FastMCP instance — host/port are already
+        # set as attributes that the server reads at run() time
+        mcp.settings.host = cfg.mcp.host
+        mcp.settings.port = cfg.mcp.port
+        mcp.run(transport=cfg.mcp.transport)
     else:
         log.error("vigie.mcp.unknown_transport", transport=cfg.mcp.transport)
         sys.exit(1)

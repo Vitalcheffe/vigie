@@ -12,28 +12,7 @@
     "app_home": {
       "home_tab_enabled": true,
       "messages_tab_enabled": true
-  }
-  },
-  "oauth_config": {
-    "scopes": {
-      "bot": [
-        "chat:write",
-        "chat:write.public",
-        "channels:read",
-        "channels:history",
-        "im:history",
-        "im:read",
-        "im:write",
-        "users:read",
-        "commands",
-        "app_mentions:read",
-        "files:read",
-        "files:write"
-      ]
-    }
-  },
-  "settings": {
-    "socket_mode_enabled": true,
+    },
     "slash_commands": [
       {
         "command": "/vigie",
@@ -56,5 +35,26 @@
         "description": "Run the canicule simulation"
       }
     ]
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "chat:write",
+        "chat:write.public",
+        "channels:read",
+        "channels:history",
+        "im:history",
+        "im:read",
+        "im:write",
+        "users:read",
+        "commands",
+        "app_mentions:read",
+        "files:read",
+        "files:write"
+      ]
+    }
+  },
+  "settings": {
+    "socket_mode_enabled": true
   }
 }

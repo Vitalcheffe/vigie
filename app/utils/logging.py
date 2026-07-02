@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import logging
 import sys
+from pathlib import Path
 from typing import Any
 
 import structlog
@@ -71,10 +72,12 @@ def setup_logging() -> structlog.stdlib.BoundLogger:
     stdout_handler.setFormatter(formatter)
     root_logger.addHandler(stdout_handler)
 
-    # Optional file handler
-    if cfg.file:
-        cfg.file.parent.mkdir(parents=True, exist_ok=True)
-        file_handler = logging.FileHandler(cfg.file)
+    # Optional file handler (only if a real path is configured)
+    file_str = str(cfg.file).strip() if cfg.file else ""
+    if file_str:
+        log_path = Path(file_str)
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        file_handler = logging.FileHandler(log_path)
         file_handler.setFormatter(formatter)
         root_logger.addHandler(file_handler)
 
