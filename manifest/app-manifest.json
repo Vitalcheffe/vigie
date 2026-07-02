@@ -1,0 +1,60 @@
+{
+  "display_information": {
+    "name": "Vigie",
+    "description": "Slack agent for heatwave elder watch networks.",
+    "background_color": "#4A154B",
+    "long_description": "Vigie is a Slack agent that turns any nonprofit or local-government workspace into an augmented watch center during heatwaves. It detects Meteo-France alerts, assigns phone check-ins to volunteers automatically, transcribes and semantically analyzes their returns in real time, and triggers critical escalations in under 5 minutes."
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "Vigie"
+    },
+    "app_home": {
+      "home_tab_enabled": true,
+      "messages_tab_enabled": true
+  }
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "chat:write",
+        "chat:write.public",
+        "channels:read",
+        "channels:history",
+        "im:history",
+        "im:read",
+        "im:write",
+        "users:read",
+        "commands",
+        "app_mentions:read",
+        "files:read",
+        "files:write"
+      ]
+    }
+  },
+  "settings": {
+    "socket_mode_enabled": true,
+    "slash_commands": [
+      {
+        "command": "/vigie",
+        "description": "Main Vigie command"
+      },
+      {
+        "command": "/vigie-checkin",
+        "description": "Start a volunteer check-in"
+      },
+      {
+        "command": "/vigie-escalate",
+        "description": "Trigger a manual escalation"
+      },
+      {
+        "command": "/vigie-report",
+        "description": "Generate the daily report"
+      },
+      {
+        "command": "/vigie-simulate",
+        "description": "Run the canicule simulation"
+      }
+    ]
+  }
+}
