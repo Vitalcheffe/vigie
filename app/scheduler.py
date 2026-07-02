@@ -122,9 +122,16 @@ async def _job_refresh_rts(orchestrator: VigieOrchestrator) -> None:
 
 
 def stop_scheduler() -> None:
-    """Shut down the scheduler (for graceful shutdown)."""
+    """Shut down the scheduler (for graceful shutdown).
+
+    Safe to call even if the scheduler was never started.
+    """
     global _scheduler
     if _scheduler is not None:
-        _scheduler.shutdown(wait=False)
+        try:
+            if _scheduler.running:
+                _scheduler.shutdown(wait=False)
+        except Exception as e:
+            log.warning("scheduler.stop_failed", error=str(e))
         _scheduler = None
         log.info("scheduler.stopped")

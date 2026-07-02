@@ -237,14 +237,16 @@ class RTSService:
 
         async def fetch_one(feed: dict[str, str]) -> list[dict[str, Any]]:
             try:
-                async with httpx.AsyncClient(timeout=10.0) as client:
-                    resp = await client.get(
-                        feed["url"],
-                        headers={"User-Agent": "Vigie/0.0.1 (heatwave watch agent)"},
-                        follow_redirects=True,
-                    )
-                    resp.raise_for_status()
-                    return _parse_rss_xml(resp.text, feed, required_terms, cutoff)
+                from app.utils.http_retry import fetch_with_retry
+
+                response = await fetch_with_retry(
+                    "GET",
+                    feed["url"],
+                    headers={"User-Agent": "Vigie/0.0.1 (heatwave watch agent)"},
+                    follow_redirects=True,
+                    timeout=10.0,
+                )
+                return _parse_rss_xml(response.text, feed, required_terms, cutoff)
             except Exception as e:
                 log.warning("rts.rss.fetch_failed", source=feed["source"], error=str(e))
                 return []

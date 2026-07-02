@@ -46,33 +46,34 @@ async def fetch_pois_around(lat: float, lon: float, radius_m: int = 1000) -> lis
     """
     Query OpenStreetMap Overpass API for POIs around a given point.
 
+    Uses exponential backoff retry for transient failures (5xx, 429,
+    network timeouts). No fake fallback: if all retries fail, returns
+    an empty list.
+
     Args:
         lat: Latitude
         lon: Longitude
         radius_m: Search radius in meters (default 1km)
 
     Returns a list of POIs with: type, name, lat, lon, address, opening_hours.
-
-    No fake fallback: if Overpass fails, returns an empty list. The
-    orchestrator will surface the error to the volunteer rather than
-    silently serving made-up pharmacy data.
     """
+    from app.utils.http_retry import fetch_with_retry
+
     cfg = get_config().external
     query = OVERPASS_QUERY_TEMPLATE.format(lat=lat, lon=lon, radius=radius_m)
 
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            # Overpass requires a User-Agent header (per their usage policy)
-            resp = await client.post(
-                cfg.overpass_api_url,
-                data={"data": query},
-                headers={
-                    "User-Agent": "Vigie/0.0.1 (Slack agent for heatwave elder watch; contact: amineharchelkorane5@gmail.com)",
-                    "Accept": "*/*",
-                },
-            )
-            resp.raise_for_status()
-            data = resp.json()
+        response = await fetch_with_retry(
+            "POST",
+            cfg.overpass_api_url,
+            data={"data": query},
+            headers={
+                "User-Agent": "Vigie/0.0.1 (Slack agent for heatwave elder watch; contact: amineharchelkorane5@gmail.com)",
+                "Accept": "*/*",
+            },
+            timeout=30.0,
+        )
+        data = response.json()
 
         pois = []
         for el in data.get("elements", []):

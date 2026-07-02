@@ -2,7 +2,7 @@
 Vigie — Health endpoint server.
 
 A tiny FastAPI app exposing:
-  GET /health  — liveness/readiness probe (returns 200 OK)
+  GET /health  — liveness/readiness probe (checks Slack + MCP reachability)
   GET /metrics — returns the live Vigie KPIs (when bot is running)
   GET /audit   — returns the last 100 audit log entries
   GET /audit/stats — returns summary stats for the audit log
@@ -13,8 +13,10 @@ Runs alongside the Bolt app in the same process (separate thread).
 from __future__ import annotations
 
 import threading
+from datetime import UTC, datetime
 from typing import Any
 
+import httpx
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
@@ -40,16 +42,70 @@ def update_metrics(metrics: dict[str, Any]) -> None:
 
 @app.get("/health")
 async def health() -> JSONResponse:
-    """Liveness/readiness probe."""
+    """Liveness/readiness probe.
+
+    Checks:
+      - Bolt app is running (this endpoint responding proves it)
+      - MCP server is reachable on the configured host:port
+    Returns 200 with component statuses, or 503 if MCP is down.
+    """
     cfg = get_config()
-    return JSONResponse(
-        {
-            "status": "ok",
-            "service": "vigie",
-            "workspace": cfg.slack.workspace_name,
-            "version": "0.0.1",
-        }
-    )
+
+    # Check MCP server reachability
+    mcp_url = f"http://{cfg.mcp.host}:{cfg.mcp.port}/mcp"
+    mcp_status = "ok"
+    mcp_error: str | None = None
+    try:
+        async with httpx.AsyncClient(timeout=2.0) as client:
+            # Send a JSON-RPC initialize request; we don't care about
+            # the response shape, only that the server responds
+            resp = await client.post(
+                mcp_url,
+                json={
+                    "jsonrpc": "2.0",
+                    "id": "health-check",
+                    "method": "initialize",
+                    "params": {
+                        "protocolVersion": "2024-11-05",
+                        "capabilities": {},
+                        "clientInfo": {"name": "vigie-health", "version": "0.0.1"},
+                    },
+                },
+                headers={
+                    "Content-Type": "application/json",
+                    "Accept": "application/json, text/event-stream",
+                    "Authorization": f"Bearer {cfg.mcp.server_token.get_secret_value()}",
+                },
+            )
+            if resp.status_code >= 500:
+                mcp_status = "error"
+                mcp_error = f"MCP returned {resp.status_code}"
+    except httpx.ConnectError as e:
+        mcp_status = "unreachable"
+        mcp_error = str(e)
+    except httpx.ReadTimeout:
+        mcp_status = "timeout"
+        mcp_error = "MCP did not respond within 2s"
+    except Exception as e:
+        mcp_status = "error"
+        mcp_error = str(e)
+
+    overall = "ok" if mcp_status == "ok" else "degraded"
+
+    response_body = {
+        "status": overall,
+        "service": "vigie",
+        "version": "0.0.1",
+        "workspace": cfg.slack.workspace_name,
+        "timestamp": datetime.now(UTC).isoformat(),
+        "components": {
+            "bolt_app": {"status": "ok"},
+            "mcp_server": {"status": mcp_status, "url": mcp_url, "error": mcp_error},
+        },
+    }
+
+    status_code = 200 if overall == "ok" else 503
+    return JSONResponse(response_body, status_code=status_code)
 
 
 @app.get("/metrics")

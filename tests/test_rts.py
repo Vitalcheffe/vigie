@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -74,33 +74,11 @@ async def test_rts_search_returns_results_from_rss_feed():
     svc.api_key = None
     svc._cache.clear()
 
-    class _OkClient:
-        def __init__(self, *args, **kwargs):
-            pass
+    # Mock the fetch_with_retry function used internally
+    mock_response = AsyncMock()
+    mock_response.text = rss_xml
 
-        async def __aenter__(self):
-            return self
-
-        async def __aexit__(self, *args):
-            return False
-
-        async def get(self, url, **kwargs):
-            class _Resp:
-                status_code = 200
-
-                def raise_for_status(self):
-                    pass
-
-                @property
-                def text(self):
-                    return rss_xml
-
-            return _Resp()
-
-        async def post(self, *args, **kwargs):
-            raise RuntimeError("should not be called")
-
-    with patch("app.services.rts.httpx.AsyncClient", _OkClient):
+    with patch("app.utils.http_retry.fetch_with_retry", return_value=mock_response):
         results = await svc.search("canicule", max_results=5, freshness_hours=720)
 
     # Should only return the canicule item (filtered by query terms)
