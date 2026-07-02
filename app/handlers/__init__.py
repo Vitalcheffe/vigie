@@ -19,12 +19,19 @@ def register_all(app: AsyncApp) -> None:
     Each submodule exposes its own `register(app)` function.
     """
     from app.handlers import actions, commands, events, views
-    from app.workflows import register as register_workflows
 
     events.register(app)
     commands.register(app)
     actions.register(app)
     views.register(app)
-    register_workflows(app)
+
+    # Workflow Builder steps — optional, may not be available in all slack_bolt versions
+    try:
+        from app.workflows import register as register_workflows
+        register_workflows(app)
+    except AttributeError:
+        log.warning("vigie.workflows.skipped", reason="workflow_step not available in this slack_bolt version")
+    except Exception as e:
+        log.warning("vigie.workflows.failed", error=str(e))
 
     log.debug("vigie.handlers.all_registered")
