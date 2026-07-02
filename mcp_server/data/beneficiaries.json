@@ -40,7 +40,7 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": "B001: All good, no issues",
-    "last_checkin_at": "2026-07-02T22:00:53.894544+00:00",
+    "last_checkin_at": "2026-07-02T22:03:25.865352+00:00",
     "status": "ok",
     "registration_date": "2026-02-07",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -86,7 +86,7 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": "B002: Tired, requests medication",
-    "last_checkin_at": "2026-07-02T22:00:55.095224+00:00",
+    "last_checkin_at": "2026-07-02T22:03:27.070621+00:00",
     "status": "ok",
     "registration_date": "2026-04-21",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -125,7 +125,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": "B003: No answer after 3 calls",
-    "last_checkin_at": "2026-07-02T22:01:01.785142+00:00",
+    "last_checkin_at": "2026-07-02T22:03:46.619423+00:00",
     "status": "escalated",
     "registration_date": "2026-05-23",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -170,9 +170,9 @@
     "vulnerability_score": 59,
     "isolation_level": "medium",
     "language": "fr",
-    "notes": "Escalated to level 2 at 2026-07-02T22:01:17.110874+00:00: Confused and disoriented",
-    "last_checkin_at": "2026-07-02T22:01:17.110874+00:00",
-    "status": "escalated",
+    "notes": null,
+    "last_checkin_at": "2026-07-02T22:03:17.777837+00:00",
+    "status": "being_checked",
     "registration_date": "2026-04-20",
     "disclaimer": "SIMULATED — no real beneficiary data"
   },
@@ -211,8 +211,8 @@
     "vulnerability_score": 74,
     "isolation_level": "high",
     "language": "fr",
-    "notes": "Escalated to level 3 at 2026-07-02T22:01:17.526466+00:00: On the ground, unconscious",
-    "last_checkin_at": "2026-07-02T22:01:17.526466+00:00",
+    "notes": "Escalated to level 3 at 2026-07-02T22:03:50.399247+00:00: On the ground, unconscious",
+    "last_checkin_at": "2026-07-02T22:03:50.399247+00:00",
     "status": "critical",
     "registration_date": "2026-02-18",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -249,7 +249,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.679945+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.781025+00:00",
     "status": "being_checked",
     "registration_date": "2026-04-18",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -296,7 +296,7 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.681493+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.782553+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-16",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -334,7 +334,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.682989+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.784148+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-15",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -385,7 +385,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.686190+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.787007+00:00",
     "status": "being_checked",
     "registration_date": "2026-02-10",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -428,7 +428,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.687856+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.788532+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-20",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -475,7 +475,7 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.689437+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.790243+00:00",
     "status": "being_checked",
     "registration_date": "2026-02-15",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -523,7 +523,7 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.691128+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.791812+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-02",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -570,7 +570,7 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.692793+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.793419+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-12",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -624,7 +624,7 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.694273+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.794941+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-12",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -671,7 +671,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.695778+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.796463+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-11",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -717,7 +717,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.697379+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.798042+00:00",
     "status": "being_checked",
     "registration_date": "2026-04-26",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -756,7 +756,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.698937+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.799547+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-19",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -802,7 +802,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.700471+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.801201+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-15",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -848,7 +848,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.701954+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.802683+00:00",
     "status": "being_checked",
     "registration_date": "2026-04-02",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -894,7 +894,7 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.703485+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.804228+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-18",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -932,7 +932,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.705016+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.805769+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-18",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -980,7 +980,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.706527+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.807279+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-22",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1032,7 +1032,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.708133+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.808786+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-20",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1071,7 +1071,7 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.709607+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.810332+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-11",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1109,7 +1109,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.711102+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.811850+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-17",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1146,7 +1146,7 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.712539+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.813375+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-27",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1190,7 +1190,7 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.714014+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.814951+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-21",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1237,7 +1237,7 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.715499+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.816496+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-14",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1279,7 +1279,7 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.716958+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.818053+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-20",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1324,7 +1324,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.718515+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.819621+00:00",
     "status": "being_checked",
     "registration_date": "2026-02-16",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1377,7 +1377,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.720224+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.821289+00:00",
     "status": "being_checked",
     "registration_date": "2026-02-17",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1428,7 +1428,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.721731+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.822810+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-09",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1473,7 +1473,7 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.723241+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.824456+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-13",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1523,7 +1523,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.724733+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.826093+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-20",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1570,7 +1570,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.726309+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.827731+00:00",
     "status": "being_checked",
     "registration_date": "2026-04-05",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1621,7 +1621,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.727811+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.829375+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-07",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1672,7 +1672,7 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.729410+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.830918+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-02",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1722,7 +1722,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.730935+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.832504+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-26",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1761,7 +1761,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.732404+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.834100+00:00",
     "status": "being_checked",
     "registration_date": "2026-02-02",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1805,7 +1805,7 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.733895+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.836396+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-12",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1851,7 +1851,7 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.735363+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.837982+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-09",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1888,7 +1888,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.736827+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.839546+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-17",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1935,7 +1935,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.738498+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.841197+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-20",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -1974,7 +1974,7 @@
     "isolation_level": "high",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.740057+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.842749+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-03",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -2013,7 +2013,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.741602+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.844337+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-12",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -2067,7 +2067,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.743104+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.845865+00:00",
     "status": "being_checked",
     "registration_date": "2026-03-06",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -2105,7 +2105,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.744561+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.847410+00:00",
     "status": "being_checked",
     "registration_date": "2026-06-22",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -2155,7 +2155,7 @@
     "isolation_level": "low",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.746075+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.849097+00:00",
     "status": "being_checked",
     "registration_date": "2026-01-28",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -2206,7 +2206,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.747548+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.850637+00:00",
     "status": "being_checked",
     "registration_date": "2026-05-17",
     "disclaimer": "SIMULATED — no real beneficiary data"
@@ -2251,7 +2251,7 @@
     "isolation_level": "medium",
     "language": "fr",
     "notes": null,
-    "last_checkin_at": "2026-07-02T22:00:45.749021+00:00",
+    "last_checkin_at": "2026-07-02T22:03:17.852150+00:00",
     "status": "being_checked",
     "registration_date": "2026-04-15",
     "disclaimer": "SIMULATED — no real beneficiary data"
