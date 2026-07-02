@@ -137,7 +137,8 @@ vigie-mcp
 # 4. Start the Slack bot (in another terminal)
 vigie-bot
 
-# 5. In Slack, type /vigie start to begin a simulated heatwave
+# 5. In Slack, type /vigie demo  (one-command full demo)
+- /vigie start to begin a simulated heatwave
 ```
 
 ### Run tests
