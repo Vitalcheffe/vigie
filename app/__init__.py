@@ -1,0 +1,1 @@
+"""Vigie app package."""
