@@ -20,6 +20,7 @@ from typing import Any
 
 from slack_sdk.web.async_client import AsyncWebClient
 
+from app.blocks.canvas import build_cellule_crise_canvas
 from app.blocks.checkin import build_checkin_message, build_volunteer_dm
 from app.blocks.dashboard import build_app_home
 from app.blocks.escalation import build_escalation_message
@@ -30,10 +31,12 @@ from app.services.slack_ai import get_slack_ai_service
 from app.state import get_state
 from app.utils.logging import get_logger
 from app.utils.slack_helpers import (
+    get_cellule_crise_channel_id,
     get_user_info,
     post_dm,
     post_to_cellule_crise,
     post_to_sector,
+    publish_canvas,
 )
 
 log = get_logger("vigie.orchestrator")
@@ -154,6 +157,9 @@ class VigieOrchestrator:
             # Update the health endpoint with live metrics
             from app.health import update_metrics
             update_metrics(self.state.get_metrics())
+
+            # Publish the initial cellule-de-crise Canvas
+            await self._update_cellule_crise_canvas()
 
             return {
                 "status": "ok",
@@ -313,6 +319,9 @@ class VigieOrchestrator:
         from app.health import update_metrics
         update_metrics(self.state.get_metrics())
 
+        # Update the cellule-de-crise Canvas with new check-in data
+        await self._update_cellule_crise_canvas()
+
         return {
             "status": "ok",
             "beneficiary_id": beneficiary_id,
@@ -412,6 +421,9 @@ class VigieOrchestrator:
         from app.health import update_metrics
         update_metrics(self.state.get_metrics())
 
+        # Update the cellule-de-crise Canvas with the new escalation
+        await self._update_cellule_crise_canvas()
+
         return {"status": "ok", "escalation_id": result.get("escalation_id"), "level": level}
 
     # ============================================================
@@ -505,6 +517,9 @@ class VigieOrchestrator:
             blocks=msg["blocks"],
         )
 
+        # Update the Canvas with the final report data
+        await self._update_cellule_crise_canvas()
+
         return {"status": "ok", "posted": True}
 
     # ============================================================
@@ -583,7 +598,76 @@ class VigieOrchestrator:
         self.state.reset()
         from app.health import update_metrics
         update_metrics(self.state.get_metrics())
+        await self._update_cellule_crise_canvas()
         return {"status": "ok", "reset": True}
+
+    # ============================================================
+    # Canvas publishing (real-time cellule de crise view)
+    # ============================================================
+
+    async def _update_cellule_crise_canvas(self) -> None:
+        """Publish or update the cellule-de-crise Slack Canvas.
+
+        Called after every state change (start, check-in, escalation,
+        report, reset) so coordinators always see live data.
+        """
+        metrics = self.state.get_metrics()
+        alert = metrics.get("alert")
+        if not alert:
+            log.debug("vigie.canvas.skipped_no_alert")
+            return
+
+        active_escalations = self.state.get_active_escalations()
+        # Enrich escalation items for the canvas
+        esc_items = []
+        for esc in active_escalations:
+            beneficiary_name = esc.get("beneficiary_id", "?")
+            esc_items.append({
+                "level": esc.get("level", 0),
+                "beneficiary_name": beneficiary_name,
+                "sector": "?",
+                "triggered_at": esc.get("recorded_at", "?")[:19],
+            })
+
+        # Fetch fresh directives for the canvas (uses cache, fast)
+        try:
+            rts_directives = await self.rts.get_health_directives(department="75")
+        except Exception:
+            rts_directives = []
+
+        canvas_blocks = build_cellule_crise_canvas(
+            date=datetime.now(UTC).date().isoformat(),
+            alert_level=alert.get("level", "orange"),
+            alert_phenomenon=alert.get("phenomenon", "canicule"),
+            alert_departments=[alert.get("department", "75")],
+            total_beneficiaries=metrics["total_assigned"],
+            contacted=metrics["contacted"],
+            ok_count=metrics["ok_count"],
+            weak_count=metrics["weak_count"],
+            coord_count=metrics["coord_escalations"],
+            samu_count=metrics["samu_escalations"],
+            avg_checkin_time=metrics["avg_checkin_time"],
+            avg_escalade_latency=metrics["avg_escalade_latency"],
+            unreachable_72h=metrics["unreachable_72h"],
+            active_escalations=esc_items,
+            rts_directives=rts_directives[:3],
+        )
+
+        channel_id = await get_cellule_crise_channel_id(self.slack)
+        if not channel_id:
+            log.warning("vigie.canvas.no_channel")
+            return
+
+        success = await publish_canvas(
+            self.slack,
+            channel_id=channel_id,
+            title="Cellule de crise — Vigie",
+            blocks=canvas_blocks,
+        )
+        if success:
+            log.info("vigie.canvas.published", channel=channel_id)
+        else:
+            log.warning("vigie.canvas.publish_failed", channel=channel_id)
 
 
 # ============================================================

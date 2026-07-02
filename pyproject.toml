@@ -52,6 +52,9 @@ dependencies = [
     "fastapi>=0.110.0",
     "uvicorn>=0.30.0",
 
+    # Scheduler for the 18h00 daily report
+    "apscheduler>=3.10.0",
+
     # CLI for scripts (seed, simulate)
     "typer>=0.12.0",
     "rich>=13.7.0",
@@ -117,4 +120,27 @@ ignore_missing_imports = true
 
 [tool.coverage.run]
 source = ["app", "mcp_server"]
-omit = ["tests/*", "scripts/*"]
+omit = [
+    "tests/*",
+    "scripts/*",
+    # Entry points and handlers require a live Slack workspace to test.
+    # Business logic is tested via the orchestrator + MCP server tests.
+    "app/main.py",
+    "app/handlers/*",
+    "app/health.py",
+    "app/scheduler.py",
+    "mcp_server/server.py",
+]
+
+[tool.coverage.report]
+fail_under = 60
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "log\\.debug",
+    "log\\.warning",
+]

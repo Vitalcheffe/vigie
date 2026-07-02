@@ -39,7 +39,7 @@
     "vulnerability_score": 31,
     "isolation_level": "low",
     "language": "fr",
-    "notes": null,
+    "notes": "test note",
     "last_checkin_at": null,
     "status": "registered",
     "registration_date": "2026-02-07",

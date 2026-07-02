@@ -27,6 +27,7 @@ from slack_sdk.web.async_client import AsyncWebClient
 
 from app.health import start_health_server
 from app.orchestrator import VigieOrchestrator
+from app.scheduler import start_scheduler, stop_scheduler
 from app.utils.config import get_config
 from app.utils.logging import setup_logging
 
@@ -102,9 +103,14 @@ def main() -> None:
     # Start the health endpoint in a daemon thread
     start_health_server()
 
+    # Build the orchestrator and start the background scheduler
+    orchestrator = get_orchestrator(app)
+    scheduler = start_scheduler(orchestrator)
+
     # Graceful shutdown handler
     def shutdown(signum: int, frame: Any) -> None:
         log.info("vigie.shutdown.signal", signal=signum)
+        stop_scheduler()
         sys.exit(0)
 
     signal.signal(signal.SIGINT, shutdown)
@@ -113,11 +119,18 @@ def main() -> None:
     if cfg.slack.app_token:
         # Socket Mode (development)
         log.info("vigie.socket_mode.starting")
-        handler = AsyncSocketModeHandler(
-            app_token=cfg.slack.app_token.get_secret_value(),
-            app=app,
-        )
-        asyncio.run(handler.start_async())
+
+        async def _run() -> None:
+            # Start the scheduler in the same event loop as the bot
+            scheduler.start()
+            log.info("vigie.scheduler.started")
+            handler = AsyncSocketModeHandler(
+                app_token=cfg.slack.app_token.get_secret_value(),
+                app=app,
+            )
+            await handler.start_async()
+
+        asyncio.run(_run())
     else:
         # Production: use the Bolt adapter (requires public URL)
         log.info("vigie.http_mode.starting", port=cfg.deployment.port)
