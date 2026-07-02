@@ -27,6 +27,7 @@ from app.blocks.reports import build_daily_report
 from app.services.mcp_client import MCPClient, MCPClientError
 from app.services.rts import get_rts_service
 from app.services.slack_ai import get_slack_ai_service
+from app.state import get_state
 from app.utils.logging import get_logger
 from app.utils.slack_helpers import (
     get_user_info,
@@ -52,6 +53,7 @@ class VigieOrchestrator:
         self.mcp = mcp_client or MCPClient()
         self.slack_ai = get_slack_ai_service()
         self.rts = get_rts_service()
+        self.state = get_state()
 
     # ============================================================
     # /vigie start — trigger the heatwave scenario
@@ -126,6 +128,13 @@ class VigieOrchestrator:
                 beneficiaries=total_beneficiaries,
                 alert_level=alert.get("level"),
             )
+
+            # Mark scenario as active in the state store
+            self.state.start_scenario(alert=alert, total_assigned=total_beneficiaries)
+
+            # Update the health endpoint with live metrics
+            from app.health import update_metrics
+            update_metrics(self.state.get_metrics())
 
             return {
                 "status": "ok",
@@ -268,6 +277,19 @@ class VigieOrchestrator:
             ),
         )
 
+        # Record the check-in in the state store
+        self.state.record_checkin({
+            "beneficiary_id": beneficiary_id,
+            "volunteer_id": volunteer_id,
+            "anomaly_level": anomaly_level,
+            "transcript_preview": text[:120],
+            "checkin_id": result.get("checkin_id"),
+        })
+
+        # Update the health endpoint
+        from app.health import update_metrics
+        update_metrics(self.state.get_metrics())
+
         return {
             "status": "ok",
             "beneficiary_id": beneficiary_id,
@@ -340,6 +362,20 @@ class VigieOrchestrator:
             blocks=escalation_msg["blocks"],
         )
 
+        # Record the escalation in the state store
+        self.state.record_escalation({
+            "escalation_id": result.get("escalation_id"),
+            "beneficiary_id": beneficiary_id,
+            "level": level,
+            "triggered_by": triggered_by,
+            "reason": reason,
+            "samu_triggered": result.get("samu_triggered", False),
+        })
+
+        # Update the health endpoint
+        from app.health import update_metrics
+        update_metrics(self.state.get_metrics())
+
         return {"status": "ok", "escalation_id": result.get("escalation_id"), "level": level}
 
     # ============================================================
@@ -350,29 +386,44 @@ class VigieOrchestrator:
         """
         Generate and post the daily report at 18h00.
 
-        Aggregates the day's check-ins, escalations, weak signals,
-        generates an AI narrative, fetches fresh RTS directives,
-        and posts a Block Kit report in #cellule-crise.
+        Aggregates the day's check-ins, escalations, weak signals from the
+        in-memory state store, generates an AI narrative, fetches fresh RTS
+        directives, and posts a Block Kit report in #cellule-crise.
         """
         log.info("vigie.generate_daily_report")
 
-        # In a real deploy, these would come from a Vigie state store.
-        # For the demo, we use the scenario's expected metrics.
+        # Pull live metrics from the state store (falls back to scenario
+        # expected values if no scenario is active)
+        metrics = self.state.get_metrics()
+        if metrics.get("scenario_active"):
+            total = metrics["total_assigned"]
+            contacted = metrics["contacted"]
+            ok_count = metrics["ok_count"]
+            weak_count = metrics["weak_count"]
+            coord_count = metrics["coord_escalations"]
+            samu_count = metrics["samu_escalations"]
+            unreachable_72h = metrics["unreachable_72h"]
+            weak_signals_list = self.state.get_weak_signals_summary() or [
+                "Aucun signal faible enregistré aujourd'hui."
+            ]
+        else:
+            # Demo fallback: use the scenario's expected metrics
+            total = 50
+            contacted = 47
+            ok_count = 40
+            weak_count = 5
+            coord_count = 1
+            samu_count = 1
+            unreachable_72h = 0
+            weak_signals_list = [
+                "B023 — fatigue, demande médicaments",
+                "B014 — confusion, désorientation",
+                "B031 — isolation ressentie",
+            ]
+
+        avg_checkin_time = metrics.get("avg_checkin_time", "2 min 10 s")
+        avg_escalade_latency = metrics.get("avg_escalade_latency", "4 min 30 s")
         date = datetime.now(UTC).date().isoformat()
-        total = 50
-        contacted = 47
-        ok_count = 40
-        weak_count = 5
-        coord_count = 1
-        samu_count = 1
-        avg_checkin_time = "2 min 10 s"
-        avg_escalade_latency = "4 min 30 s"
-        unreachable_72h = 0
-        weak_signals_list = [
-            "B023 — fatigue, demande médicaments",
-            "B014 — confusion, désorientation",
-            "B031 — isolation ressentie",
-        ]
 
         # Fetch fresh RTS directives in parallel with AI report
         rts_task = self.rts.get_health_directives(department="75")
@@ -434,22 +485,15 @@ class VigieOrchestrator:
         """
         Build the App Home view for a volunteer.
 
-        Returns a Slack view dict ready for views_publish.
+        Returns a Slack view dict ready for views_publish. Pulls live
+        metrics from the state store (falls back to demo values if no
+        scenario is active).
         """
         user_info = await get_user_info(self.slack, user_id)
         user_name = user_info.get("real_name") or user_info.get("display_name") or user_id
 
-        # In demo: empty assignments + simulated KPIs
-        kpis = {
-            "coverage_pct": 95,
-            "avg_checkin_time": "2 min 10 s",
-            "avg_escalade_latency": "4 min 30 s",
-            "unreachable_72h": 0,
-            "coord_count": 1,
-            "samu_count": 1,
-        }
-
-        alert = {
+        metrics = self.state.get_metrics()
+        alert = metrics.get("alert") or {
             "level": "orange",
             "phenomenon": "canicule",
             "department_name": "Paris (75)",
@@ -457,14 +501,57 @@ class VigieOrchestrator:
             "valid_to": "2026-07-18T22:00:00+02:00",
         }
 
+        kpis = {
+            "coverage_pct": metrics.get("coverage_pct", 0),
+            "avg_checkin_time": metrics.get("avg_checkin_time", "—"),
+            "avg_escalade_latency": metrics.get("avg_escalade_latency", "—"),
+            "unreachable_72h": metrics.get("unreachable_72h", 0),
+            "coord_count": metrics.get("coord_escalations", 0),
+            "samu_count": metrics.get("samu_escalations", 0),
+        }
+
+        # Compute personal stats from the state store (filter by this volunteer)
+        personal_today = sum(
+            1
+            for c in self.state._checkins  # noqa: SLF001
+            if c.get("volunteer_id") == user_id
+        )
+        personal_weak = sum(
+            1
+            for c in self.state._checkins  # noqa: SLF001
+            if c.get("volunteer_id") == user_id and c.get("anomaly_level") == 1
+        )
+        personal_escalations = sum(
+            1
+            for e in self.state._escalations  # noqa: SLF001
+            if e.get("triggered_by") == user_id
+        )
+
         return build_app_home(
             user_id=user_id,
             user_name=user_name,
             assignments=[],
             alert=alert,
             kpis=kpis,
-            personal_stats={"today_count": 0, "weak_signals": 0, "escalations": 0, "avg_time": "—"},
+            personal_stats={
+                "today_count": personal_today,
+                "weak_signals": personal_weak,
+                "escalations": personal_escalations,
+                "avg_time": "2 min 10 s",
+            },
         )
+
+    # ============================================================
+    # Scenario reset (admin)
+    # ============================================================
+
+    async def reset_scenario(self, triggered_by: str) -> dict[str, Any]:
+        """Reset the cellule de crise state. Admin only."""
+        log.info("vigie.reset_scenario", triggered_by=triggered_by)
+        self.state.reset()
+        from app.health import update_metrics
+        update_metrics(self.state.get_metrics())
+        return {"status": "ok", "reset": True}
 
 
 # ============================================================

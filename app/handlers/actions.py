@@ -36,15 +36,6 @@ def register(app: AsyncApp) -> None:
         user_id = body["user"]["id"]
         log.info("vigie.action.start_calls", user=user_id)
 
-    @app.action("vigie_view_beneficiary")
-    async def handle_view_beneficiary(ack: AsyncAck, action: dict, body: dict, client) -> None:
-        """Volunteer clicked 'Fiche complète' on a beneficiary in the DM."""
-        await ack()
-        beneficiary_id = action.get("value", "")
-        user_id = body["user"]["id"]
-        log.info("vigie.action.view_beneficiary", user=user_id, beneficiary=beneficiary_id)
-        # TODO: open modal with full beneficiary fiche
-
     @app.action("vigie_view_my_checkins")
     async def handle_view_my_checkins(ack: AsyncAck, body: dict, client) -> None:
         await ack()
@@ -103,18 +94,16 @@ def register(app: AsyncApp) -> None:
         await ack()
         log.info("vigie.action.resolve_escalation", user=body["user"]["id"])
 
-    # Global shortcuts
-    @app.shortcut("vigie_signal_anomaly")
-    async def handle_shortcut_anomaly(ack: AsyncAck, shortcut: dict) -> None:
-        """User triggered the 'Signaler une anomalie' shortcut on a message."""
-        await ack()
-        log.info("vigie.shortcut.anomaly", shortcut=shortcut)
-
-    @app.shortcut("vigie_reassign")
-    async def handle_shortcut_reassign(ack: AsyncAck, shortcut: dict) -> None:
-        """User triggered the 'Réassigner ce bénéficiaire' shortcut."""
-        await ack()
-        log.info("vigie.shortcut.reassign", shortcut=shortcut)
+        # Try to resolve in the state store
+        raw_value = action.get("value", "{}")
+        try:
+            payload = json.loads(raw_value)
+        except json.JSONDecodeError:
+            payload = {}
+        escalation_id = payload.get("escalation_id")
+        if escalation_id:
+            from app.state import get_state
+            get_state().resolve_escalation(escalation_id)
 
     log.debug("vigie.actions.registered")
 

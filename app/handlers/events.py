@@ -12,13 +12,29 @@ Subscribes to Slack events:
 
 from __future__ import annotations
 
+import contextlib
+
+import httpx
 from slack_bolt.async_app import AsyncApp
 from slack_bolt.context.say.async_say import AsyncSay
+from slack_sdk.web.async_client import AsyncWebClient
 
 from app.orchestrator import VigieOrchestrator
+from app.utils.config import get_config
 from app.utils.logging import get_logger
 
 log = get_logger("vigie.handlers.events")
+
+
+async def post_dm_safe(client, user_id: str, text: str) -> None:
+    """Best-effort DM via the file_shared handler."""
+    try:
+        resp = await client.conversations_open(users=user_id)
+        channel_id = resp.get("channel", {}).get("id")
+        if channel_id:
+            await client.chat_postMessage(channel=channel_id, text=text)
+    except Exception as e:
+        log.warning("vigie.post_dm_safe_failed", user=user_id, error=str(e))
 
 
 def register(app: AsyncApp) -> None:
@@ -97,10 +113,59 @@ def register(app: AsyncApp) -> None:
             await say(f":warning: Erreur lors du traitement : {result.get('message', 'unknown')}")
 
     @app.event("file_shared")
-    async def handle_file_shared(event: dict, say: AsyncSay) -> None:
-        """A file (likely voice note) was shared with Vigie."""
-        # TODO: fetch file content via files.info, then call orchestrator.process_volunteer_message
-        log.info("vigie.event.file_shared", file_id=event.get("file_id"))
+    async def handle_file_shared(event: dict, client) -> None:
+        """A file (likely voice note) was shared with Vigie in DM.
+
+        Fetches the file content, transcribes via Slack AI / Whisper,
+        then routes through the orchestrator as a check-in.
+        """
+        file_id = event.get("file_id")
+        user_id = event.get("user_id", "")
+        log.info("vigie.event.file_shared", file_id=file_id, user=user_id)
+
+        if not file_id:
+            return
+
+        try:
+            # Fetch file info
+            file_info_resp = await client.files_info(file=file_id)
+            file_info = file_info_resp.get("file", {})
+            url_private = file_info.get("url_private_download") or file_info.get("url_private")
+            if not url_private:
+                log.warning("vigie.event.file_shared.no_url", file_id=file_id)
+                return
+
+            # Download the file
+            cfg = get_config()
+            auth_headers = {"Authorization": f"Bearer {cfg.slack.bot_token.get_secret_value()}"}
+            async with httpx.AsyncClient(timeout=30.0) as http:
+                resp = await http.get(url_private, headers=auth_headers)
+                resp.raise_for_status()
+                file_bytes = resp.content
+
+            filename = file_info.get("name", "voice-note")
+
+            # Route through the orchestrator
+            slack_client = AsyncWebClient(token=cfg.slack.bot_token.get_secret_value())
+            orch = VigieOrchestrator(slack_client=slack_client)
+            result = await orch.process_volunteer_message(
+                volunteer_id=user_id,
+                text="",  # Will be filled by transcription
+                file_bytes=file_bytes,
+                filename=filename,
+            )
+
+            log.info(
+                "vigie.event.file_shared.processed",
+                status=result.get("status"),
+                beneficiary=result.get("beneficiary_id"),
+            )
+
+        except Exception as e:
+            log.error("vigie.event.file_shared.failed", file_id=file_id, error=str(e))
+            # DM the user about the failure
+            with contextlib.suppress(Exception):
+                await post_dm_safe(client, user_id, f":warning: Impossible de traiter votre note vocale : {e}")
 
     @app.event("reaction_added")
     async def handle_reaction_added(event: dict) -> None:

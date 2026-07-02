@@ -4,7 +4,11 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Tests](https://img.shields.io/badge/tests-57%20passing-brightgreen.svg)](tests/)
+[![Ruff](https://img.shields.io/badge/lint-ruff%20clean-success.svg)](https://docs.astral.sh/ruff/)
 [![Hackathon: Slack Agent Builder Challenge 2026](https://img.shields.io/badge/hackathon-Slack%20Agent%20Builder%202026-4A154B.svg)](https://slackagentbuilder.devpost.com/)
+[![Track: Agent for Good](https://img.shields.io/badge/track-Agent%20for%20Good-2EB67D.svg)](https://slackagentbuilder.devpost.com/)
+[![Stack: Slack AI + MCP + RTS](https://img.shields.io/badge/stack-Slack%20AI%20%2B%20MCP%20%2B%20RTS-36C5F0.svg)](docs/architecture.md)
 
 **Vigie** is a Slack agent that transforms any nonprofit or local government workspace into an augmented watch center during heatwaves. It detects Météo-France alerts, automatically assigns phone check-ins to volunteers, transcribes and semantically analyzes their returns in real-time, and triggers critical escalations in under 5 minutes — against 45 minutes without it.
 

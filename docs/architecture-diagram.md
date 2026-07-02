@@ -1,0 +1,141 @@
+# Vigie — Architecture Diagram (Mermaid)
+
+This Mermaid diagram is the source for the architecture diagram submitted
+to the hackathon. Render it via [mermaid.live](https://mermaid.live) and
+export as SVG or PNG 1600x1200.
+
+```mermaid
+flowchart TB
+    subgraph Slack["Slack Workspace — Reseau-Soligarde-Paris"]
+        CC["#cellule-crise<br/>coordination channel"]
+        SEC["#secteur-1..12<br/>operational channels"]
+        VOI["#voisins-1..12<br/>neighbor referent channels"]
+        DM["DMs bénévoles ↔ Vigie"]
+        HOME["App Home<br/>volunteer dashboard"]
+        CANVAS["Canvas<br/>cellule de crise real-time"]
+    end
+
+    subgraph Bolt["Bolt App — Python 3.11 async"]
+        CMD["Slash commands<br/>/vigie, /vigie-checkin, ..."]
+        EVT["Event handlers<br/>message.im, file_shared, app_home_opened"]
+        ACT["Block Kit actions<br/>escalate, close, pharmacy"]
+        MOD["Modals<br/>checkin, anomaly, reassign, escalate"]
+        ORC["VigieOrchestrator<br/>workflow conductor"]
+        STATE["VigieState<br/>in-memory store"]
+    end
+
+    subgraph AI["Slack AI Layer"]
+        TR["Transcription<br/>(Whisper fallback)"]
+        EXT["JSON Extraction<br/>state, signals, action"]
+        CLS["4-Level Classification<br/>OK / weak / coord / SAMU"]
+        RPT["Daily Report Generation<br/>18h00 narrative"]
+    end
+
+    subgraph MCP["MCP Server — FastMCP"]
+        R1["Resource: beneficiary_registry<br/>50 Plan Canicule profiles"]
+        R2["Resource: weather_alerts<br/>Météo-France + NWS"]
+        R3["Resource: community_pois<br/>OpenStreetMap Overpass"]
+        T1["Tool: assign_checkins"]
+        T2["Tool: record_checkin"]
+        T3["Tool: escalate"]
+    end
+
+    subgraph External["External APIs"]
+        MF["Météo-France API<br/>vigilance"]
+        NWS["NWS Weather API<br/>US fallback"]
+        OSM["OpenStreetMap Overpass<br/>pharmacies, hospitals, water"]
+        INSEE["INSEE<br/>demographics"]
+        DATAGOUV["data.gouv.fr<br/>schema canicule"]
+    end
+
+    subgraph RTS["Real-Time Search API"]
+        DIR["Health directives<br/>ARS, Ministry, CDC, WHO"]
+        NEWS["Local canicule news"]
+        MUN["Municipal alerts<br/>îlots de fraîcheur"]
+        CACHE["TTL Cache<br/>30 min, Redis/SQLite"]
+    end
+
+    %% Slack <-> Bolt
+    CC -.->|Event API + Web API| EVT
+    SEC -.-> EVT
+    DM -.-> EVT
+    VOI -.-> EVT
+    HOME -.->|views_publish| ORC
+    CANVAS -.-> ORC
+    CMD --> ORC
+    ACT --> ORC
+    MOD --> ORC
+
+    %% Bolt internal
+    EVT --> ORC
+    ORC --> STATE
+    ORC -->|httpx async| MCP
+    ORC -->|async| AI
+    ORC -->|async| RTS
+
+    %% AI internals
+    TR --> EXT --> CLS
+    RPT --> ORC
+
+    %% MCP <-> External
+    R2 --> MF
+    R2 --> NWS
+    R3 --> OSM
+    R1 -.->|schema| DATAGOUV
+    R1 -.->|demographics| INSEE
+
+    %% RTS <-> External
+    DIR --> CACHE
+    NEWS --> CACHE
+    MUN --> CACHE
+
+    %% Tools invoke resources
+    T1 --> R1
+    T1 --> R2
+    T2 --> R1
+    T2 --> R3
+    T2 --> CLS
+    T3 --> R1
+    T3 --> R3
+
+    %% Styling
+    classDef slackStyle fill:#4A154B,stroke:#36C5F0,stroke-width:2px,color:#FFFFFF
+    classDef boltStyle fill:#36C5F0,stroke:#4A154B,stroke-width:2px,color:#000000
+    classDef aiStyle fill:#2EB67D,stroke:#4A154B,stroke-width:2px,color:#FFFFFF
+    classDef mcpStyle fill:#ECB22E,stroke:#4A154B,stroke-width:2px,color:#000000
+    classDef extStyle fill:#E01E5A,stroke:#4A154B,stroke-width:2px,color:#FFFFFF
+    classDef rtsStyle fill:#7B68EE,stroke:#4A154B,stroke-width:2px,color:#FFFFFF
+
+    class CC,SEC,VOI,DM,HOME,CANVAS slackStyle
+    class CMD,EVT,ACT,MOD,ORC,STATE boltStyle
+    class TR,EXT,CLS,RPT aiStyle
+    class R1,R2,R3,T1,T2,T3 mcpStyle
+    class MF,NWS,OSM,INSEE,DATAGOUV extStyle
+    class DIR,NEWS,MUN,CACHE rtsStyle
+```
+
+## Rendering instructions
+
+1. Open https://mermaid.live
+2. Paste the mermaid code block above
+3. Click "Actions" → "PNG" or "SVG"
+4. For PNG: set scale to 3x for crisp rendering (1600x1200+)
+5. For SVG: vector format, scales perfectly
+
+## Style notes
+
+- Slack brand colors used (aubergine #4A154B, aloe #36C5F0, green #2EB67D, yellow #ECB22E, red #E01E5A)
+- Each layer has a distinct color band for visual separation
+- Solid lines for direct calls, dotted lines for schema/reference relationships
+- Subgraph labels match the architecture documentation
+
+## What to include in the final submitted PNG/SVG
+
+The submitted diagram should be a single image with:
+- The Mermaid graph above as the core
+- A title bar: "Vigie — Slack Agent Builder Challenge 2026"
+- A subtitle: "Slack AI + MCP server + Real-Time Search API"
+- A footer with 5 KPI icons: 95% coverage, 2 min 10 s check-in, 4 min 30 s escalation, 0 unreachable > 72h, 7 weak signals
+- A small "Made with Vigie" attribution
+
+This can be assembled in Figma or Inkscape from the Mermaid render + a few text boxes.
