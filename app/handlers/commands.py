@@ -14,6 +14,8 @@ Commands:
 
 from __future__ import annotations
 
+import asyncio
+
 from slack_bolt.async_app import AsyncApp
 from slack_bolt.context.ack.async_ack import AsyncAck
 from slack_bolt.context.respond.async_respond import AsyncRespond
@@ -244,8 +246,6 @@ async def _cmd_demo(respond: AsyncRespond, user_id: str) -> None:
 
     This is the one-command demo for judges.
     """
-    import asyncio
-
     log.info("vigie.command.demo", user=user_id)
     await respond(":movie_camera: *Starting full Vigie demo...* This will take ~15 seconds.")
 
