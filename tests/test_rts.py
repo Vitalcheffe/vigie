@@ -39,7 +39,7 @@ async def test_rts_search_returns_empty_when_all_sources_fail():
             raise httpx.ConnectError("simulated DNS failure")
 
     with patch("app.services.rts.httpx.AsyncClient", _FailClient):
-        results = await svc.search("canicule", max_results=5)
+        results = await svc.search("heatwave", max_results=5)
 
     assert results == []
     # Verify NO simulation was served
@@ -54,9 +54,9 @@ async def test_rts_search_returns_results_from_rss_feed():
   <channel>
     <title>Santé publique France</title>
     <item>
-      <title>Canicule — recommandations sanitaires</title>
-      <link>https://www.santepubliquefrance.fr/canicule-2026</link>
-      <description>Activité de niveau 3 du plan canicule.</description>
+      <title>Heatwave — health recommendations</title>
+      <link>https://www.santepubliquefrance.fr/heatwave-2026</link>
+      <description>Level 3 heatwave plan activated.</description>
       <pubDate>Mon, 14 Jul 2026 08:00:00 +0200</pubDate>
     </item>
     <item>
@@ -79,13 +79,13 @@ async def test_rts_search_returns_results_from_rss_feed():
     mock_response.text = rss_xml
 
     with patch("app.utils.http_retry.fetch_with_retry", return_value=mock_response):
-        results = await svc.search("canicule", max_results=5, freshness_hours=720)
+        results = await svc.search("heatwave", max_results=5, freshness_hours=720)
 
-    # Should only return the canicule item (filtered by query terms)
+    # Should only return the heatwave item (filtered by query terms)
     assert len(results) >= 1
-    canicule_results = [r for r in results if "canicule" in r.get("title", "").lower()]
-    assert len(canicule_results) >= 1
-    assert canicule_results[0]["url"] == "https://www.santepubliquefrance.fr/canicule-2026"
+    heatwave_results = [r for r in results if "heatwave" in r.get("title", "").lower()]
+    assert len(heatwave_results) >= 1
+    assert heatwave_results[0]["url"] == "https://www.santepubliquefrance.fr/heatwave-2026"
 
 
 @pytest.mark.asyncio
@@ -102,8 +102,8 @@ async def test_rts_cache_returns_same_results_within_ttl():
         return [{"source": "test", "title": query, "url": "https://example.org", "summary": "", "published_at": "", "_published_ts": 0}]
 
     with patch.object(svc, "_fetch_rss_feeds", side_effect=fake_fetch):
-        results1 = await svc.search("canicule", max_results=3)
-        results2 = await svc.search("canicule", max_results=3)
+        results1 = await svc.search("heatwave", max_results=3)
+        results2 = await svc.search("heatwave", max_results=3)
 
     assert results1 == results2
     assert len(svc._cache) == 1

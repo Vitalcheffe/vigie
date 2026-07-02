@@ -48,7 +48,7 @@ async def test_classification_level_2_unreachable():
     """An unreachable beneficiary should classify as level 2."""
     beneficiary = {"id": "B003"}
     level, signals, recommended = await _classify_anomaly(
-        transcript="Pas de réponse après 3 appels.",
+        transcript="No answer after 3 calls.",
         pre_detected=None,
         beneficiary=beneficiary,
     )
@@ -76,7 +76,7 @@ async def test_classification_level_2_cognitive_distress():
     """Cognitive distress (confusion, disorientation) should escalate to level 2."""
     beneficiary = {"id": "B005"}
     level, signals, recommended = await _classify_anomaly(
-        transcript="Mme Durand semble confuse et désorientée, ne sait plus quel jour on est.",
+        transcript="Mrs Durand seems confused and disoriented, ne sait plus quel jour on est.",
         pre_detected=None,
         beneficiary=beneficiary,
     )

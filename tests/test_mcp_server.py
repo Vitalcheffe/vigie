@@ -84,7 +84,7 @@ async def test_weather_alerts_parse_meteo_france_product_format():
                     "domain_id": "75",
                     "color_max": 3,
                     "phenomenons": [
-                        {"phenomenon_id": 6, "phenomenon_max_color": 3},  # canicule orange
+                        {"phenomenon_id": 6, "phenomenon_max_color": 3},  # heatwave orange
                     ],
                 },
                 {
@@ -103,7 +103,7 @@ async def test_weather_alerts_parse_meteo_france_product_format():
     assert alerts[0]["department"] == "75"
     assert alerts[0]["department_name"] == "Paris"
     assert alerts[0]["level"] == "orange"
-    assert alerts[0]["phenomenon"] == "canicule"
+    assert alerts[0]["phenomenon"] == "heatwave"
     assert "recommendation" in alerts[0]
     assert alerts[0]["max_temperature"] == 38
 
@@ -144,11 +144,11 @@ async def test_weather_alerts_is_heatwave_active_with_no_alerts():
 
 @pytest.mark.asyncio
 async def test_weather_alerts_is_heatwave_active_with_orange_canicule():
-    """is_heatwave_active should return True for an orange canicule alert."""
+    """is_heatwave_active should return True for an orange heatwave alert."""
     from mcp_server.resources.weather_alerts import is_heatwave_active
 
     mock_alerts = [
-        {"phenomenon": "canicule", "level": "orange", "department": "75"},
+        {"phenomenon": "heatwave", "level": "orange", "department": "75"},
     ]
     with patch(
         "mcp_server.resources.weather_alerts.fetch_meteo_france_vigilance",
@@ -339,8 +339,8 @@ async def test_escalate_level_labels():
     """The level labels should be human-readable French."""
     from mcp_server.tools.escalate import _LEVEL_LABELS
 
-    assert "Signal faible" in _LEVEL_LABELS[1]
-    assert "coordinateur" in _LEVEL_LABELS[2].lower()
+    assert "Weak signal" in _LEVEL_LABELS[1]
+    assert "coordinator" in _LEVEL_LABELS[2].lower()
     assert "SAMU" in _LEVEL_LABELS[3]
 
 

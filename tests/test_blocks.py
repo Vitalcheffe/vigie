@@ -139,7 +139,7 @@ def test_canvas_has_alert_banner():
     blocks = build_cellule_crise_canvas(
         date="2026-07-15",
         alert_level="orange",
-        alert_phenomenon="canicule",
+        alert_phenomenon="heatwave",
         alert_departments=["75", "93"],
         total_beneficiaries=50,
         contacted=47,
@@ -161,7 +161,7 @@ def test_app_home_has_greeting_and_actions():
         user_id="U123",
         user_name="Marie Dupont",
         assignments=[_BENEFICIARY],
-        alert={"level": "orange", "phenomenon": "canicule", "department_name": "Paris", "max_temperature": 38, "valid_to": "2026-07-18"},
+        alert={"level": "orange", "phenomenon": "heatwave", "department_name": "Paris", "max_temperature": 38, "valid_to": "2026-07-18"},
         kpis={"coverage_pct": 95, "avg_checkin_time": "2 min 10 s", "avg_escalade_latency": "4 min 30 s", "unreachable_72h": 0, "coord_count": 1, "samu_count": 1},
     )
     assert view["type"] == "home"
