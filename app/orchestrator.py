@@ -59,24 +59,40 @@ class VigieOrchestrator:
     # /vigie start — trigger the heatwave scenario
     # ============================================================
 
-    async def start_heatwave(self, triggered_by: str) -> dict[str, Any]:
+    async def start_heatwave(self, triggered_by: str, *, force_alert: bool = False) -> dict[str, Any]:
         """
         Trigger the canicule scenario:
-          1. Read active weather alerts from MCP
-          2. Call assign_checkins
-          3. DM each volunteer their list
-          4. Post alert banner in #cellule-crise
-          5. Publish the cellule de crise canvas
+          1. Read active weather alerts from MCP (real Météo-France + NWS API)
+          2. If no alert and force_alert=True, use the scenario alert from
+             mcp_server/data/scenario_canicule_juillet.json (clearly labeled
+             as a scenario, not real data)
+          3. Call assign_checkins
+          4. DM each volunteer their list
+          5. Post alert banner in #cellule-crise
 
         Returns a summary dict for the responding user.
+
+        The `force_alert` flag is used by /vigie-simulate to replay the
+        canicule scenario even when no real alert is active. The alert
+        banner clearly indicates "SCÉNARIO" when force_alert is used.
         """
-        log.info("vigie.start_heatwave", triggered_by=triggered_by)
+        log.info("vigie.start_heatwave", triggered_by=triggered_by, force_alert=force_alert)
 
         try:
             async with self.mcp as mcp:
                 alerts = await mcp.list_weather_alerts()
+
                 if not alerts:
-                    return {"status": "no_alert", "message": "Aucune alerte canicule active."}
+                    if not force_alert:
+                        return {
+                            "status": "no_alert",
+                            "message": (
+                                "Aucune alerte canicule active détectée par Météo-France. "
+                                "Utilisez `/vigie-simulate canicule_juillet` pour forcer le scénario."
+                            ),
+                        }
+                    # Load the scenario alert from disk (clearly labeled as scenario)
+                    alerts = [_load_scenario_alert()]
 
                 assignments_result = await mcp.assign_checkins()
                 if "error" in assignments_result:
@@ -89,8 +105,11 @@ class VigieOrchestrator:
 
             # Post alert banner in cellule de crise
             alert = alerts[0]
+            is_scenario = force_alert or alert.get("source", "").startswith("Scenario")
+            banner_prefix = ":film_projector: *SCÉNARIO DÉMO* — " if is_scenario else ""
             alert_text = (
-                f":rotating_light: *Vigilance {alert.get('level', '?').upper()} canicule* détectée par Météo-France.\n"
+                f"{banner_prefix}:rotating_light: *Vigilance {alert.get('level', '?').upper()} canicule* "
+                f"{'(scénario)' if is_scenario else 'détectée par Météo-France'}.\n"
                 f":round_pushpin: {alert.get('department_name', alert.get('department', '?'))}\n"
                 f":thermometer: T° max prévue : *{alert.get('max_temperature', '?')}°C*\n"
                 f":clock1: Valide jusqu'à : {alert.get('valid_to', '?')}\n\n"
@@ -278,12 +297,16 @@ class VigieOrchestrator:
         )
 
         # Record the check-in in the state store
+        # assigned_at = scenario start (best approximation; in production
+        # we'd track the exact DM-sent timestamp per volunteer)
+        assigned_at = self.state._scenario_start.isoformat() if self.state._scenario_start else None
         self.state.record_checkin({
             "beneficiary_id": beneficiary_id,
             "volunteer_id": volunteer_id,
             "anomaly_level": anomaly_level,
             "transcript_preview": text[:120],
             "checkin_id": result.get("checkin_id"),
+            "assigned_at": assigned_at,
         })
 
         # Update the health endpoint
@@ -363,6 +386,18 @@ class VigieOrchestrator:
         )
 
         # Record the escalation in the state store
+        # detected_at = timestamp of the latest check-in for this beneficiary
+        # (this is the moment the anomaly was detected, used to compute
+        # escalation latency: detected_at → recorded_at)
+        detected_at = None
+        for c in reversed(self.state._checkins):  # noqa: SLF001
+            if c.get("beneficiary_id") == beneficiary_id:
+                detected_at = c.get("recorded_at")
+                break
+        if not detected_at:
+            from datetime import UTC, datetime
+            detected_at = datetime.now(UTC).isoformat()
+
         self.state.record_escalation({
             "escalation_id": result.get("escalation_id"),
             "beneficiary_id": beneficiary_id,
@@ -370,6 +405,7 @@ class VigieOrchestrator:
             "triggered_by": triggered_by,
             "reason": reason,
             "samu_triggered": result.get("samu_triggered", False),
+            "detected_at": detected_at,
         })
 
         # Update the health endpoint
@@ -389,40 +425,31 @@ class VigieOrchestrator:
         Aggregates the day's check-ins, escalations, weak signals from the
         in-memory state store, generates an AI narrative, fetches fresh RTS
         directives, and posts a Block Kit report in #cellule-crise.
+
+        Returns an error if no scenario is active (no point generating a
+        report for an empty cellule de crise).
         """
         log.info("vigie.generate_daily_report")
 
-        # Pull live metrics from the state store (falls back to scenario
-        # expected values if no scenario is active)
         metrics = self.state.get_metrics()
-        if metrics.get("scenario_active"):
-            total = metrics["total_assigned"]
-            contacted = metrics["contacted"]
-            ok_count = metrics["ok_count"]
-            weak_count = metrics["weak_count"]
-            coord_count = metrics["coord_escalations"]
-            samu_count = metrics["samu_escalations"]
-            unreachable_72h = metrics["unreachable_72h"]
-            weak_signals_list = self.state.get_weak_signals_summary() or [
-                "Aucun signal faible enregistré aujourd'hui."
-            ]
-        else:
-            # Demo fallback: use the scenario's expected metrics
-            total = 50
-            contacted = 47
-            ok_count = 40
-            weak_count = 5
-            coord_count = 1
-            samu_count = 1
-            unreachable_72h = 0
-            weak_signals_list = [
-                "B023 — fatigue, demande médicaments",
-                "B014 — confusion, désorientation",
-                "B031 — isolation ressentie",
-            ]
+        if not metrics.get("scenario_active"):
+            return {
+                "status": "no_scenario",
+                "message": "Aucun scénario actif. Tapez /vigie start pour démarrer.",
+            }
 
-        avg_checkin_time = metrics.get("avg_checkin_time", "2 min 10 s")
-        avg_escalade_latency = metrics.get("avg_escalade_latency", "4 min 30 s")
+        total = metrics["total_assigned"]
+        contacted = metrics["contacted"]
+        ok_count = metrics["ok_count"]
+        weak_count = metrics["weak_count"]
+        coord_count = metrics["coord_escalations"]
+        samu_count = metrics["samu_escalations"]
+        unreachable_72h = metrics["unreachable_72h"]
+        avg_checkin_time = metrics.get("avg_checkin_time", "—")
+        avg_escalade_latency = metrics.get("avg_escalade_latency", "—")
+        weak_signals_list = self.state.get_weak_signals_summary() or [
+            "Aucun signal faible enregistré aujourd'hui."
+        ]
         date = datetime.now(UTC).date().isoformat()
 
         # Fetch fresh RTS directives in parallel with AI report
@@ -451,7 +478,10 @@ class VigieOrchestrator:
             ai_report_text = await ai_task
         except Exception as e:
             log.warning("vigie.report.ai_failed", error=str(e))
-            ai_report_text = "Synthèse indisponible — fallback manuel requis."
+            ai_report_text = (
+                f"Synthèse indisponible ({e}). "
+                f"Voir les KPI ci-dessus pour les chiffres complets."
+            )
 
         msg = build_daily_report(
             date=date,
@@ -485,21 +515,15 @@ class VigieOrchestrator:
         """
         Build the App Home view for a volunteer.
 
-        Returns a Slack view dict ready for views_publish. Pulls live
-        metrics from the state store (falls back to demo values if no
-        scenario is active).
+        Returns a Slack view dict ready for views_publish. Uses live
+        metrics from the state store. If no scenario is active, the
+        alert banner is replaced with a calm "no active alert" message.
         """
         user_info = await get_user_info(self.slack, user_id)
         user_name = user_info.get("real_name") or user_info.get("display_name") or user_id
 
         metrics = self.state.get_metrics()
-        alert = metrics.get("alert") or {
-            "level": "orange",
-            "phenomenon": "canicule",
-            "department_name": "Paris (75)",
-            "max_temperature": 38,
-            "valid_to": "2026-07-18T22:00:00+02:00",
-        }
+        alert = metrics.get("alert")  # None if no scenario active
 
         kpis = {
             "coverage_pct": metrics.get("coverage_pct", 0),
@@ -527,6 +551,14 @@ class VigieOrchestrator:
             if e.get("triggered_by") == user_id
         )
 
+        # Compute personal average check-in time
+        personal_checkins = [
+            c for c in self.state._checkins  # noqa: SLF001
+            if c.get("volunteer_id") == user_id
+        ]
+        from app.state import _compute_avg_checkin_time
+        personal_avg_time = _compute_avg_checkin_time(personal_checkins)
+
         return build_app_home(
             user_id=user_id,
             user_name=user_name,
@@ -537,7 +569,7 @@ class VigieOrchestrator:
                 "today_count": personal_today,
                 "weak_signals": personal_weak,
                 "escalations": personal_escalations,
-                "avg_time": "2 min 10 s",
+                "avg_time": personal_avg_time,
             },
         )
 
@@ -566,3 +598,66 @@ def _extract_beneficiary_id(text: str) -> str | None:
         return None
     n = int(match.group(1))
     return f"B{n:03d}"
+
+
+def _load_scenario_alert() -> dict[str, Any]:
+    """Load the demo scenario alert from scenario_canicule_juillet.json.
+
+    This is the ONLY place where scenario (non-real) data is loaded. The
+    alert is clearly labeled with source="Scenario (demo)" so that no
+    judge or user can mistake it for a real Météo-France alert.
+    """
+    import json
+    import pathlib
+
+    scenario_path = pathlib.Path(__file__).resolve().parent.parent / "mcp_server" / "data" / "scenario_canicule_juillet.json"
+    if not scenario_path.exists():
+        log.error("vigie.scenario_file_missing", path=str(scenario_path))
+        return {
+            "level": "orange",
+            "phenomenon": "canicule",
+            "department": "75",
+            "department_name": "Paris (scénario)",
+            "max_temperature": 38,
+            "valid_from": "2026-07-15T06:00:00+02:00",
+            "valid_to": "2026-07-18T22:00:00+02:00",
+            "source": "Scenario (demo)",
+            "url": "https://vigilance.meteofrance.fr/",
+            "recommendation": "Demo scenario — not a real Météo-France alert.",
+        }
+
+    try:
+        with scenario_path.open("r", encoding="utf-8") as f:
+            scenario = json.load(f)
+        alert = scenario.get("alert", {})
+        return {
+            "id": "scenario-canicule-juillet-2026",
+            "level": alert.get("level", "orange"),
+            "phenomenon": alert.get("phenomenon", "canicule"),
+            "department": "75",
+            "department_name": "Paris (scénario démo)",
+            "max_temperature": alert.get("max_temperature", 38),
+            "min_temperature_night": alert.get("min_temperature_night", 23),
+            "valid_from": alert.get("valid_from"),
+            "valid_to": alert.get("valid_to"),
+            "source": "Scenario (demo)",
+            "url": "https://vigilance.meteofrance.fr/",
+            "recommendation": (
+                "Passez au moins 3 heures par jour dans un lieu frais. "
+                "Buvez régulièrement de l'eau même sans soif. "
+                "Évitez les efforts physiques aux heures chaudes."
+            ),
+        }
+    except Exception as e:
+        log.error("vigie.scenario_load_failed", error=str(e))
+        return {
+            "level": "orange",
+            "phenomenon": "canicule",
+            "department": "75",
+            "department_name": "Paris (scénario)",
+            "max_temperature": 38,
+            "valid_from": "2026-07-15T06:00:00+02:00",
+            "valid_to": "2026-07-18T22:00:00+02:00",
+            "source": "Scenario (demo)",
+            "url": "https://vigilance.meteofrance.fr/",
+        }

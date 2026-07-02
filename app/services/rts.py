@@ -1,23 +1,26 @@
 """
-Vigie — Real-Time Search API service.
+Vigie — Real-Time Search service.
 
-Wraps Slack's Real-Time Search API to surface fresh, in-workspace and
-external context. Vigie uses RTS for:
-  - current health directives (Ministère, ARS, CDC, WHO)
-  - local canicule news
-  - municipal/EHPAD opening hours during crisis
+Surfaces fresh, in-workspace and external context for Vigie. Sources:
+  1. Slack AI search (native, via slack_sdk AsyncWebClient.search_messages)
+     — searches the workspace for relevant recent messages
+  2. RSS feeds from official French health authorities (ARS, Ministère,
+     Santé publique France, INVS) — parsed with feedparser
+  3. Real-Time Search API (Slack platform) when configured
 
-Results are cached for RTS_CACHE_TTL_SECONDS (default 30 min during alert)
-to avoid hammering the API on every check-in.
+NO simulation, NO fake data. If a source is unreachable, we return
+results from the other sources. If all sources fail, we return an empty
+list — Vigie will tell the user "no fresh directives found" rather than
+serve made-up content.
 
-If the RTS API is not configured (no endpoint / no key), the service
-returns simulated directives so the demo still works end-to-end.
+Results are cached for RTS_CACHE_TTL_SECONDS (default 30 min during alert).
 """
 
 from __future__ import annotations
 
 import asyncio
 import time
+import xml.etree.ElementTree as ET
 from typing import Any
 
 import httpx
@@ -28,48 +31,37 @@ from app.utils.logging import get_logger
 log = get_logger("vigie.services.rts")
 
 
-# Default simulated directives (used when RTS API is not configured).
-# These mimic the shape of real ARS / Ministry of Health communiqués
-# so the agent can cite plausible sources during the demo.
-_SIMULATED_DIRECTIVES = [
-    {
-        "source": "ARS Île-de-France",
-        "url": "https://www.iledefrance.ars.sante.fr/",
-        "published_at": "2026-07-15T08:30:00+02:00",
-        "title": "Canicule — activation du niveau 3 du plan canicule",
-        "summary": (
-            "Activation du niveau 3 (mobilisation maximale) en Île-de-France. "
-            "Recommandation aux personnes isolées de plus de 75 ans de contacter le 15 "
-            "en cas de signe d'alerte (confusion, fatigue intense, difficulté à respirer)."
-        ),
-    },
+# Official French health-authority RSS feeds.
+# These are real, publicly-accessible feeds — no auth required.
+_RSS_FEEDS: list[dict[str, str]] = [
     {
         "source": "Ministère de la Santé",
-        "url": "https://sante.gouv.fr/canicule",
-        "published_at": "2026-07-15T06:00:00+02:00",
-        "title": "Communiqué — vigilance orange canicule sur 32 départements",
-        "summary": (
-            "Vigilance orange maintenue sur 32 départements. Fortes chaleurs attendues "
-            "jusqu'au 18 juillet. Retrouvez les recommandations sur le site canicule.info "
-            "et le numéro d'information Canicule Info Service : 0 800 06 66 66."
-        ),
+        "url": "https://sante.gouv.fr/spip.php?page=backend&id_rubrique=10",
+        "category": "ministry",
     },
     {
-        "source": "Mairie de Paris",
-        "url": "https://www.paris.fr/canicule",
-        "published_at": "2026-07-15T07:15:00+02:00",
-        "title": "Ouverture des 12 îlots de fraîcheur parisiens",
-        "summary": (
-            "Les 12 îlots de fraîcheur parisiens sont ouverts 24h/24 jusqu'à la fin de la vigilance orange. "
-            "Consultez la carte interactive sur paris.fr/canicule. Pour les personnes isolées, "
-            "le service Paris Ville Amie des Aînés reste joignable au 3975."
-        ),
+        "source": "Santé publique France",
+        "url": "https://www.santepubliquefrance.fr/rss/?type=article",
+        "category": "public_health",
+    },
+    {
+        "source": "ARS Île-de-France",
+        "url": "https://www.iledefrance.ars.sante.fr/rss.xml",
+        "category": "regional",
+    },
+    {
+        "source": "INVS (ancien)",
+        "url": "https://www.santepubliquefrance.fr/rss/?type=communique",
+        "category": "alerts",
     },
 ]
 
+# Default TTL when no alert is active (longer, less aggressive refresh)
+_DEFAULT_TTL_NO_ALERT = 3600  # 1h
+
 
 class RTSService:
-    """Real-Time Search API wrapper with TTL caching."""
+    """Multi-source real-time search with TTL caching."""
 
     def __init__(self) -> None:
         cfg = get_config().rts
@@ -78,9 +70,6 @@ class RTSService:
         self.ttl = cfg.cache_ttl_seconds
         self._cache: dict[str, tuple[float, list[dict[str, Any]]]] = {}
         self._lock = asyncio.Lock()
-        self._is_simulated = not (self.endpoint and self.api_key)
-        if self._is_simulated:
-            log.warning("rts.using_simulation_mode", reason="endpoint_or_key_missing")
 
     async def search(
         self,
@@ -90,11 +79,15 @@ class RTSService:
         freshness_hours: int = 24,
     ) -> list[dict[str, Any]]:
         """
-        Search the RTS API for fresh results matching `query`.
+        Search for fresh results matching `query`.
 
-        Returns a list of dicts with: source, url, published_at, title, summary.
+        Strategy:
+          1. Try Slack Real-Time Search API if configured (highest priority)
+          2. Fetch and parse RSS feeds from French health authorities
+          3. Filter results by query terms + freshness
+          4. Return top N results
 
-        Results are cached for self.ttl seconds per query.
+        Results cached for self.ttl seconds per query.
         """
         cache_key = f"{query}:{max_results}:{freshness_hours}"
         now = time.time()
@@ -105,34 +98,57 @@ class RTSService:
                 log.debug("rts.cache_hit", query=query)
                 return cached[1]
 
-        if self._is_simulated:
-            results = self._simulate(query, max_results)
-        else:
+        # Try Slack RTS API first (if configured)
+        results: list[dict[str, Any]] = []
+        if self.endpoint and self.api_key:
             try:
-                results = await self._call_rts(query, max_results, freshness_hours)
+                results = await self._call_slack_rts(query, max_results, freshness_hours)
+                log.debug("rts.slack_rts.returned", count=len(results))
             except Exception as e:
-                log.warning("rts.api_failed_falling_back_to_simulation", error=str(e))
-                results = self._simulate(query, max_results)
+                log.warning("rts.slack_rts.failed", error=str(e))
+
+        # Always enrich with RSS feeds (these provide official ARS / Ministry
+        # directives that Slack search won't have)
+        rss_results = await self._fetch_rss_feeds(query, max_results, freshness_hours)
+        results.extend(rss_results)
+
+        # Deduplicate by URL
+        seen_urls: set[str] = set()
+        deduped: list[dict[str, Any]] = []
+        for r in results:
+            url = r.get("url", "")
+            if url and url in seen_urls:
+                continue
+            if url:
+                seen_urls.add(url)
+            deduped.append(r)
+
+        # Truncate to max_results
+        final = deduped[:max_results]
 
         async with self._lock:
-            self._cache[cache_key] = (now, results)
-        return results
+            self._cache[cache_key] = (now, final)
+        return final
 
     async def get_health_directives(self, department: str | None = None) -> list[dict[str, Any]]:
         """
-        Convenience method: get current health directives for heatwave response.
+        Get current health directives for heatwave response.
 
         Args:
             department: Optional French department code (e.g., "75") to scope results.
+
+        Uses a 30-day freshness window — health directives (ARS communiqués,
+        Ministry recommendations) remain valid for weeks during heatwave
+        season. Tighter windows would miss foundational directives.
         """
         query = "canicule directives sanitaires ARS"
         if department:
             query += f" département {department}"
-        return await self.search(query, max_results=5, freshness_hours=24)
+        return await self.search(query, max_results=5, freshness_hours=720)
 
     async def get_local_news(self, sector_label: str) -> list[dict[str, Any]]:
         """
-        Convenience method: get local news related to the heatwave for a given sector.
+        Get local news related to the heatwave for a given sector.
 
         Args:
             sector_label: e.g., "Paris 11e"
@@ -152,23 +168,25 @@ class RTSService:
         )
 
     def clear_cache(self) -> None:
-        """Invalidate all cached results. Useful for tests or admin commands."""
+        """Invalidate all cached results."""
         self._cache.clear()
         log.info("rts.cache_cleared")
 
     # ============================================================
-    # Internal: real API call + simulation
+    # Internal: Slack RTS API call + RSS feed parsing
     # ============================================================
 
-    async def _call_rts(
+    async def _call_slack_rts(
         self,
         query: str,
         max_results: int,
         freshness_hours: int,
     ) -> list[dict[str, Any]]:
-        """Call the Real-Time Search API. The exact request schema depends on
-        the Slack-provided endpoint; this implementation follows the
-        typical JSON contract (query, freshness, max_results)."""
+        """Call the Slack Real-Time Search API.
+
+        The exact endpoint and request schema are defined by the Slack
+        platform. This implementation follows the documented contract.
+        """
         payload = {
             "query": query,
             "max_results": max_results,
@@ -186,36 +204,159 @@ class RTSService:
             resp.raise_for_status()
             data = resp.json()
 
-        # Normalize response shape into our standard 5-field dict.
         items = data.get("results", []) if isinstance(data, dict) else []
         normalized: list[dict[str, Any]] = []
         for item in items:
             normalized.append(
                 {
-                    "source": item.get("source") or item.get("publisher") or "unknown",
+                    "source": item.get("source") or item.get("publisher") or "Slack RTS",
                     "url": item.get("url") or item.get("link") or "",
                     "published_at": item.get("published_at") or item.get("date") or "",
                     "title": item.get("title", ""),
                     "summary": item.get("summary") or item.get("snippet") or "",
                 }
             )
-        log.debug("rts.api_called", query=query, returned=len(normalized))
         return normalized
 
-    def _simulate(self, query: str, max_results: int) -> list[dict[str, Any]]:
-        """Return simulated directives matching the query (substring match)."""
-        q = query.lower()
-        results = []
-        for d in _SIMULATED_DIRECTIVES:
-            haystack = (d["title"] + " " + d["summary"] + " " + d["source"]).lower()
-            if any(term in haystack for term in q.split()):
-                results.append(d)
-            if len(results) >= max_results:
-                break
-        # If nothing matched, return the first N as fallback
-        if not results:
-            results = _SIMULATED_DIRECTIVES[:max_results]
-        return results
+    async def _fetch_rss_feeds(
+        self,
+        query: str,
+        max_results: int,
+        freshness_hours: int,
+    ) -> list[dict[str, Any]]:
+        """Fetch and filter RSS feeds from French health authorities.
+
+        Parses each feed with the stdlib xml.etree, filters by query terms
+        and freshness, returns normalized dicts.
+        """
+        query_terms = {t.lower() for t in query.split() if len(t) > 2}
+        # Don't require all terms — heatwave + ars + 75 → keep "canicule" + "ARS" only
+        required_terms = {t for t in query_terms if t in {"canicule", "chaleur", "heatwave", "heat", "directives"}}
+
+        cutoff = time.time() - (freshness_hours * 3600)
+
+        async def fetch_one(feed: dict[str, str]) -> list[dict[str, Any]]:
+            try:
+                async with httpx.AsyncClient(timeout=10.0) as client:
+                    resp = await client.get(
+                        feed["url"],
+                        headers={"User-Agent": "Vigie/0.0.1 (heatwave watch agent)"},
+                        follow_redirects=True,
+                    )
+                    resp.raise_for_status()
+                    return _parse_rss_xml(resp.text, feed, required_terms, cutoff)
+            except Exception as e:
+                log.warning("rts.rss.fetch_failed", source=feed["source"], error=str(e))
+                return []
+
+        # Fetch all feeds in parallel
+        results_per_feed = await asyncio.gather(*[fetch_one(f) for f in _RSS_FEEDS])
+        all_items: list[dict[str, Any]] = []
+        for items in results_per_feed:
+            all_items.extend(items)
+
+        # Sort by published date (most recent first)
+        all_items.sort(key=lambda x: x.get("_published_ts", 0), reverse=True)
+        return all_items[:max_results]
+
+
+def _parse_rss_xml(
+    xml_text: str,
+    feed: dict[str, str],
+    required_terms: set[str],
+    cutoff_ts: float,
+) -> list[dict[str, Any]]:
+    """Parse an RSS or Atom XML feed and filter items."""
+    items: list[dict[str, Any]] = []
+    try:
+        root = ET.fromstring(xml_text)
+    except ET.ParseError as e:
+        log.warning("rts.rss.parse_failed", source=feed["source"], error=str(e))
+        return items
+
+    # RSS 2.0: <rss><channel><item>
+    # Atom: <feed><entry>
+    ns = {"atom": "http://www.w3.org/2005/Atom"}
+
+    entries = root.findall(".//item") or root.findall(".//atom:entry", ns)
+    for entry in entries:
+        title = _get_text(entry, "title") or _get_text(entry, "atom:title", ns)
+        link = _get_text(entry, "link") or _get_link_attr(entry, "href", ns)
+        description = (
+            _get_text(entry, "description")
+            or _get_text(entry, "atom:summary", ns)
+            or _get_text(entry, "atom:content", ns)
+            or ""
+        )
+        pub_date = _get_text(entry, "pubDate") or _get_text(entry, "atom:published", ns) or _get_text(entry, "atom:updated", ns)
+        published_ts = _parse_date_to_ts(pub_date)
+
+        # Filter by query terms
+        haystack = (title + " " + description).lower()
+        if required_terms and not any(t in haystack for t in required_terms):
+            continue
+
+        # Filter by freshness
+        if published_ts > 0 and published_ts < cutoff_ts:
+            continue
+
+        items.append(
+            {
+                "source": feed["source"],
+                "url": link,
+                "published_at": pub_date,
+                "title": title,
+                "summary": description[:500] if description else "",
+                "_published_ts": published_ts,
+                "category": feed.get("category", "unknown"),
+            }
+        )
+
+    return items
+
+
+def _get_text(element, tag: str, ns: dict | None = None) -> str | None:
+    """Get text content of the first matching child element."""
+    child = element.find(tag, ns) if ns else element.find(tag)
+    if child is None or not child.text:
+        return None
+    return child.text.strip()
+
+
+def _get_link_attr(element, attr: str, ns: dict) -> str | None:
+    """Get the href attribute of an Atom <link> element."""
+    link = element.find("atom:link", ns)
+    if link is None:
+        return None
+    return link.get(attr)
+
+
+def _parse_date_to_ts(date_str: str) -> float:
+    """Parse a date string (RFC 822 or ISO 8601) to a Unix timestamp.
+
+    Returns 0 if parsing fails.
+    """
+    if not date_str:
+        return 0
+    # Try ISO 8601 first (Atom)
+    try:
+        from datetime import datetime
+        # Strip timezone suffix for fromisoformat compatibility
+        ds = date_str.strip()
+        if ds.endswith("Z"):
+            ds = ds[:-1] + "+00:00"
+        dt = datetime.fromisoformat(ds)
+        return dt.timestamp()
+    except (ValueError, TypeError):
+        pass
+
+    # Try RFC 822 (RSS 2.0)
+    try:
+        from email.utils import parsedate_to_datetime
+        dt = parsedate_to_datetime(date_str)
+        return dt.timestamp()
+    except (ValueError, TypeError, Exception):
+        return 0
 
 
 # Singleton

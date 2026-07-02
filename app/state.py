@@ -83,7 +83,11 @@ class VigieState:
     # ============================================================
 
     def record_checkin(self, checkin: dict[str, Any]) -> None:
-        """Record a completed check-in."""
+        """Record a completed check-in.
+
+        Optional field `assigned_at` (ISO timestamp) lets us compute the
+        actual check-in latency (assigned_at → recorded_at).
+        """
         with _lock:
             self._checkins.append({**checkin, "recorded_at": datetime.now(UTC).isoformat()})
             if checkin.get("anomaly_level", 0) == 1:
@@ -96,7 +100,11 @@ class VigieState:
         )
 
     def record_escalation(self, escalation: dict[str, Any]) -> None:
-        """Record an escalation."""
+        """Record an escalation.
+
+        Optional field `detected_at` (ISO timestamp) lets us compute the
+        actual escalation latency (detected_at → recorded_at).
+        """
         with _lock:
             self._escalations.append({**escalation, "recorded_at": datetime.now(UTC).isoformat()})
         log.info(
@@ -122,7 +130,11 @@ class VigieState:
     # ============================================================
 
     def get_metrics(self) -> dict[str, Any]:
-        """Return the live metrics dict for /metrics and dashboards."""
+        """Return the live metrics dict for /metrics and dashboards.
+
+        All latencies are computed from the recorded timestamps of
+        check-ins and escalations — no hardcoded values.
+        """
         with _lock:
             checkins = list(self._checkins)
             escalations = list(self._escalations)
@@ -139,9 +151,9 @@ class VigieState:
         coverage_pct = int((contacted / total_assigned) * 100) if total_assigned > 0 else 0
         unreachable_72h = max(0, total_assigned - contacted)
 
-        # Latencies (we'd compute from timestamps in a real impl; use defaults for demo)
-        avg_checkin_time = "2 min 10 s"
-        avg_escalade_latency = "4 min 30 s"
+        # Compute real latencies from recorded_at timestamps
+        avg_checkin_time = _compute_avg_checkin_time(checkins)
+        avg_escalade_latency = _compute_avg_escalade_latency(escalations)
 
         return {
             "alert": alert,
@@ -196,3 +208,72 @@ def get_state() -> VigieState:
     if _state is None:
         _state = VigieState()
     return _state
+
+
+# ============================================================
+# Latency computation helpers
+# ============================================================
+
+def _parse_iso(ts: str | None) -> float | None:
+    """Parse an ISO timestamp to Unix seconds. Returns None on failure."""
+    if not ts:
+        return None
+    try:
+        from datetime import datetime
+        ds = ts.strip()
+        if ds.endswith("Z"):
+            ds = ds[:-1] + "+00:00"
+        return datetime.fromisoformat(ds).timestamp()
+    except (ValueError, TypeError):
+        return None
+
+
+def _format_duration(seconds: float) -> str:
+    """Format a duration in seconds as a human-readable string."""
+    if seconds < 60:
+        return f"{int(seconds)} s"
+    if seconds < 3600:
+        minutes = int(seconds // 60)
+        secs = int(seconds % 60)
+        return f"{minutes} min {secs:02d} s"
+    hours = int(seconds // 3600)
+    minutes = int((seconds % 3600) // 60)
+    return f"{hours} h {minutes:02d} min"
+
+
+def _compute_avg_checkin_time(checkins: list[dict[str, Any]]) -> str:
+    """Compute the average check-in duration from assigned_at → recorded_at.
+
+    Returns "—" if no check-ins have an assigned_at timestamp.
+    """
+    durations: list[float] = []
+    for c in checkins:
+        assigned_ts = _parse_iso(c.get("assigned_at"))
+        recorded_ts = _parse_iso(c.get("recorded_at"))
+        if assigned_ts is None or recorded_ts is None:
+            continue
+        if recorded_ts > assigned_ts:
+            durations.append(recorded_ts - assigned_ts)
+
+    if not durations:
+        return "—"
+    return _format_duration(sum(durations) / len(durations))
+
+
+def _compute_avg_escalade_latency(escalations: list[dict[str, Any]]) -> str:
+    """Compute the average escalation latency from detected_at → recorded_at.
+
+    Returns "—" if no escalations have a detected_at timestamp.
+    """
+    durations: list[float] = []
+    for e in escalations:
+        detected_ts = _parse_iso(e.get("detected_at"))
+        recorded_ts = _parse_iso(e.get("recorded_at"))
+        if detected_ts is None or recorded_ts is None:
+            continue
+        if recorded_ts > detected_ts:
+            durations.append(recorded_ts - detected_ts)
+
+    if not durations:
+        return "—"
+    return _format_duration(sum(durations) / len(durations))

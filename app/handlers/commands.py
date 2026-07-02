@@ -133,29 +133,29 @@ def register(app: AsyncApp) -> None:
 
     @app.command("/vigie-simulate")
     async def handle_simulate_command(ack: AsyncAck, command: dict, respond: AsyncRespond) -> None:
-        """Run a simulation scenario by replaying the canicule events in Slack."""
+        """Run a simulation scenario by replaying the canicule events in Slack.
+
+        Uses force_alert=True so the scenario can run even without a real
+        Météo-France canicule alert. The alert banner is clearly labeled
+        "SCÉNARIO DÉMO" to avoid any confusion with real data.
+        """
         await ack()
         scenario_name = command.get("text", "").strip() or "canicule_juillet"
         user_id = command.get("user_id", "unknown")
         log.info("vigie.command.simulate", scenario=scenario_name, user=user_id)
 
-        # Trigger the heatwave scenario
+        # Trigger the heatwave scenario with force_alert=True
         orch = _get_orchestrator()
-        result = await orch.start_heatwave(triggered_by=user_id)
+        result = await orch.start_heatwave(triggered_by=user_id, force_alert=True)
 
         if result.get("status") == "ok":
             await respond(
-                f":movie_camera: Scénario `{scenario_name}` démarré.\n"
+                f":movie_camera: Scénario `{scenario_name}` démarré (mode démo — alerte clairement étiquetée).\n"
                 f"• Bénéficiaires affectés : *{result.get('total_beneficiaries', 0)}*\n"
                 f"• Bénévoles notifiés : *{result.get('volunteers_notified', 0)}*\n\n"
                 f"Pour simuler un check-in, envoyez-moi un DM : `B023: Mme Dupont fatiguée`.\n"
                 f"Pour simuler une escalade : `/vigie-escalate B003 3 \"Au sol, inconsciente\"`.\n"
                 f"Pour générer le rapport : `/vigie report`."
-            )
-        elif result.get("status") == "no_alert":
-            await respond(
-                ":information_source: Aucune alerte active. "
-                "Le scénario de simulation nécessite une alerte (le MCP server en simule une par défaut)."
             )
         else:
             await respond(f":warning: Erreur : {result.get('message', result)}")
@@ -199,16 +199,21 @@ async def _cmd_help(respond: AsyncRespond) -> None:
 
 
 async def _cmd_start(respond: AsyncRespond, user_id: str) -> None:
-    """Start the heatwave scenario."""
+    """Start the heatwave scenario using REAL Météo-France alerts.
+
+    If no canicule alert is currently active, the user is invited to use
+    /vigie-simulate to force the demo scenario (clearly labeled as such).
+    """
     log.info("vigie.command.start", user=user_id)
     orch = _get_orchestrator()
-    result = await orch.start_heatwave(triggered_by=user_id)
+    # force_alert=False: only trigger if a real Météo-France alert is active
+    result = await orch.start_heatwave(triggered_by=user_id, force_alert=False)
 
     if result.get("status") == "ok":
         await respond(
             text=(
-                f":rotating_light: *Scénario canicule démarré.*\n"
-                f"• Niveau d'alerte : *{result.get('alert_level', '?')}*\n"
+                f":rotating_light: *Canicule réelle détectée — scénario démarré.*\n"
+                f"• Niveau d'alerte : *{result.get('alert_level', '?')}* (source : Météo-France)\n"
                 f"• Bénéficiaires à contacter : *{result.get('total_beneficiaries', 0)}*\n"
                 f"• Bénévoles notifiés : *{result.get('volunteers_notified', 0)}*\n"
                 f"• Message publié dans #cellule-crise\n"
@@ -216,7 +221,10 @@ async def _cmd_start(respond: AsyncRespond, user_id: str) -> None:
             )
         )
     elif result.get("status") == "no_alert":
-        await respond(":information_source: Aucune alerte canicule active. Utilisez `/vigie-simulate canicule_juillet` pour forcer le scénario.")
+        await respond(
+            ":information_source: Aucune alerte canicule active détectée par Météo-France. "
+            "Pour démarrer le scénario de démo, tapez `/vigie-simulate canicule_juillet`."
+        )
     else:
         await respond(f":warning: Erreur : {result.get('message', result)}")
 

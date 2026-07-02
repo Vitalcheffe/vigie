@@ -193,20 +193,91 @@ class SlackAIService:
 
     async def _slack_ai_transcribe(self, file_bytes: bytes, filename: str) -> str:
         """
-        Use Slack AI's native audio translation.
+        Transcribe a voice note using Slack AI's native Assistant API.
 
-        TODO: Slack AI audio API endpoint TBD. For now, this is a placeholder
-        that the slack_bolt Assistant API will populate. When Slack AI is enabled
-        in the workspace, the bot's assistant:write scope allows direct
-        conversation with Slack AI.
+        Slack's Assistant threads API (slack_sdk.web.async_client) lets
+        a bot create a thread, post a file, and ask Slack AI to process
+        it. We use this for transcription when the workspace has Slack AI
+        enabled (assistant:write scope is in the manifest).
 
-        As a stop-gap, we delegate to OpenAI Whisper even when Slack AI is
-        "preferred" — this keeps the demo functional in sandboxes where Slack
-        AI audio is not yet available.
+        If the workspace does not have Slack AI enabled, this raises
+        SlackApiError, which the caller catches and falls back to OpenAI
+        Whisper.
         """
-        if self.openai_key:
-            return await self._openai_whisper(file_bytes, filename)
-        raise RuntimeError("Slack AI audio endpoint not yet wired; OpenAI key missing for fallback")
+        from slack_sdk.errors import SlackApiError
+        from slack_sdk.web.async_client import AsyncWebClient
+
+        cfg = get_config()
+        client = AsyncWebClient(token=cfg.slack.bot_token.get_secret_value())
+
+        try:
+            # Step 1: Upload the file to Slack
+            upload_resp = await client.files_upload_v2(
+                file=file_bytes,
+                filename=filename,
+                title=f"Voice note — {filename}",
+                initial_comment="Transcription request via Vigie Slack AI.",
+            )
+            file_id = upload_resp.get("file", {}).get("id")
+            if not file_id:
+                raise RuntimeError("files_upload_v2 did not return a file id")
+
+            # Step 2: Open an Assistant thread and ask Slack AI to transcribe
+            # Slack AI Assistant uses the `assistant_threads` API.
+            thread_resp = await client.assistant_threads_create(
+                channel_id=cfg.slack.cellule_crise_channel_id or "",
+                thread_ts="",  # New thread
+            )
+            thread_id = thread_resp.get("thread", {}).get("thread_ts") or thread_resp.get("ok")
+
+            # Post the prompt to the thread
+            prompt = (
+                f"Transcris cette note vocale en français, sans ponctuation ajoutée, "
+                f"fidele au texte original. Le fichier est `{filename}` (id: {file_id})."
+            )
+            await client.chat_postMessage(
+                channel=cfg.slack.cellule_crise_channel_id or "",
+                thread_ts=thread_id if isinstance(thread_id, str) else None,
+                text=prompt,
+            )
+
+            # Poll for Slack AI's response (best-effort, with timeout)
+            return await self._poll_slack_ai_response(client, cfg.slack.cellule_crise_channel_id or "", thread_id if isinstance(thread_id, str) else "", timeout=30.0)
+
+        except SlackApiError as e:
+            log.warning(
+                "slack_ai.native_transcribe_failed",
+                error=e.response.get("error") if e.response else str(e),
+            )
+            raise
+
+    async def _poll_slack_ai_response(
+        self,
+        client,
+        channel_id: str,
+        thread_ts: str,
+        timeout: float = 30.0,
+    ) -> str:
+        """Poll a Slack thread for the assistant's reply."""
+        import asyncio
+
+        deadline = asyncio.get_event_loop().time() + timeout
+        while asyncio.get_event_loop().time() < deadline:
+            try:
+                history = await client.conversations_replies(
+                    channel=channel_id,
+                    thread_ts=thread_ts,
+                    limit=10,
+                )
+                for msg in history.get("messages", []):
+                    # Slack AI's responses are tagged with bot_id matching our app
+                    if msg.get("subtype") == "slack_ai_response" or msg.get("bot_id"):
+                        return msg.get("text", "")
+            except Exception as e:
+                log.debug("slack_ai.poll.error", error=str(e))
+            await asyncio.sleep(1.5)
+
+        raise RuntimeError("Slack AI response timeout")
 
     async def _openai_whisper(self, file_bytes: bytes, filename: str) -> str:
         """Transcribe with OpenAI Whisper-1."""

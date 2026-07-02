@@ -52,13 +52,25 @@ async def fetch_pois_around(lat: float, lon: float, radius_m: int = 1000) -> lis
         radius_m: Search radius in meters (default 1km)
 
     Returns a list of POIs with: type, name, lat, lon, address, opening_hours.
+
+    No fake fallback: if Overpass fails, returns an empty list. The
+    orchestrator will surface the error to the volunteer rather than
+    silently serving made-up pharmacy data.
     """
     cfg = get_config().external
     query = OVERPASS_QUERY_TEMPLATE.format(lat=lat, lon=lon, radius=radius_m)
 
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
-            resp = await client.post(cfg.overpass_api_url, data={"data": query})
+            # Overpass requires a User-Agent header (per their usage policy)
+            resp = await client.post(
+                cfg.overpass_api_url,
+                data={"data": query},
+                headers={
+                    "User-Agent": "Vigie/0.0.1 (Slack agent for heatwave elder watch; contact: amineharchelkorane5@gmail.com)",
+                    "Accept": "*/*",
+                },
+            )
             resp.raise_for_status()
             data = resp.json()
 
@@ -91,47 +103,12 @@ async def fetch_pois_around(lat: float, lon: float, radius_m: int = 1000) -> lis
         log.debug("vigie.mcp.pois.fetched", count=len(pois), lat=lat, lon=lon, radius=radius_m)
         return pois
 
+    except httpx.HTTPError as e:
+        log.warning("vigie.mcp.pois.overpass_http_failed", error=str(e), lat=lat, lon=lon)
+        return []
     except Exception as e:
-        log.warning("vigie.mcp.pois.overpass_failed", error=str(e))
-        return _simulated_pois(lat, lon)
-
-
-def _simulated_pois(lat: float, lon: float) -> list[dict[str, Any]]:
-    """Fallback simulated POIs (for offline demo)."""
-    return [
-        {
-            "id": "sim-pharmacy-1",
-            "type": "pharmacy",
-            "name": "Pharmacie des Lilas",
-            "lat": lat + 0.0018,
-            "lon": lon + 0.0012,
-            "address": {"street": "Rue des Lilas", "housenumber": "12", "postcode": "75020", "city": "Paris"},
-            "opening_hours": "Mo-Fr 09:00-19:00; Sa 09:00-13:00",
-            "phone": "+33 1 43 00 00 00",
-            "distance_m": 200,
-        },
-        {
-            "id": "sim-hospital-1",
-            "type": "hospital",
-            "name": "Hôpital Saint-Louis",
-            "lat": lat + 0.005,
-            "lon": lon - 0.003,
-            "address": {"street": "Avenue Claude Vellefaux", "housenumber": "1", "postcode": "75010", "city": "Paris"},
-            "opening_hours": "24/7",
-            "phone": "+33 1 42 49 99 99",
-            "distance_m": 850,
-        },
-        {
-            "id": "sim-water-1",
-            "type": "drinking_water",
-            "name": "Fontaine Place de la République",
-            "lat": lat - 0.002,
-            "lon": lon + 0.001,
-            "address": {"city": "Paris"},
-            "opening_hours": "24/7",
-            "distance_m": 320,
-        },
-    ]
+        log.warning("vigie.mcp.pois.overpass_parse_failed", error=str(e))
+        return []
 
 
 def _haversine(lat1: float, lon1: float, lat2: float | None, lon2: float | None) -> float:
