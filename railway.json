@@ -1,6 +1,11 @@
-[phases]
-install = "pip install -e ."
-build = "echo 'No build step needed'"
-
-[start]
-cmd = "python -m app.main"
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "startCommand": "python start.py",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 3
+  }
+}
