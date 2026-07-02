@@ -1,0 +1,47 @@
+services:
+  vigie-bot:
+    build: .
+    container_name: vigie-bot
+    restart: unless-stopped
+    command: python -m app.main
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - vigie-mcp
+      - redis
+    networks:
+      - vigie-net
+
+  vigie-mcp:
+    build: .
+    container_name: vigie-mcp
+    restart: unless-stopped
+    command: python -m mcp_server.server
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    networks:
+      - vigie-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: vigie-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - vigie-net
+
+networks:
+  vigie-net:
+    driver: bridge
+
+volumes:
+  redis-data:
