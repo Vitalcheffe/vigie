@@ -1,0 +1,807 @@
+     1→     1→"""
+     2→     2→Vigie — Orchestrator.
+     3→     3→
+     4→     4→The conductor that wires Slack events/commands to the MCP server, Slack AI,
+     5→     5→and Real-Time Search service. Handlers stay thin; all real logic lives here.
+     6→     6→
+     7→     7→Public API:
+     8→     8→  - start_heatwave(triggered_by) — trigger the canicule scenario
+     9→     9→  - process_volunteer_message(volunteer_id, text, file_id=None) — handle a DM
+    10→    10→  - trigger_escalation(beneficiary_id, level, triggered_by, reason)
+    11→    11→  - generate_daily_report()
+    12→    12→  - get_dashboard_state(user_id) — fetch KPIs for App Home
+    13→    13→"""
+    14→    14→
+    15→    15→from __future__ import annotations
+    16→    16→
+    17→    17→import re
+    18→    18→from datetime import UTC, datetime
+    19→    19→from typing import Any
+    20→    20→
+    21→    21→from slack_sdk.web.async_client import AsyncWebClient
+    22→    22→
+    23→    23→from app.audit import log_action
+    24→    24→from app.blocks.canvas import build_cellule_crise_canvas
+    25→    25→from app.blocks.checkin import build_checkin_message, build_volunteer_dm
+    26→    26→from app.blocks.dashboard import build_app_home
+    27→    27→from app.blocks.escalation import build_escalation_message
+    28→    28→from app.blocks.reports import build_daily_report
+    29→    29→from app.services.mcp_client import MCPClient, MCPClientError
+    30→    30→from app.services.rts import get_rts_service
+    31→    31→from app.services.slack_ai import get_slack_ai_service
+    32→    32→from app.state import get_state
+    33→    33→from app.utils.logging import get_logger
+    34→    34→from app.utils.slack_helpers import (
+    35→    35→    get_cellule_crise_channel_id,
+    36→    36→    get_user_info,
+    37→    37→    post_dm,
+    38→    38→    post_to_cellule_crise,
+    39→    39→    post_to_sector,
+    40→    40→    publish_canvas,
+    41→    41→)
+    42→    42→
+    43→    43→log = get_logger("vigie.orchestrator")
+    44→    44→
+    45→    45→_BENEFICIARY_ID_PATTERN = re.compile(r"\bB(\d{1,4})\b", re.IGNORECASE)
+    46→    46→
+    47→    47→
+    48→    48→class VigieOrchestrator:
+    49→    49→    """High-level Vigie workflow conductor."""
+    50→    50→
+    51→    51→    def __init__(
+    52→    52→        self,
+    53→    53→        slack_client: AsyncWebClient,
+    54→    54→        mcp_client: MCPClient | None = None,
+    55→    55→    ) -> None:
+    56→    56→        self.slack = slack_client
+    57→    57→        self.mcp = mcp_client or MCPClient()
+    58→    58→        self.slack_ai = get_slack_ai_service()
+    59→    59→        self.rts = get_rts_service()
+    60→    60→        self.state = get_state()
+    61→    61→
+    62→    62→    # ============================================================
+    63→    63→    # /vigie start — trigger the heatwave scenario
+    64→    64→    # ============================================================
+    65→    65→
+    66→    66→    async def start_heatwave(self, triggered_by: str, *, force_alert: bool = False) -> dict[str, Any]:
+    67→    67→        """
+    68→    68→        Trigger the canicule scenario:
+    69→    69→          1. Read active weather alerts from MCP (real Météo-France + NWS API)
+    70→    70→          2. If no alert and force_alert=True, use the scenario alert from
+    71→    71→             mcp_server/data/scenario_canicule_juillet.json (clearly labeled
+    72→    72→             as a scenario, not real data)
+    73→    73→          3. Call assign_checkins
+    74→    74→          4. DM each volunteer their list
+    75→    75→          5. Post alert banner in #cellule-crise
+    76→    76→
+    77→    77→        Returns a summary dict for the responding user.
+    78→    78→
+    79→    79→        The `force_alert` flag is used by /vigie-simulate to replay the
+    80→    80→        canicule scenario even when no real alert is active. The alert
+    81→    81→        banner clearly indicates "SCÉNARIO" when force_alert is used.
+    82→    82→        """
+    83→    83→        log.info("vigie.start_heatwave", triggered_by=triggered_by, force_alert=force_alert)
+    84→    84→
+    85→    85→        try:
+    86→    86→            async with self.mcp as mcp:
+    87→    87→                alerts = await mcp.list_weather_alerts()
+    88→    88→
+    89→    89→                if not alerts:
+    90→    90→                    if not force_alert:
+    91→    91→                        return {
+    92→    92→                            "status": "no_alert",
+    93→    93→                            "message": (
+    94→    94→                                "Aucune alerte canicule active détectée par Météo-France. "
+    95→    95→                                "Utilisez `/vigie-simulate canicule_juillet` pour forcer le scénario."
+    96→    96→                            ),
+    97→    97→                        }
+    98→    98→                    # Load the scenario alert from disk (clearly labeled as scenario)
+    99→    99→                    alerts = [_load_scenario_alert()]
+   100→   100→
+   101→   101→                assignments_result = await mcp.assign_checkins(force=force_alert)
+   102→   102→                if "error" in assignments_result:
+   103→   103→                    return {"status": "error", "message": assignments_result["error"]}
+   104→   104→
+   105→   105→                assignments = assignments_result.get("assignments", [])
+   106→   106→                total_beneficiaries = assignments_result.get("total_beneficiaries", 0)
+   107→   107→                total_volunteers = assignments_result.get("total_volunteers", 0)
+   108→   108→                date = assignments_result.get("date", datetime.now(UTC).date().isoformat())
+   109→   109→
+   110→   110→            # Post alert banner in cellule de crise
+   111→   111→            alert = alerts[0]
+   112→   112→            is_scenario = force_alert or alert.get("source", "").startswith("Scenario")
+   113→   113→            banner_prefix = ":film_projector: *SCÉNARIO DÉMO* — " if is_scenario else ""
+   114→   114→            alert_text = (
+   115→   115→                f"{banner_prefix}:rotating_light: *Vigilance {alert.get('level', '?').upper()} canicule* "
+   116→   116→                f"{'(scénario)' if is_scenario else 'détectée par Météo-France'}.\n"
+   117→   117→                f":round_pushpin: {alert.get('department_name', alert.get('department', '?'))}\n"
+   118→   118→                f":thermometer: T° max prévue : *{alert.get('max_temperature', '?')}°C*\n"
+   119→   119→                f":clock1: Valide jusqu'à : {alert.get('valid_to', '?')}\n\n"
+   120→   120→                f"*{total_beneficiaries} bénéficiaires* à contacter aujourd'hui.\n"
+   121→   121→                f"*{total_volunteers} bénévoles* affectés automatiquement.\n"
+   122→   122→                f"_Déclenché par <@{triggered_by}>_"
+   123→   123→            )
+   124→   124→            await post_to_cellule_crise(self.slack, text=alert_text)
+   125→   125→
+   126→   126→            # DM each volunteer
+   127→   127→            dm_count = 0
+   128→   128→            for assignment in assignments:
+   129→   129→                volunteer_id = assignment.get("volunteer_id")
+   130→   130→                volunteer_name = assignment.get("volunteer_name", volunteer_id)
+   131→   131→                beneficiaries = assignment.get("beneficiaries", [])
+   132→   132→
+   133→   133→                if not volunteer_id:
+   134→   134→                    continue
+   135→   135→
+   136→   136→                # Get the Slack user info if volunteer has a slack_user_id
+   137→   137→                # (in sandbox, the volunteer_id is the slack user id once seeded)
+   138→   138→                msg = build_volunteer_dm(
+   139→   139→                    volunteer_id=volunteer_id,
+   140→   140→                    volunteer_name=volunteer_name,
+   141→   141→                    assignments=beneficiaries,
+   142→   142→                    alert_level=alert.get("level", "orange"),
+   143→   143→                    date=date,
+   144→   144→                )
+   145→   145→                await post_dm(self.slack, volunteer_id, text=msg["text"], blocks=msg["blocks"])
+   146→   146→                dm_count += 1
+   147→   147→
+   148→   148→            log.info(
+   149→   149→                "vigie.start_heatwave.done",
+   150→   150→                volunteers_notified=dm_count,
+   151→   151→                beneficiaries=total_beneficiaries,
+   152→   152→                alert_level=alert.get("level"),
+   153→   153→            )
+   154→   154→
+   155→   155→            # Mark scenario as active in the state store
+   156→   156→            self.state.start_scenario(alert=alert, total_assigned=total_beneficiaries)
+   157→   157→
+   158→   158→            # Update the health endpoint with live metrics
+   159→   159→            from app.health import update_metrics
+   160→   160→            update_metrics(self.state.get_metrics())
+   161→   161→
+   162→   162→            # Publish the initial cellule-de-crise Canvas
+   163→   163→            await self._update_cellule_crise_canvas()
+   164→   164→
+   165→   165→            log_action(
+   166→   166→                actor=triggered_by,
+   167→   167→                action="force_scenario" if force_alert else "start_heatwave",
+   168→   168→                target=alert.get("department", "?"),
+   169→   169→                reason=f"alert_level={alert.get('level')}",
+   170→   170→                result="ok",
+   171→   171→                metadata={
+   172→   172→                    "alert_level": alert.get("level"),
+   173→   173→                    "total_beneficiaries": total_beneficiaries,
+   174→   174→                    "volunteers_notified": dm_count,
+   175→   175→                    "force_alert": force_alert,
+   176→   176→                },
+   177→   177→            )
+   178→   178→
+   179→   179→            return {
+   180→   180→                "status": "ok",
+   181→   181→                "alert_level": alert.get("level"),
+   182→   182→                "total_beneficiaries": total_beneficiaries,
+   183→   183→                "total_volunteers": total_volunteers,
+   184→   184→                "volunteers_notified": dm_count,
+   185→   185→                "alert": alert,
+   186→   186→            }
+   187→   187→
+   188→   188→        except MCPClientError as e:
+   189→   189→            log.error("vigie.start_heatwave.mcp_error", error=str(e))
+   190→   190→            log_action(actor=triggered_by, action="start_heatwave", result="mcp_error", reason=str(e))
+   191→   191→            return {"status": "mcp_error", "message": str(e)}
+   192→   192→        except Exception as e:
+   193→   193→            log.error("vigie.start_heatwave.failed", error=str(e))
+   194→   194→            log_action(actor=triggered_by, action="start_heatwave", result="error", reason=str(e))
+   195→   195→            return {"status": "error", "message": str(e)}
+   196→   196→
+   197→   197→    # ============================================================
+   198→   198→    # Volunteer DM → check-in processing
+   199→   199→    # ============================================================
+   200→   200→
+   201→   201→    async def process_volunteer_message(
+   202→   202→        self,
+   203→   203→        volunteer_id: str,
+   204→   204→        text: str,
+   205→   205→        file_bytes: bytes | None = None,
+   206→   206→        filename: str | None = None,
+   207→   207→    ) -> dict[str, Any]:
+   208→   208→        """
+   209→   209→        Process a DM from a volunteer (a check-in note).
+   210→   210→
+   211→   211→        The volunteer must mention the beneficiary ID in their message
+   212→   212→        (e.g., "B023: Mme Dupont fatiguée"). If voice note, transcribe first.
+   213→   213→
+   214→   214→        Steps:
+   215→   215→          1. Transcribe (if voice) via Slack AI / Whisper
+   216→   216→          2. Extract beneficiary ID from text
+   217→   217→          3. Call MCP record_checkin
+   218→   218→          4. Post the result in the sector channel
+   219→   219→        """
+   220→   220→        log.info("vigie.process_message", volunteer=volunteer_id, text_preview=text[:80])
+   221→   221→
+   222→   222→        # Transcribe voice if needed
+   223→   223→        if file_bytes and filename:
+   224→   224→            try:
+   225→   225→                text = await self.slack_ai.transcribe_audio(file_bytes, filename)
+   226→   226→                log.debug("vigie.process_message.transcribed", length=len(text))
+   227→   227→            except Exception as e:
+   228→   228→                log.error("vigie.process_message.transcribe_failed", error=str(e))
+   229→   229→                return {"status": "transcribe_failed", "message": str(e)}
+   230→   230→
+   231→   231→        # Extract beneficiary ID
+   232→   232→        beneficiary_id = _extract_beneficiary_id(text)
+   233→   233→        if not beneficiary_id:
+   234→   234→            await post_dm(
+   235→   235→                self.slack,
+   236→   236→                volunteer_id,
+   237→   237→                text=(
+   238→   238→                    "Je n'arrive pas à identifier le bénéficiaire dans votre message. "
+   239→   239→                    "Commencez par l'ID (ex : `B023: Mme Dupont va bien`)."
+   240→   240→                ),
+   241→   241→            )
+   242→   242→            return {"status": "no_beneficiary_id"}
+   243→   243→
+   244→   244→        # Classify anomaly with Slack AI (in parallel with MCP call below)
+   245→   245→        try:
+   246→   246→            ai_level, ai_signals, ai_recommended = await self.slack_ai.classify_anomaly(text)
+   247→   247→        except Exception as e:
+   248→   248→            log.warning("vigie.process_message.ai_classify_failed", error=str(e))
+   249→   249→            ai_level, ai_signals, ai_recommended = 0, [], "ok"
+   250→   250→
+   251→   251→        # Call MCP record_checkin
+   252→   252→        try:
+   253→   253→            async with self.mcp as mcp:
+   254→   254→                result = await mcp.record_checkin(
+   255→   255→                    beneficiary_id=beneficiary_id,
+   256→   256→                    volunteer_id=volunteer_id,
+   257→   257→                    transcript=text,
+   258→   258→                    channel_type="voice" if file_bytes else "text",
+   259→   259→                    detected_signals=ai_signals,
+   260→   260→                )
+   261→   261→        except MCPClientError as e:
+   262→   262→            log.error("vigie.process_message.mcp_error", error=str(e))
+   263→   263→            return {"status": "mcp_error", "message": str(e)}
+   264→   264→
+   265→   265→        if "error" in result:
+   266→   266→            await post_dm(
+   267→   267→                self.slack,
+   268→   268→                volunteer_id,
+   269→   269→                text=f"Erreur pour {beneficiary_id} : {result.get('error')}",
+   270→   270→            )
+   271→   271→            return result
+   272→   272→
+   273→   273→        # Use AI classification if MCP didn't classify, or merge signals
+   274→   274→        anomaly_level = result.get("anomaly_level", ai_level)
+   275→   275→        signals = result.get("detected_signals") or ai_signals
+   276→   276→        recommended = result.get("recommended_action", ai_recommended)
+   277→   277→        suggested_pois = result.get("suggested_pois", [])
+   278→   278→
+   279→   279→        # Get the beneficiary info from MCP result
+   280→   280→        beneficiary = {
+   281→   281→            "id": beneficiary_id,
+   282→   282→            "first_name": result.get("beneficiary", {}).get("name", "?").split()[0] if result.get("beneficiary") else "?",
+   283→   283→            "last_initial": "?",
+   284→   284→            "age": result.get("beneficiary", {}).get("age"),
+   285→   285→            "sector": result.get("beneficiary", {}).get("sector"),
+   286→   286→        }
+   287→   287→
+   288→   288→        # Build and post the sector channel message
+   289→   289→        sector_msg = build_checkin_message(
+   290→   290→            beneficiary=beneficiary,
+   291→   291→            volunteer_id=volunteer_id,
+   292→   292→            transcript=text,
+   293→   293→            anomaly_level=anomaly_level,
+   294→   294→            signals=signals,
+   295→   295→            recommended_action=recommended,
+   296→   296→            suggested_pois=suggested_pois,
+   297→   297→            checkin_id=result.get("checkin_id"),
+   298→   298→        )
+   299→   299→
+   300→   300→        sector = beneficiary.get("sector")
+   301→   301→        if sector:
+   302→   302→            await post_to_sector(
+   303→   303→                self.slack,
+   304→   304→                sector,
+   305→   305→                text=sector_msg["text"],
+   306→   306→                blocks=sector_msg["blocks"],
+   307→   307→            )
+   308→   308→
+   309→   309→        # Acknowledge the volunteer in DM
+   310→   310→        level_emoji = {0: ":white_check_mark:", 1: ":large_yellow_circle:", 2: ":large_orange_circle:", 3: ":red_circle:"}
+   311→   311→        await post_dm(
+   312→   312→            self.slack,
+   313→   313→            volunteer_id,
+   314→   314→            text=(
+   315→   315→                f"{level_emoji.get(anomaly_level, ':white_circle:')} Check-in enregistré pour "
+   316→   316→                f"{beneficiary_id} — niveau {anomaly_level}. "
+   317→   317→                f"Message publié dans #secteur-{sector}." if sector else
+   318→   318→                f"{level_emoji.get(anomaly_level, ':white_circle:')} Check-in enregistré pour {beneficiary_id}."
+   319→   319→            ),
+   320→   320→        )
+   321→   321→
+   322→   322→        # Record the check-in in the state store
+   323→   323→        # assigned_at = scenario start (best approximation; in production
+   324→   324→        # we'd track the exact DM-sent timestamp per volunteer)
+   325→   325→        assigned_at = self.state._scenario_start.isoformat() if self.state._scenario_start else None
+   326→   326→        self.state.record_checkin({
+   327→   327→            "beneficiary_id": beneficiary_id,
+   328→   328→            "volunteer_id": volunteer_id,
+   329→   329→            "anomaly_level": anomaly_level,
+   330→   330→            "transcript_preview": text[:120],
+   331→   331→            "checkin_id": result.get("checkin_id"),
+   332→   332→            "assigned_at": assigned_at,
+   333→   333→        })
+   334→   334→
+   335→   335→        # Update the health endpoint
+   336→   336→        from app.health import update_metrics
+   337→   337→        update_metrics(self.state.get_metrics())
+   338→   338→
+   339→   339→        # Update the cellule-de-crise Canvas with new check-in data
+   340→   340→        await self._update_cellule_crise_canvas()
+   341→   341→
+   342→   342→        log_action(
+   343→   343→            actor=volunteer_id,
+   344→   344→            action="process_checkin",
+   345→   345→            target=beneficiary_id,
+   346→   346→            reason=text[:120],
+   347→   347→            result="ok",
+   348→   348→            metadata={
+   349→   349→                "anomaly_level": anomaly_level,
+   350→   350→                "checkin_id": result.get("checkin_id"),
+   351→   351→                "channel_type": "voice" if file_bytes else "text",
+   352→   352→            },
+   353→   353→        )
+   354→   354→
+   355→   355→        return {
+   356→   356→            "status": "ok",
+   357→   357→            "beneficiary_id": beneficiary_id,
+   358→   358→            "anomaly_level": anomaly_level,
+   359→   359→            "checkin_id": result.get("checkin_id"),
+   360→   360→        }
+   361→   361→
+   362→   362→    # ============================================================
+   363→   363→    # Escalation trigger
+   364→   364→    # ============================================================
+   365→   365→
+   366→   366→    async def trigger_escalation(
+   367→   367→        self,
+   368→   368→        beneficiary_id: str,
+   369→   369→        level: int,
+   370→   370→        triggered_by: str,
+   371→   371→        reason: str | None = None,
+   372→   372→    ) -> dict[str, Any]:
+   373→   373→        """
+   374→   374→        Trigger an escalation and post in #cellule-crise.
+   375→   375→        """
+   376→   376→        log.info(
+   377→   377→            "vigie.trigger_escalation",
+   378→   378→            beneficiary=beneficiary_id,
+   379→   379→            level=level,
+   380→   380→            triggered_by=triggered_by,
+   381→   381→        )
+   382→   382→
+   383→   383→        try:
+   384→   384→            async with self.mcp as mcp:
+   385→   385→                result = await mcp.escalate(
+   386→   386→                    beneficiary_id=beneficiary_id,
+   387→   387→                    level=level,
+   388→   388→                    triggered_by=triggered_by,
+   389→   389→                    reason=reason,
+   390→   390→                )
+   391→   391→        except MCPClientError as e:
+   392→   392→            log.error("vigie.trigger_escalation.mcp_error", error=str(e))
+   393→   393→            return {"status": "mcp_error", "message": str(e)}
+   394→   394→
+   395→   395→        if "error" in result:
+   396→   396→            return result
+   397→   397→
+   398→   398→        # Build the cellule de crise message
+   399→   399→        beneficiary = {
+   400→   400→            "id": beneficiary_id,
+   401→   401→            "first_name": result.get("beneficiary", {}).get("name", "?").split()[0] if result.get("beneficiary") else "?",
+   402→   402→            "last_initial": "?",
+   403→   403→            "age": result.get("beneficiary", {}).get("age"),
+   404→   404→            "sector": result.get("beneficiary", {}).get("sector"),
+   405→   405→            "phone": result.get("beneficiary", {}).get("phone"),
+   406→   406→            "address": result.get("beneficiary", {}).get("address"),
+   407→   407→        }
+   408→   408→
+   409→   409→        escalation_msg = build_escalation_message(
+   410→   410→            beneficiary=beneficiary,
+   411→   411→            level=level,
+   412→   412→            triggered_by=triggered_by,
+   413→   413→            reason=reason,
+   414→   414→            context_summary=result.get("context_summary", ""),
+   415→   415→            neighbor_notified=result.get("neighbor_referent_notified", False),
+   416→   416→            coordinator_notified=result.get("medical_coordinator_notified", False),
+   417→   417→            samu_triggered=result.get("samu_triggered", False),
+   418→   418→            escalation_id=result.get("escalation_id"),
+   419→   419→        )
+   420→   420→
+   421→   421→        await post_to_cellule_crise(
+   422→   422→            self.slack,
+   423→   423→            text=escalation_msg["text"],
+   424→   424→            blocks=escalation_msg["blocks"],
+   425→   425→        )
+   426→   426→
+   427→   427→        # Record the escalation in the state store
+   428→   428→        # detected_at = timestamp of the latest check-in for this beneficiary
+   429→   429→        # (this is the moment the anomaly was detected, used to compute
+   430→   430→        # escalation latency: detected_at → recorded_at)
+   431→   431→        detected_at = None
+   432→   432→        for c in reversed(self.state._checkins):  # noqa: SLF001
+   433→   433→            if c.get("beneficiary_id") == beneficiary_id:
+   434→   434→                detected_at = c.get("recorded_at")
+   435→   435→                break
+   436→   436→        if not detected_at:
+   437→   437→            from datetime import UTC, datetime
+   438→   438→            detected_at = datetime.now(UTC).isoformat()
+   439→   439→
+   440→   440→        self.state.record_escalation({
+   441→   441→            "escalation_id": result.get("escalation_id"),
+   442→   442→            "beneficiary_id": beneficiary_id,
+   443→   443→            "level": level,
+   444→   444→            "triggered_by": triggered_by,
+   445→   445→            "reason": reason,
+   446→   446→            "samu_triggered": result.get("samu_triggered", False),
+   447→   447→            "detected_at": detected_at,
+   448→   448→        })
+   449→   449→
+   450→   450→        # Update the health endpoint
+   451→   451→        from app.health import update_metrics
+   452→   452→        update_metrics(self.state.get_metrics())
+   453→   453→
+   454→   454→        # Update the cellule-de-crise Canvas with the new escalation
+   455→   455→        await self._update_cellule_crise_canvas()
+   456→   456→
+   457→   457→        log_action(
+   458→   458→            actor=triggered_by,
+   459→   459→            action="trigger_escalation",
+   460→   460→            target=beneficiary_id,
+   461→   461→            reason=reason,
+   462→   462→            result="ok",
+   463→   463→            metadata={
+   464→   464→                "level": level,
+   465→   465→                "escalation_id": result.get("escalation_id"),
+   466→   466→                "samu_triggered": result.get("samu_triggered", False),
+   467→   467→            },
+   468→   468→        )
+   469→   469→
+   470→   470→        return {"status": "ok", "escalation_id": result.get("escalation_id"), "level": level}
+   471→   471→
+   472→   472→    # ============================================================
+   473→   473→    # Daily report generation
+   474→   474→    # ============================================================
+   475→   475→
+   476→   476→    async def generate_daily_report(self) -> dict[str, Any]:
+   477→   477→        """
+   478→   478→        Generate and post the daily report at 18h00.
+   479→   479→
+   480→   480→        Aggregates the day's check-ins, escalations, weak signals from the
+   481→   481→        in-memory state store, generates an AI narrative, fetches fresh RTS
+   482→   482→        directives, and posts a Block Kit report in #cellule-crise.
+   483→   483→
+   484→   484→        Returns an error if no scenario is active (no point generating a
+   485→   485→        report for an empty cellule de crise).
+   486→   486→        """
+   487→   487→        log.info("vigie.generate_daily_report")
+   488→   488→
+   489→   489→        metrics = self.state.get_metrics()
+   490→   490→        if not metrics.get("scenario_active"):
+   491→   491→            return {
+   492→   492→                "status": "no_scenario",
+   493→   493→                "message": "Aucun scénario actif. Tapez /vigie start pour démarrer.",
+   494→   494→            }
+   495→   495→
+   496→   496→        total = metrics["total_assigned"]
+   497→   497→        contacted = metrics["contacted"]
+   498→   498→        ok_count = metrics["ok_count"]
+   499→   499→        weak_count = metrics["weak_count"]
+   500→   500→        coord_count = metrics["coord_escalations"]
+   501→   501→        samu_count = metrics["samu_escalations"]
+   502→   502→        unreachable_72h = metrics["unreachable_72h"]
+   503→   503→        avg_checkin_time = metrics.get("avg_checkin_time", "—")
+   504→   504→        avg_escalade_latency = metrics.get("avg_escalade_latency", "—")
+   505→   505→        weak_signals_list = self.state.get_weak_signals_summary() or [
+   506→   506→            "Aucun signal faible enregistré aujourd'hui."
+   507→   507→        ]
+   508→   508→        date = datetime.now(UTC).date().isoformat()
+   509→   509→
+   510→   510→        # Fetch fresh RTS directives in parallel with AI report
+   511→   511→        rts_task = self.rts.get_health_directives(department="75")
+   512→   512→        ai_task = self.slack_ai.generate_daily_report(
+   513→   513→            date=date,
+   514→   514→            total=total,
+   515→   515→            contacted=contacted,
+   516→   516→            ok_count=ok_count,
+   517→   517→            weak_count=weak_count,
+   518→   518→            coord_count=coord_count,
+   519→   519→            samu_count=samu_count,
+   520→   520→            avg_escalade_latency=avg_escalade_latency,
+   521→   521→            unreachable_72h=unreachable_72h,
+   522→   522→            weak_signals_list=weak_signals_list,
+   523→   523→            rts_directives=[],  # Will be filled by RTS task
+   524→   524→        )
+   525→   525→
+   526→   526→        try:
+   527→   527→            rts_directives = await rts_task
+   528→   528→        except Exception as e:
+   529→   529→            log.warning("vigie.report.rts_failed", error=str(e))
+   530→   530→            rts_directives = []
+   531→   531→
+   532→   532→        try:
+   533→   533→            ai_report_text = await ai_task
+   534→   534→        except Exception as e:
+   535→   535→            log.warning("vigie.report.ai_failed", error=str(e))
+   536→   536→            ai_report_text = (
+   537→   537→                f"Synthèse indisponible ({e}). "
+   538→   538→                f"Voir les KPI ci-dessus pour les chiffres complets."
+   539→   539→            )
+   540→   540→
+   541→   541→        msg = build_daily_report(
+   542→   542→            date=date,
+   543→   543→            total=total,
+   544→   544→            contacted=contacted,
+   545→   545→            ok_count=ok_count,
+   546→   546→            weak_count=weak_count,
+   547→   547→            coord_count=coord_count,
+   548→   548→            samu_count=samu_count,
+   549→   549→            avg_checkin_time=avg_checkin_time,
+   550→   550→            avg_escalade_latency=avg_escalade_latency,
+   551→   551→            unreachable_72h=unreachable_72h,
+   552→   552→            weak_signals_list=weak_signals_list,
+   553→   553→            rts_directives=rts_directives,
+   554→   554→            ai_report_text=ai_report_text,
+   555→   555→        )
+   556→   556→
+   557→   557→        await post_to_cellule_crise(
+   558→   558→            self.slack,
+   559→   559→            text=msg["text"],
+   560→   560→            blocks=msg["blocks"],
+   561→   561→        )
+   562→   562→
+   563→   563→        # Update the Canvas with the final report data
+   564→   564→        await self._update_cellule_crise_canvas()
+   565→   565→
+   566→   566→        log_action(
+   567→   567→            actor="scheduler",
+   568→   568→            action="generate_report",
+   569→   569→            result="ok",
+   570→   570→            metadata={
+   571→   571→                "total": total,
+   572→   572→                "contacted": contacted,
+   573→   573→                "samu_count": samu_count,
+   574→   574→            },
+   575→   575→        )
+   576→   576→
+   577→   577→        return {"status": "ok", "posted": True}
+   578→   578→
+   579→   579→    # ============================================================
+   580→   580→    # Dashboard state (App Home)
+   581→   581→    # ============================================================
+   582→   582→
+   583→   583→    async def get_dashboard_state(self, user_id: str) -> dict[str, Any]:
+   584→   584→        """
+   585→   585→        Build the App Home view for a volunteer.
+   586→   586→
+   587→   587→        Returns a Slack view dict ready for views_publish. Uses live
+   588→   588→        metrics from the state store. If no scenario is active, the
+   589→   589→        alert banner is replaced with a calm "no active alert" message.
+   590→   590→        """
+   591→   591→        user_info = await get_user_info(self.slack, user_id)
+   592→   592→        user_name = user_info.get("real_name") or user_info.get("display_name") or user_id
+   593→   593→
+   594→   594→        metrics = self.state.get_metrics()
+   595→   595→        alert = metrics.get("alert")  # None if no scenario active
+   596→   596→
+   597→   597→        kpis = {
+   598→   598→            "coverage_pct": metrics.get("coverage_pct", 0),
+   599→   599→            "avg_checkin_time": metrics.get("avg_checkin_time", "—"),
+   600→   600→            "avg_escalade_latency": metrics.get("avg_escalade_latency", "—"),
+   601→   601→            "unreachable_72h": metrics.get("unreachable_72h", 0),
+   602→   602→            "coord_count": metrics.get("coord_escalations", 0),
+   603→   603→            "samu_count": metrics.get("samu_escalations", 0),
+   604→   604→        }
+   605→   605→
+   606→   606→        # Compute personal stats from the state store (filter by this volunteer)
+   607→   607→        personal_today = sum(
+   608→   608→            1
+   609→   609→            for c in self.state._checkins  # noqa: SLF001
+   610→   610→            if c.get("volunteer_id") == user_id
+   611→   611→        )
+   612→   612→        personal_weak = sum(
+   613→   613→            1
+   614→   614→            for c in self.state._checkins  # noqa: SLF001
+   615→   615→            if c.get("volunteer_id") == user_id and c.get("anomaly_level") == 1
+   616→   616→        )
+   617→   617→        personal_escalations = sum(
+   618→   618→            1
+   619→   619→            for e in self.state._escalations  # noqa: SLF001
+   620→   620→            if e.get("triggered_by") == user_id
+   621→   621→        )
+   622→   622→
+   623→   623→        # Compute personal average check-in time
+   624→   624→        personal_checkins = [
+   625→   625→            c for c in self.state._checkins  # noqa: SLF001
+   626→   626→            if c.get("volunteer_id") == user_id
+   627→   627→        ]
+   628→   628→        from app.state import _compute_avg_checkin_time
+   629→   629→        personal_avg_time = _compute_avg_checkin_time(personal_checkins)
+   630→   630→
+   631→   631→        return build_app_home(
+   632→   632→            user_id=user_id,
+   633→   633→            user_name=user_name,
+   634→   634→            assignments=[],
+   635→   635→            alert=alert,
+   636→   636→            kpis=kpis,
+   637→   637→            personal_stats={
+   638→   638→                "today_count": personal_today,
+   639→   639→                "weak_signals": personal_weak,
+   640→   640→                "escalations": personal_escalations,
+   641→   641→                "avg_time": personal_avg_time,
+   642→   642→            },
+   643→   643→        )
+   644→   644→
+   645→   645→    # ============================================================
+   646→   646→    # Scenario reset (admin)
+   647→   647→    # ============================================================
+   648→   648→
+   649→   649→    async def reset_scenario(self, triggered_by: str) -> dict[str, Any]:
+   650→   650→        """Reset the cellule de crise state. Admin only."""
+   651→   651→        log.info("vigie.reset_scenario", triggered_by=triggered_by)
+   652→   652→        self.state.reset()
+   653→   653→        from app.health import update_metrics
+   654→   654→        update_metrics(self.state.get_metrics())
+   655→   655→        await self._update_cellule_crise_canvas()
+   656→   656→        log_action(
+   657→   657→            actor=triggered_by,
+   658→   658→            action="reset_scenario",
+   659→   659→            result="ok",
+   660→   660→        )
+   661→   661→        return {"status": "ok", "reset": True}
+   662→   662→
+   663→   663→    # ============================================================
+   664→   664→    # Canvas publishing (real-time cellule de crise view)
+   665→   665→    # ============================================================
+   666→   666→
+   667→   667→    async def _update_cellule_crise_canvas(self) -> None:
+   668→   668→        """Publish or update the cellule-de-crise Slack Canvas.
+   669→   669→
+   670→   670→        Called after every state change (start, check-in, escalation,
+   671→   671→        report, reset) so coordinators always see live data.
+   672→   672→        """
+   673→   673→        metrics = self.state.get_metrics()
+   674→   674→        alert = metrics.get("alert")
+   675→   675→        if not alert:
+   676→   676→            log.debug("vigie.canvas.skipped_no_alert")
+   677→   677→            return
+   678→   678→
+   679→   679→        active_escalations = self.state.get_active_escalations()
+   680→   680→        # Enrich escalation items for the canvas
+   681→   681→        esc_items = []
+   682→   682→        for esc in active_escalations:
+   683→   683→            beneficiary_name = esc.get("beneficiary_id", "?")
+   684→   684→            esc_items.append({
+   685→   685→                "level": esc.get("level", 0),
+   686→   686→                "beneficiary_name": beneficiary_name,
+   687→   687→                "sector": "?",
+   688→   688→                "triggered_at": esc.get("recorded_at", "?")[:19],
+   689→   689→            })
+   690→   690→
+   691→   691→        # Fetch fresh directives for the canvas (uses cache, fast)
+   692→   692→        try:
+   693→   693→            rts_directives = await self.rts.get_health_directives(department="75")
+   694→   694→        except Exception:
+   695→   695→            rts_directives = []
+   696→   696→
+   697→   697→        canvas_blocks = build_cellule_crise_canvas(
+   698→   698→            date=datetime.now(UTC).date().isoformat(),
+   699→   699→            alert_level=alert.get("level", "orange"),
+   700→   700→            alert_phenomenon=alert.get("phenomenon", "canicule"),
+   701→   701→            alert_departments=[alert.get("department", "75")],
+   702→   702→            total_beneficiaries=metrics["total_assigned"],
+   703→   703→            contacted=metrics["contacted"],
+   704→   704→            ok_count=metrics["ok_count"],
+   705→   705→            weak_count=metrics["weak_count"],
+   706→   706→            coord_count=metrics["coord_escalations"],
+   707→   707→            samu_count=metrics["samu_escalations"],
+   708→   708→            avg_checkin_time=metrics["avg_checkin_time"],
+   709→   709→            avg_escalade_latency=metrics["avg_escalade_latency"],
+   710→   710→            unreachable_72h=metrics["unreachable_72h"],
+   711→   711→            active_escalations=esc_items,
+   712→   712→            rts_directives=rts_directives[:3],
+   713→   713→        )
+   714→   714→
+   715→   715→        channel_id = await get_cellule_crise_channel_id(self.slack)
+   716→   716→        if not channel_id:
+   717→   717→            log.warning("vigie.canvas.no_channel")
+   718→   718→            return
+   719→   719→
+   720→   720→        success = await publish_canvas(
+   721→   721→            self.slack,
+   722→   722→            channel_id=channel_id,
+   723→   723→            title="Cellule de crise — Vigie",
+   724→   724→            blocks=canvas_blocks,
+   725→   725→        )
+   726→   726→        if success:
+   727→   727→            log.info("vigie.canvas.published", channel=channel_id)
+   728→   728→        else:
+   729→   729→            log.warning("vigie.canvas.publish_failed", channel=channel_id)
+   730→   730→
+   731→   731→
+   732→   732→# ============================================================
+   733→   733→# Helpers
+   734→   734→# ============================================================
+   735→   735→
+   736→   736→
+   737→   737→def _extract_beneficiary_id(text: str) -> str | None:
+   738→   738→    """Extract a beneficiary ID (B001, B23, etc.) from a volunteer's message."""
+   739→   739→    match = _BENEFICIARY_ID_PATTERN.search(text)
+   740→   740→    if not match:
+   741→   741→        return None
+   742→   742→    n = int(match.group(1))
+   743→   743→    return f"B{n:03d}"
+   744→   744→
+   745→   745→
+   746→   746→def _load_scenario_alert() -> dict[str, Any]:
+   747→   747→    """Load the demo scenario alert from scenario_canicule_juillet.json.
+   748→   748→
+   749→   749→    This is the ONLY place where scenario (non-real) data is loaded. The
+   750→   750→    alert is clearly labeled with source="Scenario (demo)" so that no
+   751→   751→    judge or user can mistake it for a real Météo-France alert.
+   752→   752→    """
+   753→   753→    import json
+   754→   754→    import pathlib
+   755→   755→
+   756→   756→    scenario_path = pathlib.Path(__file__).resolve().parent.parent / "mcp_server" / "data" / "scenario_canicule_juillet.json"
+   757→   757→    if not scenario_path.exists():
+   758→   758→        log.error("vigie.scenario_file_missing", path=str(scenario_path))
+   759→   759→        return {
+   760→   760→            "level": "orange",
+   761→   761→            "phenomenon": "canicule",
+   762→   762→            "department": "75",
+   763→   763→            "department_name": "Paris (scénario)",
+   764→   764→            "max_temperature": 38,
+   765→   765→            "valid_from": "2026-07-15T06:00:00+02:00",
+   766→   766→            "valid_to": "2026-07-18T22:00:00+02:00",
+   767→   767→            "source": "Scenario (demo)",
+   768→   768→            "url": "https://vigilance.meteofrance.fr/",
+   769→   769→            "recommendation": "Demo scenario — not a real Météo-France alert.",
+   770→   770→        }
+   771→   771→
+   772→   772→    try:
+   773→   773→        with scenario_path.open("r", encoding="utf-8") as f:
+   774→   774→            scenario = json.load(f)
+   775→   775→        alert = scenario.get("alert", {})
+   776→   776→        return {
+   777→   777→            "id": "scenario-canicule-juillet-2026",
+   778→   778→            "level": alert.get("level", "orange"),
+   779→   779→            "phenomenon": alert.get("phenomenon", "canicule"),
+   780→   780→            "department": "75",
+   781→   781→            "department_name": "Paris (scénario démo)",
+   782→   782→            "max_temperature": alert.get("max_temperature", 38),
+   783→   783→            "min_temperature_night": alert.get("min_temperature_night", 23),
+   784→   784→            "valid_from": alert.get("valid_from"),
+   785→   785→            "valid_to": alert.get("valid_to"),
+   786→   786→            "source": "Scenario (demo)",
+   787→   787→            "url": "https://vigilance.meteofrance.fr/",
+   788→   788→            "recommendation": (
+   789→   789→                "Passez au moins 3 heures par jour dans un lieu frais. "
+   790→   790→                "Buvez régulièrement de l'eau même sans soif. "
+   791→   791→                "Évitez les efforts physiques aux heures chaudes."
+   792→   792→            ),
+   793→   793→        }
+   794→   794→    except Exception as e:
+   795→   795→        log.error("vigie.scenario_load_failed", error=str(e))
+   796→   796→        return {
+   797→   797→            "level": "orange",
+   798→   798→            "phenomenon": "canicule",
+   799→   799→            "department": "75",
+   800→   800→            "department_name": "Paris (scénario)",
+   801→   801→            "max_temperature": 38,
+   802→   802→            "valid_from": "2026-07-15T06:00:00+02:00",
+   803→   803→            "valid_to": "2026-07-18T22:00:00+02:00",
+   804→   804→            "source": "Scenario (demo)",
+   805→   805→            "url": "https://vigilance.meteofrance.fr/",
+   806→   806→        }
+   807→   807→
