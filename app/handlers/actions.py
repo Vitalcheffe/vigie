@@ -1,93 +1,144 @@
 """
-Vigie — Block Kit action handlers.
+Vigie — Block Kit action handlers (async).
 
 Handles interactive button clicks, modal submissions, and other
 Block Kit interactions.
-
-Callback IDs handled:
-- vigie_start_calls       — volunteer starts their daily calls
-- vigie_record_checkin    — volunteer submits a check-in note
-- vigie_escalate_<level>  — escalate a beneficiary to level 1/2/3
-- vigie_close_checkin     — close a check-in as OK
-- vigie_signal_anomaly    — global shortcut to report an anomaly
-- vigie_reassign          — reassign a beneficiary to another volunteer
 """
 
 from __future__ import annotations
 
-from slack_bolt import App
-from slack_bolt.context.ack import Ack
+import json
 
+from slack_bolt.async_app import AsyncApp
+from slack_bolt.context.ack.async_ack import AsyncAck
+from slack_sdk.web.async_client import AsyncWebClient
+
+from app.orchestrator import VigieOrchestrator
+from app.utils.config import get_config
 from app.utils.logging import get_logger
 
 log = get_logger("vigie.handlers.actions")
 
 
-def register(app: App) -> None:
+def _get_orchestrator() -> VigieOrchestrator:
+    cfg = get_config()
+    client = AsyncWebClient(token=cfg.slack.bot_token.get_secret_value())
+    return VigieOrchestrator(slack_client=client)
+
+
+def register(app: AsyncApp) -> None:
     """Register all Block Kit action handlers."""
 
     @app.action("vigie_start_calls")
-    def handle_start_calls(ack: Ack, action: dict, body: dict) -> None:
+    async def handle_start_calls(ack: AsyncAck, action: dict, body: dict) -> None:
         """Volunteer clicked 'Démarrer les appels' in their DM."""
-        ack()
+        await ack()
         user_id = body["user"]["id"]
         log.info("vigie.action.start_calls", user=user_id)
-        # TODO: open modal with the beneficiary list
+
+    @app.action("vigie_view_beneficiary")
+    async def handle_view_beneficiary(ack: AsyncAck, action: dict, body: dict, client) -> None:
+        """Volunteer clicked 'Fiche complète' on a beneficiary in the DM."""
+        await ack()
+        beneficiary_id = action.get("value", "")
+        user_id = body["user"]["id"]
+        log.info("vigie.action.view_beneficiary", user=user_id, beneficiary=beneficiary_id)
+        # TODO: open modal with full beneficiary fiche
+
+    @app.action("vigie_view_my_checkins")
+    async def handle_view_my_checkins(ack: AsyncAck, body: dict, client) -> None:
+        await ack()
+        user_id = body["user"]["id"]
+        log.info("vigie.action.view_my_checkins", user=user_id)
+
+    @app.action("vigie_view_cellule_crise")
+    async def handle_view_cellule_crise(ack: AsyncAck, body: dict, client) -> None:
+        await ack()
+        log.info("vigie.action.view_cellule_crise", user=body["user"]["id"])
 
     @app.action("vigie_record_checkin")
-    def handle_record_checkin(ack: Ack, action: dict, body: dict) -> None:
+    async def handle_record_checkin(ack: AsyncAck, action: dict, body: dict) -> None:
         """Volunteer submitted a check-in note (modal or inline)."""
-        ack()
-        # TODO: route to Slack AI + MCP record_checkin
+        await ack()
 
     @app.action("vigie_escalate_1")
-    def handle_escalate_1(ack: Ack, action: dict, body: dict) -> None:
+    async def handle_escalate_1(ack: AsyncAck, action: dict, body: dict) -> None:
         """Volunteer clicked 'Escalader niveau 1' (signal faible)."""
-        ack()
-        log.info("vigie.action.escalate_1", action=action)
-        # TODO: MCP escalate(beneficiary_id, level=1)
+        await ack()
+        await _do_escalate(action, body, level=1)
 
     @app.action("vigie_escalate_2")
-    def handle_escalate_2(ack: Ack, action: dict, body: dict) -> None:
+    async def handle_escalate_2(ack: AsyncAck, action: dict, body: dict) -> None:
         """Volunteer clicked 'Escalader niveau 2' (coordinator)."""
-        ack()
-        log.info("vigie.action.escalate_2", action=action)
-        # TODO: MCP escalate(beneficiary_id, level=2)
+        await ack()
+        await _do_escalate(action, body, level=2)
 
     @app.action("vigie_escalate_3")
-    def handle_escalate_3(ack: Ack, action: dict, body: dict) -> None:
+    async def handle_escalate_3(ack: AsyncAck, action: dict, body: dict) -> None:
         """Volunteer clicked 'Escalader niveau 3' (critical, SAMU)."""
-        ack()
-        log.info("vigie.action.escalate_3", action=action)
-        # TODO: MCP escalate(beneficiary_id, level=3) + SAMU button
+        await ack()
+        await _do_escalate(action, body, level=3)
 
     @app.action("vigie_close_checkin")
-    def handle_close_checkin(ack: Ack, action: dict, body: dict) -> None:
+    async def handle_close_checkin(ack: AsyncAck, action: dict, body: dict) -> None:
         """Volunteer clicked 'Clôturer' (check-in OK, no escalation)."""
-        ack()
-        log.info("vigie.action.close_checkin", action=action)
-        # TODO: MCP record_checkin + close
+        await ack()
+        log.info("vigie.action.close_checkin", action_value=action.get("value"))
 
     @app.action("vigie_confirm_pharmacy")
-    def handle_confirm_pharmacy(ack: Ack, action: dict, body: dict) -> None:
-        """Volunteer confirmed the suggested pharmacy for medication delivery."""
-        ack()
-        log.info("vigie.action.confirm_pharmacy", action=action)
-        # TODO: MCP update + notify pharmacy channel
+    async def handle_confirm_pharmacy(ack: AsyncAck, action: dict, body: dict) -> None:
+        """Volunteer confirmed the suggested pharmacy."""
+        await ack()
+        log.info("vigie.action.confirm_pharmacy", action_value=action.get("value"))
+
+    @app.action("vigie_call_samu")
+    async def handle_call_samu(ack: AsyncAck, action: dict, body: dict) -> None:
+        """Someone clicked the SAMU call button."""
+        await ack()
+        log.warning("vigie.action.call_samu", user=body["user"]["id"], action_value=action.get("value"))
+
+    @app.action("vigie_resolve_escalation")
+    async def handle_resolve_escalation(ack: AsyncAck, action: dict, body: dict) -> None:
+        """Coordinator clicked 'Marquer résolu' on an escalation."""
+        await ack()
+        log.info("vigie.action.resolve_escalation", user=body["user"]["id"])
 
     # Global shortcuts
     @app.shortcut("vigie_signal_anomaly")
-    def handle_shortcut_anomaly(ack: Ack, shortcut: dict) -> None:
+    async def handle_shortcut_anomaly(ack: AsyncAck, shortcut: dict) -> None:
         """User triggered the 'Signaler une anomalie' shortcut on a message."""
-        ack()
+        await ack()
         log.info("vigie.shortcut.anomaly", shortcut=shortcut)
-        # TODO: open modal to capture anomaly details
 
     @app.shortcut("vigie_reassign")
-    def handle_shortcut_reassign(ack: Ack, shortcut: dict) -> None:
+    async def handle_shortcut_reassign(ack: AsyncAck, shortcut: dict) -> None:
         """User triggered the 'Réassigner ce bénéficiaire' shortcut."""
-        ack()
+        await ack()
         log.info("vigie.shortcut.reassign", shortcut=shortcut)
-        # TODO: open modal to select a new volunteer
 
     log.debug("vigie.actions.registered")
+
+
+async def _do_escalate(action: dict, body: dict, *, level: int) -> None:
+    """Common escalation handler used by all three escalation buttons."""
+    user_id = body["user"]["id"]
+    raw_value = action.get("value", "{}")
+    try:
+        payload = json.loads(raw_value)
+    except json.JSONDecodeError:
+        payload = {}
+
+    beneficiary_id = payload.get("beneficiary_id")
+    if not beneficiary_id:
+        log.warning("vigie.escalate.no_beneficiary_in_payload", value=raw_value)
+        return
+
+    orch = _get_orchestrator()
+    result = await orch.trigger_escalation(
+        beneficiary_id=beneficiary_id,
+        level=level,
+        triggered_by=user_id,
+    )
+
+    if result.get("status") != "ok":
+        log.warning("vigie.escalate.failed", result=result)

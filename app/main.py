@@ -1,8 +1,9 @@
 """
-Vigie — Main entry point for the Slack Bolt application.
+Vigie — Main entry point for the Slack Bolt application (async).
 
-This module starts the Slack bot that listens for events, slash commands,
-and Block Kit interactions in the workspace sandbox.
+Starts the Slack bot that listens for events, slash commands, and Block Kit
+interactions. Uses AsyncApp so handlers can call the MCP client, Slack AI,
+and RTS service without blocking.
 
 Usage:
     vigie-bot
@@ -15,13 +16,17 @@ can switch to HTTP request URL for production.
 
 from __future__ import annotations
 
+import asyncio
 import signal
 import sys
 from typing import Any
 
-from slack_bolt import App
-from slack_bolt.adapter.socket_mode import SocketModeHandler
+from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
+from slack_bolt.async_app import AsyncApp
+from slack_sdk.web.async_client import AsyncWebClient
 
+from app.health import start_health_server
+from app.orchestrator import VigieOrchestrator
 from app.utils.config import get_config
 from app.utils.logging import setup_logging
 
@@ -29,9 +34,9 @@ from app.utils.logging import setup_logging
 log = setup_logging()
 
 
-def create_app() -> App:
+def create_app() -> AsyncApp:
     """
-    Create and configure the Slack Bolt app.
+    Create and configure the Slack Bolt async app.
 
     All handlers are registered here. The app is returned (not started)
     so it can be tested or wrapped if needed.
@@ -44,10 +49,9 @@ def create_app() -> App:
         num_sectors=cfg.slack.num_sectors,
     )
 
-    app = App(
+    app = AsyncApp(
         token=cfg.slack.bot_token.get_secret_value(),
         signing_secret=cfg.slack.signing_secret.get_secret_value(),
-        # Token rotation and other options can be enabled here
         token_verification_enabled=True,
         request_verification_enabled=True,
         ignoring_self_events_enabled=True,
@@ -64,14 +68,8 @@ def create_app() -> App:
     return app
 
 
-def _register_handlers(app: App) -> None:
-    """
-    Register all event, command, and action handlers.
-
-    Handlers are imported lazily to avoid circular imports.
-    Each handler module is responsible for its own registration.
-    """
-    # Lazy imports to avoid circular deps
+def _register_handlers(app: AsyncApp) -> None:
+    """Register all event, command, and action handlers."""
     from app.handlers import actions, commands, events, views
 
     events.register(app)
@@ -80,6 +78,12 @@ def _register_handlers(app: App) -> None:
     views.register(app)
 
     log.debug("vigie.handlers.registered")
+
+
+def get_orchestrator(app: AsyncApp) -> VigieOrchestrator:
+    """Build the Vigie orchestrator with the app's async Slack client."""
+    client = AsyncWebClient(token=get_config().slack.bot_token.get_secret_value())
+    return VigieOrchestrator(slack_client=client)
 
 
 def main() -> None:
@@ -95,6 +99,9 @@ def main() -> None:
 
     app = create_app()
 
+    # Start the health endpoint in a daemon thread
+    start_health_server()
+
     # Graceful shutdown handler
     def shutdown(signum: int, frame: Any) -> None:
         log.info("vigie.shutdown.signal", signal=signum)
@@ -106,19 +113,14 @@ def main() -> None:
     if cfg.slack.app_token:
         # Socket Mode (development)
         log.info("vigie.socket_mode.starting")
-        handler = SocketModeHandler(
+        handler = AsyncSocketModeHandler(
             app_token=cfg.slack.app_token.get_secret_value(),
             app=app,
         )
-        handler.start()
+        asyncio.run(handler.start_async())
     else:
         # Production: use the Bolt adapter (requires public URL)
         log.info("vigie.http_mode.starting", port=cfg.deployment.port)
-        from slack_bolt.adapter.fastapi import SlackRequestHandler
-
-        handler = SlackRequestHandler(app)
-        # In production, mount this handler on a FastAPI/Flask app
-        # For now, log a warning
         log.warning(
             "vigie.http_mode.not_configured",
             hint="Set SLACK_APP_TOKEN for Socket Mode, or configure a web framework adapter",

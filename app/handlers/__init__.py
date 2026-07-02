@@ -1,8 +1,8 @@
-"""Vigie handlers package — Slack event, command, and action handlers."""
+"""Vigie handlers package — Slack event, command, and action handlers (async)."""
 
 from __future__ import annotations
 
-from slack_bolt import App
+from slack_bolt.async_app import AsyncApp
 
 from app.utils.logging import get_logger
 
@@ -11,15 +11,13 @@ log = get_logger("vigie.handlers")
 __all__ = ["register_all"]
 
 
-def register_all(app: App) -> None:
+def register_all(app: AsyncApp) -> None:
     """
-    Register all Vigie handlers on the Bolt app.
+    Register all Vigie handlers on the Bolt async app.
 
-    This is the single entry point called from app.main.create_app().
-    Each submodule (events, commands, actions, views) exposes its own
-    `register(app)` function.
+    Single entry point called from app.main.create_app().
+    Each submodule exposes its own `register(app)` function.
     """
-    # Lazy import to avoid circular deps
     from app.handlers import actions, commands, events, views
 
     events.register(app)
