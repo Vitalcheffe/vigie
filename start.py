@@ -1,63 +1,45 @@
-"""
-Vigie — Startup wrapper for Railway.
+"""Vigie — Railway keep-alive wrapper."""
+import os, sys, time, signal, subprocess
 
-Catches all errors during startup and prints them to stdout so they
-appear in Railway's deploy logs.
-"""
-
-import sys
-import traceback
-
-
-def main() -> None:
-    print("=== Vigie starting ===", flush=True)
-    print(f"Python: {sys.version}", flush=True)
-
-    # Check env vars
-    import os
-    required = ["SLACK_BOT_TOKEN", "SLACK_SIGNING_SECRET", "SLACK_APP_TOKEN"]
-    for var in required:
-        val = os.environ.get(var, "")
-        if val:
-            print(f"  ✓ {var} is set ({val[:20]}...)", flush=True)
-        else:
-            print(f"  ✗ {var} is MISSING", flush=True)
-
-    print(f"  MCP_IN_PROCESS={os.environ.get('MCP_IN_PROCESS', 'false')}", flush=True)
-
-    # Try importing modules
-    try:
-        print("=== Importing modules ===", flush=True)
-        from app.utils.config import get_config
-        print("  ✓ app.utils.config", flush=True)
-
-        from app.utils.logging import setup_logging
-        print("  ✓ app.utils.logging", flush=True)
-
-        from slack_bolt.async_app import AsyncApp
-        print("  ✓ slack_bolt.async_app", flush=True)
-
-        from app.orchestrator import VigieOrchestrator
-        print("  ✓ app.orchestrator", flush=True)
-
-        from app.handlers import register_all
-        print("  ✓ app.handlers", flush=True)
-
-    except Exception as e:
-        print(f"❌ IMPORT ERROR: {e}", flush=True)
-        traceback.print_exc()
+def main():
+    print("=== Vigie keep-alive wrapper ===", flush=True)
+    
+    max_retries = 5
+    retry_count = 0
+    
+    while retry_count < max_retries:
+        print(f"Attempt {retry_count + 1}/{max_retries}", flush=True)
+        
+        env = os.environ.copy()
+        env["MCP_IN_PROCESS"] = "true"
+        env["LOG_LEVEL"] = "INFO"
+        env["LOG_FORMAT"] = "text"
+        
+        proc = subprocess.Popen(
+            [sys.executable, "-m", "app.main"],
+            env=env,
+            stdout=sys.stdout,
+            stderr=sys.stderr,
+        )
+        
+        print(f"Bot started (PID {proc.pid})", flush=True)
+        
+        # Wait for the process to exit
+        retcode = proc.wait()
+        print(f"Bot exited with code {retcode}", flush=True)
+        
+        if retcode == 0:
+            print("Clean exit, not retrying.", flush=True)
+            break
+        
+        retry_count += 1
+        if retry_count < max_retries:
+            print(f"Waiting 5s before retry...", flush=True)
+            time.sleep(5)
+    
+    if retry_count >= max_retries:
+        print("Max retries reached. Exiting.", flush=True)
         sys.exit(1)
-
-    # Start the app — use the same path that worked in the SUCCESS deployment
-    try:
-        print("=== Starting app ===", flush=True)
-        from app.main import main as app_main
-        app_main()
-    except Exception as e:
-        print(f"❌ STARTUP ERROR: {e}", flush=True)
-        traceback.print_exc()
-        sys.exit(1)
-
 
 if __name__ == "__main__":
     main()
