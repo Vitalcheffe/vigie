@@ -17,6 +17,7 @@ can switch to HTTP request URL for production.
 from __future__ import annotations
 
 import asyncio
+import os
 import signal
 import sys
 from typing import Any
@@ -97,8 +98,11 @@ def main() -> None:
 
     app = create_app()
 
-    # Start the health endpoint in a daemon thread
-    start_health_server()
+    # Start the health endpoint (skip on Railway to avoid port conflicts)
+    if not os.environ.get("MCP_IN_PROCESS", "false").lower() in ("true", "1", "yes"):
+        start_health_server()
+    else:
+        log.info("vigie.health.skipped_railway")
 
     # Build the orchestrator and start the background scheduler
     orchestrator = get_orchestrator(app)
