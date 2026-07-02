@@ -54,8 +54,54 @@ def main() -> None:
     # Try starting the app
     try:
         print("=== Starting app ===", flush=True)
-        from app.main import main as app_main
-        app_main()
+        # On Railway (MCP_IN_PROCESS=true), skip the health server
+        # because it conflicts with asyncio.run() in the main thread.
+        # Socket Mode doesn't need an HTTP endpoint.
+        if os.environ.get("MCP_IN_PROCESS", "false").lower() in ("true", "1", "yes"):
+            print("  Skipping health server (Railway/Socket Mode mode)", flush=True)
+            # Start the bot directly without the health server
+            import asyncio
+            from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
+            from app.main import create_app, get_orchestrator
+            from app.scheduler import start_scheduler
+
+            app = create_app()
+            orchestrator = get_orchestrator(app)
+            scheduler = start_scheduler(orchestrator)
+
+            import signal
+            import sys
+
+            def shutdown(signum, frame):
+                print(f"Shutdown signal {signum}", flush=True)
+                from app.scheduler import stop_scheduler
+                stop_scheduler()
+                sys.exit(0)
+
+            signal.signal(signal.SIGINT, shutdown)
+            signal.signal(signal.SIGTERM, shutdown)
+
+            cfg = __import__("app.utils.config", fromlist=["get_config"]).get_config()
+            if cfg.slack.app_token:
+                print("  Starting Socket Mode...", flush=True)
+
+                async def _run():
+                    scheduler.start()
+                    print("  Scheduler started", flush=True)
+                    handler = AsyncSocketModeHandler(
+                        app_token=cfg.slack.app_token.get_secret_value(),
+                        app=app,
+                    )
+                    await handler.start_async()
+
+                asyncio.run(_run())
+            else:
+                print("  ERROR: SLACK_APP_TOKEN not set", flush=True)
+                sys.exit(1)
+        else:
+            # Normal mode (local dev) — use app.main.main()
+            from app.main import main as app_main
+            app_main()
     except Exception as e:
         print(f"❌ STARTUP ERROR: {e}", flush=True)
         traceback.print_exc()
