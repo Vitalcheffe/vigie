@@ -53,7 +53,6 @@ def create_mcp_server() -> FastMCP:
 
     mcp = FastMCP(
         name="vigie-mcp",
-        version="0.0.1",
         instructions=(
             "Vigie MCP server — exposes the Plan Canicule beneficiary registry, "
             "real-time weather alerts, and community points of interest "

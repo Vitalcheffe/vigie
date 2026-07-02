@@ -20,6 +20,7 @@ from typing import Any
 
 from slack_sdk.web.async_client import AsyncWebClient
 
+from app.audit import log_action
 from app.blocks.canvas import build_cellule_crise_canvas
 from app.blocks.checkin import build_checkin_message, build_volunteer_dm
 from app.blocks.dashboard import build_app_home
@@ -161,6 +162,20 @@ class VigieOrchestrator:
             # Publish the initial cellule-de-crise Canvas
             await self._update_cellule_crise_canvas()
 
+            log_action(
+                actor=triggered_by,
+                action="force_scenario" if force_alert else "start_heatwave",
+                target=alert.get("department", "?"),
+                reason=f"alert_level={alert.get('level')}",
+                result="ok",
+                metadata={
+                    "alert_level": alert.get("level"),
+                    "total_beneficiaries": total_beneficiaries,
+                    "volunteers_notified": dm_count,
+                    "force_alert": force_alert,
+                },
+            )
+
             return {
                 "status": "ok",
                 "alert_level": alert.get("level"),
@@ -172,9 +187,11 @@ class VigieOrchestrator:
 
         except MCPClientError as e:
             log.error("vigie.start_heatwave.mcp_error", error=str(e))
+            log_action(actor=triggered_by, action="start_heatwave", result="mcp_error", reason=str(e))
             return {"status": "mcp_error", "message": str(e)}
         except Exception as e:
             log.error("vigie.start_heatwave.failed", error=str(e))
+            log_action(actor=triggered_by, action="start_heatwave", result="error", reason=str(e))
             return {"status": "error", "message": str(e)}
 
     # ============================================================
@@ -322,6 +339,19 @@ class VigieOrchestrator:
         # Update the cellule-de-crise Canvas with new check-in data
         await self._update_cellule_crise_canvas()
 
+        log_action(
+            actor=volunteer_id,
+            action="process_checkin",
+            target=beneficiary_id,
+            reason=text[:120],
+            result="ok",
+            metadata={
+                "anomaly_level": anomaly_level,
+                "checkin_id": result.get("checkin_id"),
+                "channel_type": "voice" if file_bytes else "text",
+            },
+        )
+
         return {
             "status": "ok",
             "beneficiary_id": beneficiary_id,
@@ -424,6 +454,19 @@ class VigieOrchestrator:
         # Update the cellule-de-crise Canvas with the new escalation
         await self._update_cellule_crise_canvas()
 
+        log_action(
+            actor=triggered_by,
+            action="trigger_escalation",
+            target=beneficiary_id,
+            reason=reason,
+            result="ok",
+            metadata={
+                "level": level,
+                "escalation_id": result.get("escalation_id"),
+                "samu_triggered": result.get("samu_triggered", False),
+            },
+        )
+
         return {"status": "ok", "escalation_id": result.get("escalation_id"), "level": level}
 
     # ============================================================
@@ -520,6 +563,17 @@ class VigieOrchestrator:
         # Update the Canvas with the final report data
         await self._update_cellule_crise_canvas()
 
+        log_action(
+            actor="scheduler",
+            action="generate_report",
+            result="ok",
+            metadata={
+                "total": total,
+                "contacted": contacted,
+                "samu_count": samu_count,
+            },
+        )
+
         return {"status": "ok", "posted": True}
 
     # ============================================================
@@ -599,6 +653,11 @@ class VigieOrchestrator:
         from app.health import update_metrics
         update_metrics(self.state.get_metrics())
         await self._update_cellule_crise_canvas()
+        log_action(
+            actor=triggered_by,
+            action="reset_scenario",
+            result="ok",
+        )
         return {"status": "ok", "reset": True}
 
     # ============================================================

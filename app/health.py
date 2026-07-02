@@ -1,12 +1,13 @@
 """
 Vigie — Health endpoint server.
 
-A tiny FastAPI app exposing /health for Docker / Railway health checks.
-Runs alongside the Bolt app in the same process (separate thread).
+A tiny FastAPI app exposing:
+  GET /health  — liveness/readiness probe (returns 200 OK)
+  GET /metrics — returns the live Vigie KPIs (when bot is running)
+  GET /audit   — returns the last 100 audit log entries
+  GET /audit/stats — returns summary stats for the audit log
 
-Endpoints:
-  GET /health  — returns 200 OK with JSON status
-  GET /metrics — returns the live KPIs (when bot is running)
+Runs alongside the Bolt app in the same process (separate thread).
 """
 
 from __future__ import annotations
@@ -55,6 +56,23 @@ async def health() -> JSONResponse:
 async def metrics() -> JSONResponse:
     """Return the last published live metrics (or empty dict if not running)."""
     return JSONResponse({"metrics": _live_metrics})
+
+
+@app.get("/audit")
+async def audit_log(limit: int = 100) -> JSONResponse:
+    """Return the last `limit` audit log entries (most recent first)."""
+    from app.audit import get_audit_log
+
+    entries = get_audit_log(limit=limit)
+    return JSONResponse({"count": len(entries), "entries": entries})
+
+
+@app.get("/audit/stats")
+async def audit_stats() -> JSONResponse:
+    """Return summary stats for the audit log."""
+    from app.audit import get_audit_stats
+
+    return JSONResponse(get_audit_stats())
 
 
 def start_health_server(port: int | None = None) -> threading.Thread:

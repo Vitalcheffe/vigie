@@ -4,7 +4,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-57%20passing-brightgreen.svg)](tests/)
+[![CI](https://github.com/Vitalcheffe/vigie/actions/workflows/ci.yml/badge.svg)](https://github.com/Vitalcheffe/vigie/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/tests-128%20passing-brightgreen.svg)](tests/)
+[![Coverage](https://img.shields.io/badge/coverage-68%25-success.svg)](https://github.com/Vitalcheffe/vigie/actions/workflows/ci.yml)
 [![Ruff](https://img.shields.io/badge/lint-ruff%20clean-success.svg)](https://docs.astral.sh/ruff/)
 [![Hackathon: Slack Agent Builder Challenge 2026](https://img.shields.io/badge/hackathon-Slack%20Agent%20Builder%202026-4A154B.svg)](https://slackagentbuilder.devpost.com/)
 [![Track: Agent for Good](https://img.shields.io/badge/track-Agent%20for%20Good-2EB67D.svg)](https://slackagentbuilder.devpost.com/)
