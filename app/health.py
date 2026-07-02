@@ -133,10 +133,12 @@ async def audit_stats() -> JSONResponse:
 
 def start_health_server(port: int | None = None) -> threading.Thread:
     """Start the health server in a daemon thread. Non-blocking."""
+    import os
     import uvicorn
 
-    cfg = get_config()
-    actual_port = port or cfg.deployment.port
+    # Use the PORT env var directly (Railway sets this automatically)
+    # Fall back to the config value, then to 3000
+    actual_port = port or int(os.environ.get("PORT", 0)) or 3000
 
     def _run() -> None:
         try:
