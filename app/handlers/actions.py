@@ -36,6 +36,55 @@ def register(app: AsyncApp) -> None:
         user_id = body["user"]["id"]
         log.info("vigie.action.start_calls", user=user_id)
 
+    @app.action("vigie_quick_checkin")
+    async def handle_quick_checkin(ack: AsyncAck, action: dict, body: dict, client) -> None:
+        """Volunteer clicked 'Check-in' next to a beneficiary name.
+
+        Opens a human-friendly modal with the beneficiary's name pre-filled
+        and 4 big buttons (OK / Weak signal / No answer / Critical).
+        No IDs to type.
+        """
+        await ack()
+        user_id = body["user"]["id"]
+        raw_value = action.get("value", "{}")
+        try:
+            payload = json.loads(raw_value)
+        except json.JSONDecodeError:
+            payload = {}
+
+        beneficiary_id = payload.get("beneficiary_id", "")
+        beneficiary_name = payload.get("beneficiary_name", beneficiary_id)
+
+        log.info("vigie.action.quick_checkin", user=user_id, beneficiary=beneficiary_id)
+
+        from app.blocks.quick_checkin import build_quick_checkin_modal
+        modal = build_quick_checkin_modal(
+            beneficiary_id=beneficiary_id,
+            beneficiary_name=beneficiary_name,
+        )
+        await client.views_open(trigger_id=body["trigger_id"], view=modal)
+
+    # Quick check-in state buttons (inside the modal)
+    @app.action("vigie_state_ok")
+    async def handle_state_ok(ack: AsyncAck, action: dict, body: dict, client) -> None:
+        await ack()
+        await _process_quick_state(action, body, client, state="ok")
+
+    @app.action("vigie_state_weak")
+    async def handle_state_weak(ack: AsyncAck, action: dict, body: dict, client) -> None:
+        await ack()
+        await _process_quick_state(action, body, client, state="weak")
+
+    @app.action("vigie_state_unreachable")
+    async def handle_state_unreachable(ack: AsyncAck, action: dict, body: dict, client) -> None:
+        await ack()
+        await _process_quick_state(action, body, client, state="unreachable")
+
+    @app.action("vigie_state_critical")
+    async def handle_state_critical(ack: AsyncAck, action: dict, body: dict, client) -> None:
+        await ack()
+        await _process_quick_state(action, body, client, state="critical")
+
     @app.action("vigie_view_my_checkins")
     async def handle_view_my_checkins(ack: AsyncAck, body: dict, client) -> None:
         await ack()
@@ -131,3 +180,110 @@ async def _do_escalate(action: dict, body: dict, *, level: int) -> None:
 
     if result.get("status") != "ok":
         log.warning("vigie.escalate.failed", result=result)
+
+
+async def _process_quick_state(action: dict, body: dict, client, *, state: str) -> None:
+    """Process a quick check-in state button click from the modal.
+
+    Called when the volunteer clicks OK / Weak signal / No answer / Critical
+    in the quick check-in modal. Routes through the orchestrator.
+    """
+    user_id = body["user"]["id"]
+    raw_value = action.get("value", "{}")
+    try:
+        payload = json.loads(raw_value)
+    except json.JSONDecodeError:
+        payload = {}
+
+    beneficiary_id = payload.get("beneficiary_id")
+    if not beneficiary_id:
+        log.warning("vigie.quick_state.no_beneficiary", value=raw_value)
+        return
+
+    # Map state to transcript + anomaly level
+    state_map = {
+        "ok": ("All good, no issues.", 0),
+        "weak": ("Weak signal: tired, requests help.", 1),
+        "unreachable": ("No answer after 3 calls.", 2),
+        "critical": ("Critical: on the ground, unconscious.", 3),
+    }
+    transcript, anomaly_level = state_map.get(state, ("Unknown state.", 0))
+
+    log.info("vigie.quick_state", beneficiary=beneficiary_id, state=state, user=user_id)
+
+    # If critical, trigger escalation directly
+    if anomaly_level == 3:
+        orch = _get_orchestrator()
+        await orch.trigger_escalation(
+            beneficiary_id=beneficiary_id,
+            level=3,
+            triggered_by=user_id,
+            reason=transcript,
+        )
+        # Close the modal
+        await client.views_update(
+            view_id=body["view"]["id"],
+            view={
+                "type": "modal",
+                "callback_id": "vigie_modal_checkin",
+                "title": {"type": "plain_text", "text": "Done"},
+                "close": {"type": "plain_text", "text": "Close"},
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": f":rotating_light: *Critical escalation triggered for {beneficiary_id}.*\n\nCheck #cellule-crise for the SAMU alert.",
+                        },
+                    }
+                ],
+            },
+        )
+        return
+
+    # For non-critical states, process as a check-in
+    orch = _get_orchestrator()
+    result = await orch.process_volunteer_message(
+        volunteer_id=user_id,
+        text=f"{beneficiary_id}: {transcript}",
+    )
+
+    # Update the modal to show confirmation
+    if result.get("status") == "ok":
+        await client.views_update(
+            view_id=body["view"]["id"],
+            view={
+                "type": "modal",
+                "callback_id": "vigie_modal_checkin",
+                "title": {"type": "plain_text", "text": "Done"},
+                "close": {"type": "plain_text", "text": "Close"},
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": f":white_check_mark: *Check-in recorded for {beneficiary_id}.*\n\nState: {state}\nAnomaly level: {result.get('anomaly_level', 0)}\n\nMessage posted in the sector channel.",
+                        },
+                    }
+                ],
+            },
+        )
+    else:
+        await client.views_update(
+            view_id=body["view"]["id"],
+            view={
+                "type": "modal",
+                "callback_id": "vigie_modal_checkin",
+                "title": {"type": "plain_text", "text": "Error"},
+                "close": {"type": "plain_text", "text": "Close"},
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": f":warning: Could not process check-in: {result.get('message', 'unknown error')}",
+                        },
+                    }
+                ],
+            },
+        )

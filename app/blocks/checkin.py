@@ -212,6 +212,7 @@ def build_volunteer_dm(
         vuln = b.get("vulnerability_score", 0)
         conditions = b.get("medical_conditions") or []
         meds = b.get("medications") or []
+        bid = b.get("id", "")
 
         blocks.append(
             {
@@ -219,7 +220,7 @@ def build_volunteer_dm(
                 "text": {
                     "type": "mrkdwn",
                     "text": (
-                        f"*{name}* ({age} yrs, sector {sector}) — `id: {b.get('id')}`\n"
+                        f"*{name}* ({age} yrs, sector {sector})\n"
                         f":telephone: `{phone}`\n"
                         f":heart: Vulnerability: *{vuln}/100*"
                         + (f" — Conditions: {', '.join(conditions)}" if conditions else "")
@@ -228,26 +229,20 @@ def build_volunteer_dm(
                 },
                 "accessory": {
                     "type": "button",
-                    "text": {"type": "plain_text", "text": "Full profile", "emoji": True},
-                    "action_id": "vigie_view_beneficiary",
-                    "value": b.get("id", ""),
+                    "text": {"type": "plain_text", "text": "Check-in", "emoji": True},
+                    "action_id": "vigie_quick_checkin",
+                    "style": "primary",
+                    "value": json.dumps({"beneficiary_id": bid, "beneficiary_name": name}),
                 },
             }
         )
 
     blocks.append({"type": "divider"})
-
     blocks.append(
         {
-            "type": "actions",
+            "type": "context",
             "elements": [
-                {
-                    "type": "button",
-                    "text": {"type": "plain_text", "text": ":telephone_receiver: Start calls", "emoji": True},
-                    "style": "primary",
-                    "action_id": "vigie_start_calls",
-                    "value": json.dumps({"volunteer_id": volunteer_id, "date": date}),
-                }
+                {"type": "mrkdwn", "text": "_Click \"Check-in\" next to each name after your call. No need to type anything._"},
             ],
         }
     )
