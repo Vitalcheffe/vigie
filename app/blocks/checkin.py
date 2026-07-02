@@ -174,13 +174,14 @@ def build_volunteer_dm(
     """
     visual = ":large_orange_circle:" if alert_level == "orange" else ":red_circle:"
     count = len(assignments)
+    first_name = volunteer_name.split()[0] if volunteer_name else "there"
 
     blocks: list[dict[str, Any]] = [
         {
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": f"{visual} Hello {volunteer_name.split()[0]} — {count} check-ins for today",
+                "text": f"{visual} Hi {first_name}, you have {count} people to check on today",
                 "emoji": True,
             },
         },
@@ -189,11 +190,12 @@ def build_volunteer_dm(
             "text": {
                 "type": "mrkdwn",
                 "text": (
-                    f"Orange *heatwave vigilance* active since 7 AM this morning. "
-                    f"You have *{count} beneficiaries* to contact before 2 PM. "
-                    f"Date: *{date}*.\n\n"
-                    "After each call, send me a note (text or voice) with what you observed. "
-                    "I handle analysis, pharmacies, and escalations."
+                    f"A *{alert_level} heatwave alert* is active. "
+                    f"These {count} people are counting on a phone call from you before 2 PM.\n\n"
+                    "After each call, just click the **Check-in** button next to their name. "
+                    "You'll pick how they're doing from a few options — that's it. "
+                    "I handle pharmacies, escalations, and everything else.\n\n"
+                    "_Thank you for being here. Every call matters._ 💜"
                 ),
             },
         },

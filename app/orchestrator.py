@@ -107,19 +107,18 @@ class VigieOrchestrator:
                 total_volunteers = assignments_result.get("total_volunteers", 0)
                 date = assignments_result.get("date", datetime.now(UTC).date().isoformat())
 
-            # Post alert banner in crisis cell
+            # Post alert banner in crisis cell — calm, clear, human
             alert = alerts[0]
             is_scenario = force_alert or alert.get("source", "").startswith("Scenario")
             banner_prefix = ":film_projector: *DEMO SCENARIO* — " if is_scenario else ""
             alert_text = (
-                f"{banner_prefix}:rotating_light: *{alert.get('level', '?').upper()} heatwave vigilance* "
-                f"{'(scenario)' if is_scenario else 'detected by Météo-France'}.\n"
+                f"{banner_prefix}:rotating_light: *{alert.get('level', '?').upper()} HEATWAVE ALERT*\n"
                 f":round_pushpin: {alert.get('department_name', alert.get('department', '?'))}\n"
-                f":thermometer: Max forecast T°: *{alert.get('max_temperature', '?')}°C*\n"
+                f":thermometer: Max forecast: *{alert.get('max_temperature', '?')}°C*\n"
                 f":clock1: Valid until: {alert.get('valid_to', '?')}\n\n"
-                f"*{total_beneficiaries} beneficiaries* to contact today.\n"
-                f"*{total_volunteers} volunteers* assigned automatically.\n"
-                f"_Triggered by <@{triggered_by}>_"
+                f"*{total_beneficiaries} isolated elders* need a phone call today.\n"
+                f"*{total_volunteers} volunteers* have been notified and assigned.\n\n"
+                f"_I'm watching. Every call counts._"
             )
             await post_to_cellule_crise(self.slack, text=alert_text)
 
@@ -306,17 +305,26 @@ class VigieOrchestrator:
                 blocks=sector_msg["blocks"],
             )
 
-        # Acknowledge the volunteer in DM
-        level_emoji = {0: ":white_check_mark:", 1: ":large_yellow_circle:", 2: ":large_orange_circle:", 3: ":red_circle:"}
+        # Acknowledge the volunteer in DM — warm, human, grateful
+        import random
+        from app.tone import CHECKIN_OK, CHECKIN_WEAK, CHECKIN_UNREACHABLE, CHECKIN_CRITICAL
+
+        # Get the beneficiary's name for a personal message
+        beneficiary_name = beneficiary.get("first_name", beneficiary_id)
+
+        if anomaly_level == 0:
+            ack_text = random.choice(CHECKIN_OK).format(name=beneficiary_name)
+        elif anomaly_level == 1:
+            ack_text = random.choice(CHECKIN_WEAK).format(name=beneficiary_name)
+        elif anomaly_level == 2:
+            ack_text = random.choice(CHECKIN_UNREACHABLE).format(name=beneficiary_name)
+        else:
+            ack_text = random.choice(CHECKIN_CRITICAL).format(name=beneficiary_name)
+
         await post_dm(
             self.slack,
             volunteer_id,
-            text=(
-                f"{level_emoji.get(anomaly_level, ':white_circle:')} Check-in recorded for "
-                f"{beneficiary_id} — level {anomaly_level}. "
-                f"Message posted in #secteur-{sector}." if sector else
-                f"{level_emoji.get(anomaly_level, ':white_circle:')} Check-in recorded for {beneficiary_id}."
-            ),
+            text=ack_text,
         )
 
         # Record the check-in in the state store

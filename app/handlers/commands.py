@@ -177,24 +177,25 @@ async def _cmd_help(respond: AsyncRespond) -> None:
         blocks=[
             {
                 "type": "header",
-                "text": {"type": "plain_text", "text": "Vigie — Help"},
+                "text": {"type": "plain_text", "text": "I'm Vigie — here's how I can help", "emoji": True},
             },
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
                     "text": (
-                        "*Available commands:*\n\n"
-                        "• `/vigie start` — Trigger the heatwave scenario\n"
-                        "• `/vigie demo` — Run the FULL demo (scenario + check-in + escalation + report)\n"
-                        "• `/vigie status` — State of the crisis cell\n"
-                        "• `/vigie report` — Generate the daily report\n"
-                        "• `/vigie reset` — Reset the simulation (admin)\n"
-                        "• `/vigie-checkin <id>` — Start a check-in\n"
-                        "• `/vigie-escalate <id> <1|2|3>` — Manual escalation\n"
-                        "• `/vigie-simulate <name>` — Launch a scenario\n"
-                        "• `/vigie help` — This help\n\n"
-                        "_In case of life-threatening emergency, call 15 or 112._"
+                        "*Quick start for judges:*\n"
+                        "• `/vigie demo` — Run the FULL demo (everything in one command)\n\n"
+                        "*Individual commands:*\n"
+                        "• `/vigie-simulate canicule_juillet` — Start the heatwave scenario\n"
+                        "• `/vigie status` — See who's been contacted and who hasn't\n"
+                        "• `/vigie report` — Generate today's report with KPIs\n"
+                        "• `/vigie reset` — Start over\n"
+                        "• `/vigie-escalate B003 3 \"reason\"` — Trigger a SAMU escalation\n\n"
+                        "*For volunteers:*\n"
+                        "Just wait for my DM — I'll send you a list of people to call with buttons. "
+                        "No commands needed.\n\n"
+                        "_In a real emergency, call 15 (France) or 112 (EU)._"
                     ),
                 },
             },

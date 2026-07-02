@@ -50,13 +50,13 @@ def build_app_home(
 
     blocks: list[dict[str, Any]] = []
 
-    # Header
+    # Header — warm, personal
     blocks.append(
         {
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": f":wave: Hello {first_name}",
+                "text": f":wave: Hi {first_name}",
                 "emoji": True,
             },
         }
@@ -68,10 +68,10 @@ def build_app_home(
             "text": {
                 "type": "mrkdwn",
                 "text": (
-                    "Welcome to your Vigie dashboard. "
-                    "Here you'll find your check-ins for today, active alerts, "
-                    "and the state of the crisis cell.\n\n"
-                    "_Vigie watches so that no one watches alone._"
+                    f"I'm Vigie — I help you watch over isolated elders during heatwaves.\n\n"
+                    f"When there's a heatwave alert, I'll send you a list of people to call. "
+                    f"You just click a button after each call. I handle the rest.\n\n"
+                    f"_You're not alone in this. I'm here._ 💜"
                 ),
             },
         }

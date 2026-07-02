@@ -15,9 +15,9 @@ from app.utils.logging import get_logger
 log = get_logger("vigie.blocks.escalation")
 
 LEVEL_LABELS = {
-    1: ("Weak signal", ":large_yellow_circle:"),
-    2: ("Coordinator escalation", ":large_orange_circle:"),
-    3: ("Critical — SAMU", ":red_circle:"),
+    1: ("Weak signal — watching closely", ":large_yellow_circle:"),
+    2: ("Needs medical coordinator", ":large_orange_circle:"),
+    3: ("CRITICAL — SAMU needed", ":red_circle:"),
 }
 
 
@@ -66,15 +66,15 @@ def build_escalation_message(
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": f"{emoji} ESCALATION LEVEL {level} — {name}",
+                "text": f"{emoji} {name} needs help — {label}",
                 "emoji": True,
             },
         },
         {
             "type": "context",
             "elements": [
-                {"type": "mrkdwn", "text": f"*{age} yrs* — sector {sector} — `id: {beneficiary.get('id')}`"},
-                {"type": "mrkdwn", "text": f"Triggered by <@{triggered_by}>"},
+                {"type": "mrkdwn", "text": f"{age} years old — sector {sector}"},
+                {"type": "mrkdwn", "text": f"Alerted by <@{triggered_by}>"},
             ],
         },
         {"type": "divider"},
@@ -124,24 +124,24 @@ def build_escalation_message(
         }
     )
 
-    # Procedure
+    # Procedure — clear, calm, actionable
     if level == 3:
         procedure = [
-            "1. Call *15 (SAMU)* immediately — button below",
-            "2. If possible, send a neighbor on site while waiting",
-            "3. Stay on the line with SAMU until emergency services arrive",
-            "4. Document the time of arrival of emergency services in this thread",
+            "1. :rotating_light: Call *15 (SAMU)* now — use the button below",
+            "2. If you can, ask a neighbor to go check on them while waiting",
+            "3. Stay on the line with SAMU until help arrives",
+            "4. Post the arrival time in this thread when emergency services get there",
         ]
     elif level == 2:
         procedure = [
-            "1. The medical coordinator makes contact within *15 minutes*",
-            "2. Assess the need for a home visit",
-            "3. If worsening → click \"Escalate to SAMU\" below",
+            "1. The medical coordinator will reach out within *15 minutes*",
+            "2. They'll decide if a home visit is needed",
+            "3. If the situation gets worse, click \"Escalate to SAMU\" below",
         ]
     else:
         procedure = [
-            "1. Enhanced monitoring (check-in every 2h)",
-            "2. If worsening → click \"Escalate to coordinator\" below",
+            "1. I'll keep a close eye on them — check-in every 2 hours",
+            "2. If things change, click \"Escalate to coordinator\" below",
         ]
 
     blocks.append(
