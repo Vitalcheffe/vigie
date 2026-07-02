@@ -1,9 +1,12 @@
 # ============================================================
-# VIGIE — Slack App Manifest (minimal, validated)
+# VIGIE — Slack App Manifest (minimal, Socket Mode compatible)
 # ============================================================
 # Create the app at https://api.slack.com/apps
 # Choose "Create New App" -> "From an app manifest"
 # Paste this YAML, click Create.
+#
+# Events and interactivity are configured MANUALLY after app creation
+# (they don't work well in the manifest with Socket Mode).
 # ============================================================
 
 display_information:
@@ -18,15 +21,6 @@ features:
   app_home:
     home_tab_enabled: true
     messages_tab_enabled: true
-  shortcuts:
-    - name: Report an anomaly
-      type: message
-      callback_id: vigie_signal_anomaly
-      description: Report an anomaly on a beneficiary
-    - name: Reassign this beneficiary
-      type: message
-      callback_id: vigie_reassign
-      description: Reassign the beneficiary to another volunteer
 
 oauth_config:
   scopes:
@@ -60,24 +54,6 @@ oauth_config:
       - workflows:read
 
 settings:
-  event_subscriptions:
-    bot_events:
-      - message.channels
-      - message.im
-      - message.mpim
-      - message.groups
-      - app_mention
-      - app_home_opened
-      - app_uninstalled
-      - team_join
-      - reaction_added
-      - reaction_removed
-      - file_shared
-      - user_change
-      - channel_created
-      - member_joined_channel
-  interactivity:
-    is_enabled: true
   org_deploy_enabled: false
   socket_mode_enabled: true
   token_rotation_enabled: false
