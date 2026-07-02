@@ -6,6 +6,25 @@ All required sections per the official rules §4.5 are included.
 
 ---
 
+## LIVE SANDBOX (for judges)
+
+**Workspace URL:** https://reseausoligar-uvv9699.slack.com
+**App ID:** A0BERBRLBKN
+**Team ID:** T0BE64EN8CF
+
+The bot is deployed on Railway and running 24/7. Access has been granted
+to slackhack@salesforce.com and testing@devpost.com.
+
+**Quick test commands:**
+1. `/vigie help` — see all commands
+2. `/vigie-simulate canicule_juillet` — run the heatwave scenario
+3. DM Vigie: `B023: Mrs Dupont tired, requests medication` — test a check-in
+4. `/vigie-escalate B003 3 "On the ground, unconscious"` — test SAMU escalation
+5. `/vigie report` — generate the daily report
+6. `/vigie status` — see live metrics
+
+---
+
 ## Project title
 
 **Vigie — Slack agent for elder watch during heatwaves**
