@@ -98,7 +98,7 @@ class VigieOrchestrator:
                     # Load the scenario alert from disk (clearly labeled as scenario)
                     alerts = [_load_scenario_alert()]
 
-                assignments_result = await mcp.assign_checkins()
+                assignments_result = await mcp.assign_checkins(force=force_alert)
                 if "error" in assignments_result:
                     return {"status": "error", "message": assignments_result["error"]}
 

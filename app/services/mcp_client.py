@@ -142,15 +142,17 @@ class MCPClient:
         volunteer_ids: list[str] | None = None,
         date: str | None = None,
         sector_filter: str | None = None,
+        force: bool = False,
     ) -> dict[str, Any]:
         """Assign daily check-in lists to volunteers."""
-        log.debug("mcp.assign_checkins.call", date=date, sector=sector_filter)
+        log.debug("mcp.assign_checkins.call", date=date, sector=sector_filter, force=force)
         return await self._call_tool(
             "assign_checkins",
             {
                 "volunteer_ids": volunteer_ids,
                 "date": date,
                 "sector_filter": sector_filter,
+                "force": force,
             },
         )
 

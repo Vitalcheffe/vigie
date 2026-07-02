@@ -31,6 +31,7 @@ async def assign_checkins(
     volunteer_ids: list[str] | None = None,
     date: str | None = None,
     sector_filter: str | None = None,
+    force: bool = False,
 ) -> dict[str, Any]:
     """
     Assign daily check-in lists to volunteers.
@@ -64,17 +65,18 @@ async def assign_checkins(
     if date is None:
         date = datetime.now(UTC).date().isoformat()
 
-    log.info("vigie.mcp.tool.assign_checkins", date=date, sector=sector_filter)
+    log.info("vigie.mcp.tool.assign_checkins", date=date, sector=sector_filter, force=force)
 
-    # 1. Check if heatwave is active
-    heatwave_active = await is_heatwave_active()
-    if not heatwave_active:
-        log.warning("vigie.mcp.tool.assign_checkins.no_heatwave")
-        return {
-            "error": "no_active_heatwave",
-            "message": "No active canicule alert. Use force=true to override.",
-            "date": date,
-        }
+    # 1. Check if heatwave is active (skip when force=True for demo mode)
+    if not force:
+        heatwave_active = await is_heatwave_active()
+        if not heatwave_active:
+            log.warning("vigie.mcp.tool.assign_checkins.no_heatwave")
+            return {
+                "error": "no_active_heatwave",
+                "message": "No active canicule alert. Use force=true to override.",
+                "date": date,
+            }
 
     # 2. Load registry
     registry = get_registry()
