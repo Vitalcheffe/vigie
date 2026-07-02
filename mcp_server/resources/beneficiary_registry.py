@@ -41,7 +41,6 @@ _registry_path: Path | None = None
 
 def _registry_file() -> Path:
     """Resolve the path to the beneficiaries JSON file."""
-    cfg = get_config()
     # Default to mcp_server/data/beneficiaries.json
     base = Path(__file__).resolve().parent.parent
     return base / "data" / "beneficiaries.json"

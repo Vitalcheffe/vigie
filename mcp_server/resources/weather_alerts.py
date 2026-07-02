@@ -48,11 +48,9 @@ async def fetch_meteo_france_vigilance() -> list[dict[str, Any]]:
                 headers=headers,
             )
             resp.raise_for_status()
-            data = resp.json()
-
-        # TODO: parse the actual Météo-France response schema
-        # For now, return a simulated alert if the demo scenario is active
-        return _simulated_alerts()
+            # TODO: parse the actual Météo-France response schema
+            # For now, return a simulated alert if the demo scenario is active
+            return _simulated_alerts()
 
     except Exception as e:
         log.warning("vigie.mcp.weather.meteo_france.failed", error=str(e))

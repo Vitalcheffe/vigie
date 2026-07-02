@@ -33,7 +33,7 @@ def generate_volunteers(output_path: Path, count: int = 12) -> None:
 
     volunteers: list[dict[str, Any]] = []
     chosen_names = random.sample(
-        [(f, l) for f in FIRST_NAMES for l in LAST_NAMES],
+        [(f, ln) for f in FIRST_NAMES for ln in LAST_NAMES],
         k=count,
     )
 

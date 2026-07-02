@@ -13,7 +13,6 @@ small and testable. Includes:
 
 from __future__ import annotations
 
-import asyncio
 from functools import lru_cache
 from typing import Any
 

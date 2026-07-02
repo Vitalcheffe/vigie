@@ -18,7 +18,7 @@ The tool:
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from app.utils.logging import get_logger
@@ -62,7 +62,7 @@ async def record_checkin(
         }
     """
     if timestamp is None:
-        timestamp = datetime.now(timezone.utc).isoformat()
+        timestamp = datetime.now(UTC).isoformat()
 
     log.info(
         "vigie.mcp.tool.record_checkin",
@@ -116,7 +116,7 @@ async def record_checkin(
         suggested_pois=suggested_pois,
     )
 
-    checkin_id = f"C-{beneficiary_id}-{int(datetime.now(timezone.utc).timestamp())}"
+    checkin_id = f"C-{beneficiary_id}-{int(datetime.now(UTC).timestamp())}"
 
     result = {
         "checkin_id": checkin_id,

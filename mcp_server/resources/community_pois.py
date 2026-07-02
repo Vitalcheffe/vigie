@@ -140,7 +140,7 @@ def _haversine(lat1: float, lon1: float, lat2: float | None, lon2: float | None)
         return 9999.0
     import math
 
-    R = 6_371_000  # Earth radius in meters
+    earth_radius_m = 6_371_000  # Earth radius in meters
     phi1, phi2 = math.radians(lat1), math.radians(lat2)
     dphi = math.radians(lat2 - lat1)
     dlam = math.radians(lon2 - lon1)
@@ -148,7 +148,7 @@ def _haversine(lat1: float, lon1: float, lat2: float | None, lon2: float | None)
         math.sin(dphi / 2) ** 2
         + math.cos(phi1) * math.cos(phi2) * math.sin(dlam / 2) ** 2
     )
-    return 2 * R * math.asin(math.sqrt(a))
+    return 2 * earth_radius_m * math.asin(math.sqrt(a))
 
 
 def register(mcp) -> None:

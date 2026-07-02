@@ -18,7 +18,7 @@ The escalation flow:
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from app.utils.logging import get_logger
@@ -61,7 +61,7 @@ async def escalate(
             "timestamp": "..."
         }
     """
-    timestamp = datetime.now(timezone.utc).isoformat()
+    timestamp = datetime.now(UTC).isoformat()
 
     log.info(
         "vigie.mcp.tool.escalate",
@@ -134,7 +134,7 @@ async def escalate(
         samu_triggered=samu_triggered,
     )
 
-    escalation_id = f"E-{beneficiary_id}-L{level}-{int(datetime.now(timezone.utc).timestamp())}"
+    escalation_id = f"E-{beneficiary_id}-L{level}-{int(datetime.now(UTC).timestamp())}"
 
     result = {
         "escalation_id": escalation_id,

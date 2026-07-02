@@ -23,9 +23,7 @@ from __future__ import annotations
 
 import asyncio
 import json
-import random
 from dataclasses import dataclass
-from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -34,7 +32,7 @@ from rich.console import Console
 from rich.table import Table
 
 from app.utils.config import get_config
-from app.utils.logging import get_logger, setup_logging
+from app.utils.logging import setup_logging
 
 console = Console()
 log = setup_logging()
@@ -109,7 +107,7 @@ def main(
     """Run the Vigie canicule simulation scenario."""
     cfg = get_config()
 
-    console.print(f"\n[bold purple]Vigie — Canicule Simulation[/bold purple]")
+    console.print("\n[bold purple]Vigie — Canicule Simulation[/bold purple]")
     console.print(f"Workspace: [cyan]{cfg.slack.workspace_name}[/cyan]\n")
 
     scenario = load_scenario(scenario_path)

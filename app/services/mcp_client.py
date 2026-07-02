@@ -41,7 +41,7 @@ class MCPClient:
         self.token = token or cfg.mcp.server_token.get_secret_value()
         self._client: httpx.AsyncClient | None = None
 
-    async def __aenter__(self) -> "MCPClient":
+    async def __aenter__(self) -> MCPClient:
         self._client = httpx.AsyncClient(
             base_url=self.base_url,
             headers={
@@ -86,10 +86,7 @@ class MCPClient:
 
         # MCP streamable-http returns SSE; the final "data:" line carries the JSON-RPC response.
         body = resp.text
-        if body.startswith("event:") or "data:" in body:
-            rpc_response = _extract_sse_payload(body)
-        else:
-            rpc_response = json.loads(body)
+        rpc_response = _extract_sse_payload(body) if "data:" in body else json.loads(body)
 
         if "error" in rpc_response:
             err = rpc_response["error"]
@@ -211,7 +208,7 @@ class MCPClient:
 
         payload = {
             "jsonrpc": "2.0",
-            "id": f"vigie-resource",
+            "id": "vigie-resource",
             "method": "resources/read",
             "params": {"uri": uri},
         }
@@ -225,10 +222,7 @@ class MCPClient:
             raise MCPClientError(f"MCP server returned {resp.status_code}", status=resp.status_code)
 
         body = resp.text
-        if "data:" in body:
-            rpc_response = _extract_sse_payload(body)
-        else:
-            rpc_response = json.loads(body)
+        rpc_response = _extract_sse_payload(body) if "data:" in body else json.loads(body)
 
         if "error" in rpc_response:
             raise MCPClientError(f"RPC error reading {uri}: {rpc_response['error']}")

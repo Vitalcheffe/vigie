@@ -17,7 +17,6 @@ returns simulated directives so the demo still works end-to-end.
 from __future__ import annotations
 
 import asyncio
-import json
 import time
 from typing import Any
 

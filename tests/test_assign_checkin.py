@@ -10,7 +10,6 @@ Validates that the assign_checkins tool correctly:
 
 from __future__ import annotations
 
-import json
 from unittest.mock import AsyncMock, patch
 
 import pytest

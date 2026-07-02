@@ -23,7 +23,7 @@ from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 
 from app.utils.config import get_config
-from app.utils.logging import get_logger, setup_logging
+from app.utils.logging import setup_logging
 
 # Initialize logging FIRST, before anything else
 log = setup_logging()
@@ -72,7 +72,7 @@ def _register_handlers(app: App) -> None:
     Each handler module is responsible for its own registration.
     """
     # Lazy imports to avoid circular deps
-    from app.handlers import events, commands, actions, views
+    from app.handlers import actions, commands, events, views
 
     events.register(app)
     commands.register(app)

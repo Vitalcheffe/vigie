@@ -29,11 +29,10 @@ import signal
 import sys
 from typing import Any
 
-from mcp.server import Server
 from mcp.server.fastmcp import FastMCP
 
 from app.utils.config import get_config
-from app.utils.logging import get_logger, setup_logging
+from app.utils.logging import setup_logging
 
 log = setup_logging()
 
@@ -64,14 +63,14 @@ def create_mcp_server() -> FastMCP:
     )
 
     # Register resources (lazy import to avoid circular deps)
-    from mcp_server.resources import beneficiary_registry, weather_alerts, community_pois
+    from mcp_server.resources import beneficiary_registry, community_pois, weather_alerts
 
     beneficiary_registry.register(mcp)
     weather_alerts.register(mcp)
     community_pois.register(mcp)
 
     # Register tools
-    from mcp_server.tools import assign_checkins, record_checkin, escalate
+    from mcp_server.tools import assign_checkins, escalate, record_checkin
 
     assign_checkins.register(mcp)
     record_checkin.register(mcp)

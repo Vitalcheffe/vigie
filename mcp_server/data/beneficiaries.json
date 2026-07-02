@@ -1,0 +1,2259 @@
+[
+  {
+    "id": "B001",
+    "first_name": "Hélène",
+    "last_initial": "I",
+    "age": 79,
+    "gender": "F",
+    "sector": 1,
+    "address": {
+      "street": "60 Rue du Temple",
+      "postal_code": "75001",
+      "city": "Paris",
+      "lat": 48.855918,
+      "lon": 2.333537
+    },
+    "phone": "+33 6 87 13 81 35",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Bernard",
+        "sector": 1,
+        "phone": "+33 6 63 38 67 85",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 30 99 64"
+      }
+    ],
+    "medical_conditions": [
+      "diabète type 2"
+    ],
+    "medications": [
+      "antiparkinsonien",
+      "metformine",
+      "antidépresseur"
+    ],
+    "vulnerability_score": 31,
+    "isolation_level": "low",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-02-07",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B002",
+    "first_name": "Yvonne",
+    "last_initial": "D",
+    "age": 74,
+    "gender": "F",
+    "sector": 2,
+    "address": {
+      "street": "97 Boulevard Voltaire",
+      "postal_code": "75002",
+      "city": "Paris",
+      "lat": 48.867797,
+      "lon": 2.343462
+    },
+    "phone": "+33 6 80 47 90 89",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 2,
+        "phone": "+33 6 34 18 15 94",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 20 39 22"
+      }
+    ],
+    "medical_conditions": [
+      "BPCO"
+    ],
+    "medications": [
+      "antiarythmique",
+      "diurétique",
+      "antihypertenseur"
+    ],
+    "vulnerability_score": 21,
+    "isolation_level": "low",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-04-21",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B003",
+    "first_name": "Jeanne",
+    "last_initial": "L",
+    "age": 83,
+    "gender": "F",
+    "sector": 3,
+    "address": {
+      "street": "164 Rue Vieille du Temple",
+      "postal_code": "75003",
+      "city": "Paris",
+      "lat": 48.857234,
+      "lon": 2.361295
+    },
+    "phone": "+33 6 38 97 51 17",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 50 61 44"
+      }
+    ],
+    "medical_conditions": [
+      "insuffisance cardiaque"
+    ],
+    "medications": [
+      "metformine",
+      "antalgique",
+      "anticoagulant"
+    ],
+    "vulnerability_score": 48,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-05-23",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B004",
+    "first_name": "Georges",
+    "last_initial": "P",
+    "age": 84,
+    "gender": "M",
+    "sector": 4,
+    "address": {
+      "street": "150 Rue Amelot",
+      "postal_code": "75004",
+      "city": "Paris",
+      "lat": 48.85845,
+      "lon": 2.35639
+    },
+    "phone": "+33 6 84 61 56 38",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 4,
+        "phone": "+33 6 73 21 16 24",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 97 64 86"
+      }
+    ],
+    "medical_conditions": [
+      "Alzheimer début",
+      "dépression",
+      "arthrose"
+    ],
+    "medications": [
+      "anticoagulant"
+    ],
+    "vulnerability_score": 59,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-04-20",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B005",
+    "first_name": "Andrée",
+    "last_initial": "I",
+    "age": 89,
+    "gender": "F",
+    "sector": 5,
+    "address": {
+      "street": "68 Rue du Temple",
+      "postal_code": "75005",
+      "city": "Paris",
+      "lat": 48.843348,
+      "lon": 2.349537
+    },
+    "phone": "+33 6 32 74 23 90",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 87 35 29"
+      }
+    ],
+    "medical_conditions": [
+      "hypertension",
+      "diabète type 2",
+      "AVC séquellaire"
+    ],
+    "medications": [
+      "insuline",
+      "metformine",
+      "diurétique"
+    ],
+    "vulnerability_score": 74,
+    "isolation_level": "high",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-02-18",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B006",
+    "first_name": "Andrée",
+    "last_initial": "A",
+    "age": 91,
+    "gender": "F",
+    "sector": 6,
+    "address": {
+      "street": "79 Rue du Faubourg du Temple",
+      "postal_code": "75006",
+      "city": "Paris",
+      "lat": 48.856787,
+      "lon": 2.333317
+    },
+    "phone": "+33 6 17 40 82 20",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 18 78 26"
+      }
+    ],
+    "medical_conditions": [
+      "hypertension"
+    ],
+    "medications": [
+      "insuline"
+    ],
+    "vulnerability_score": 46,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-04-18",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B007",
+    "first_name": "Lucien",
+    "last_initial": "V",
+    "age": 85,
+    "gender": "M",
+    "sector": 7,
+    "address": {
+      "street": "64 Rue du Faubourg du Temple",
+      "postal_code": "75007",
+      "city": "Paris",
+      "lat": 48.859996,
+      "lon": 2.309515
+    },
+    "phone": "+33 6 18 53 12 85",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Bernard",
+        "sector": 7,
+        "phone": "+33 6 10 19 90 17",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 52 19 75"
+      }
+    ],
+    "medical_conditions": [
+      "AVC séquellaire",
+      "démence légère",
+      "insuffisance cardiaque"
+    ],
+    "medications": [
+      "insuline",
+      "anxiolytique"
+    ],
+    "vulnerability_score": 88,
+    "isolation_level": "high",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-06-16",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B008",
+    "first_name": "André",
+    "last_initial": "T",
+    "age": 90,
+    "gender": "M",
+    "sector": 8,
+    "address": {
+      "street": "106 Rue de Turenne",
+      "postal_code": "75008",
+      "city": "Paris",
+      "lat": 48.87459,
+      "lon": 2.306543
+    },
+    "phone": "+33 6 16 96 93 92",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 53 23 41"
+      }
+    ],
+    "medical_conditions": [
+      "dépression",
+      "hypothyroïdie"
+    ],
+    "medications": [
+      "metformine"
+    ],
+    "vulnerability_score": 54,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-05-15",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B009",
+    "first_name": "André",
+    "last_initial": "I",
+    "age": 86,
+    "gender": "M",
+    "sector": 9,
+    "address": {
+      "street": "4 Boulevard Voltaire",
+      "postal_code": "75009",
+      "city": "Paris",
+      "lat": 48.873506,
+      "lon": 2.342993
+    },
+    "phone": "+33 6 40 31 62 72",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Bernard",
+        "sector": 9,
+        "phone": "+33 6 17 31 58 10",
+        "proximity": "Same building"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 68 46 64"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 81 94 72 29",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "diabète type 2"
+    ],
+    "medications": [
+      "antiparkinsonien",
+      "metformine"
+    ],
+    "vulnerability_score": 51,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-02-10",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B010",
+    "first_name": "Henri",
+    "last_initial": "T",
+    "age": 89,
+    "gender": "M",
+    "sector": 10,
+    "address": {
+      "street": "136 Rue de Belleville",
+      "postal_code": "75010",
+      "city": "Paris",
+      "lat": 48.872768,
+      "lon": 2.364194
+    },
+    "phone": "+33 6 17 75 20 33",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 40 61 25"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 82 41 84 86",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "BPCO"
+    ],
+    "medications": [
+      "antiarythmique"
+    ],
+    "vulnerability_score": 46,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-01-20",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B011",
+    "first_name": "Georges",
+    "last_initial": "T",
+    "age": 90,
+    "gender": "M",
+    "sector": 11,
+    "address": {
+      "street": "77 Rue de Turenne",
+      "postal_code": "75011",
+      "city": "Paris",
+      "lat": 48.857958,
+      "lon": 2.380717
+    },
+    "phone": "+33 6 50 19 11 68",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Bernard",
+        "sector": 11,
+        "phone": "+33 6 22 19 78 37",
+        "proximity": "Same building"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 54 18 41"
+      }
+    ],
+    "medical_conditions": [
+      "insuffisance cardiaque",
+      "démence légère"
+    ],
+    "medications": [
+      "insuline",
+      "anticoagulant",
+      "diurétique"
+    ],
+    "vulnerability_score": 73,
+    "isolation_level": "high",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-02-15",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B012",
+    "first_name": "Monique",
+    "last_initial": "J",
+    "age": 91,
+    "gender": "F",
+    "sector": 12,
+    "address": {
+      "street": "30 Rue Oberkampf",
+      "postal_code": "75012",
+      "city": "Paris",
+      "lat": 48.844389,
+      "lon": 2.385343
+    },
+    "phone": "+33 6 80 29 44 46",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Bernard",
+        "sector": 12,
+        "phone": "+33 6 36 97 91 43",
+        "proximity": "Same building"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 16 21 91"
+      }
+    ],
+    "medical_conditions": [
+      "Alzheimer début",
+      "AVC séquellaire",
+      "hypertension"
+    ],
+    "medications": [
+      "antiparkinsonien",
+      "diurétique",
+      "metformine"
+    ],
+    "vulnerability_score": 81,
+    "isolation_level": "high",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-03-02",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B013",
+    "first_name": "Édouard",
+    "last_initial": "E",
+    "age": 92,
+    "gender": "M",
+    "sector": 1,
+    "address": {
+      "street": "39 Rue Vieille du Temple",
+      "postal_code": "75001",
+      "city": "Paris",
+      "lat": 48.856352,
+      "lon": 2.341431
+    },
+    "phone": "+33 6 14 57 84 80",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 49 56 15"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 36 97 41 95",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "arthrose",
+      "dépression",
+      "AVC séquellaire"
+    ],
+    "medications": [
+      "antiparkinsonien",
+      "antihypertenseur",
+      "metformine"
+    ],
+    "vulnerability_score": 74,
+    "isolation_level": "high",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-01-12",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B014",
+    "first_name": "Thérèse",
+    "last_initial": "N",
+    "age": 91,
+    "gender": "F",
+    "sector": 2,
+    "address": {
+      "street": "106 Rue du Faubourg du Temple",
+      "postal_code": "75002",
+      "city": "Paris",
+      "lat": 48.867866,
+      "lon": 2.341422
+    },
+    "phone": "+33 6 44 30 99 23",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 2,
+        "phone": "+33 6 70 38 35 68",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 39 38 13"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 61 52 45 18",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "démence légère",
+      "arthrose"
+    ],
+    "medications": [
+      "antalgique",
+      "antidépresseur",
+      "antihypertenseur",
+      "metformine"
+    ],
+    "vulnerability_score": 73,
+    "isolation_level": "high",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-03-12",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B015",
+    "first_name": "Georgette",
+    "last_initial": "S",
+    "age": 82,
+    "gender": "F",
+    "sector": 3,
+    "address": {
+      "street": "81 Rue Amelot",
+      "postal_code": "75003",
+      "city": "Paris",
+      "lat": 48.856684,
+      "lon": 2.361846
+    },
+    "phone": "+33 6 87 75 24 59",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 3,
+        "phone": "+33 6 15 65 10 76",
+        "proximity": "Same building"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 95 35 56"
+      }
+    ],
+    "medical_conditions": [
+      "diabète type 2",
+      "insuffisance cardiaque",
+      "arthrose"
+    ],
+    "medications": [
+      "diurétique",
+      "antihypertenseur"
+    ],
+    "vulnerability_score": 64,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-06-11",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B016",
+    "first_name": "Solenne",
+    "last_initial": "D",
+    "age": 81,
+    "gender": "F",
+    "sector": 4,
+    "address": {
+      "street": "98 Rue de Belleville",
+      "postal_code": "75004",
+      "city": "Paris",
+      "lat": 48.852273,
+      "lon": 2.355204
+    },
+    "phone": "+33 6 88 82 48 61",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 4,
+        "phone": "+33 6 46 36 65 84",
+        "proximity": "Same building"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 66 66 96"
+      }
+    ],
+    "medical_conditions": [
+      "Alzheimer début",
+      "hypothyroïdie"
+    ],
+    "medications": [
+      "diurétique",
+      "antiparkinsonien"
+    ],
+    "vulnerability_score": 56,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-04-26",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B017",
+    "first_name": "Renée",
+    "last_initial": "F",
+    "age": 93,
+    "gender": "F",
+    "sector": 5,
+    "address": {
+      "street": "173 Rue de la Roquette",
+      "postal_code": "75005",
+      "city": "Paris",
+      "lat": 48.847184,
+      "lon": 2.352511
+    },
+    "phone": "+33 6 38 35 28 13",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 88 19 68"
+      }
+    ],
+    "medical_conditions": [
+      "AVC séquellaire"
+    ],
+    "medications": [
+      "antiarythmique",
+      "insuline",
+      "metformine"
+    ],
+    "vulnerability_score": 58,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-06-19",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B018",
+    "first_name": "Marcel",
+    "last_initial": "M",
+    "age": 87,
+    "gender": "M",
+    "sector": 6,
+    "address": {
+      "street": "179 Rue du Temple",
+      "postal_code": "75006",
+      "city": "Paris",
+      "lat": 48.850188,
+      "lon": 2.333041
+    },
+    "phone": "+33 6 69 16 81 41",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 6,
+        "phone": "+33 6 27 69 95 77",
+        "proximity": "Same building"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 66 88 74"
+      }
+    ],
+    "medical_conditions": [
+      "arthrose"
+    ],
+    "medications": [
+      "antihypertenseur",
+      "metformine",
+      "antidépresseur"
+    ],
+    "vulnerability_score": 51,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-05-15",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B019",
+    "first_name": "Monique",
+    "last_initial": "P",
+    "age": 86,
+    "gender": "F",
+    "sector": 7,
+    "address": {
+      "street": "20 Rue de la Roquette",
+      "postal_code": "75007",
+      "city": "Paris",
+      "lat": 48.857267,
+      "lon": 2.307746
+    },
+    "phone": "+33 6 40 44 52 50",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 7,
+        "phone": "+33 6 29 39 59 98",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 63 62 52"
+      }
+    ],
+    "medical_conditions": [
+      "démence légère"
+    ],
+    "medications": [
+      "diurétique",
+      "antiparkinsonien",
+      "anxiolytique"
+    ],
+    "vulnerability_score": 58,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-04-02",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B020",
+    "first_name": "Émile",
+    "last_initial": "M",
+    "age": 90,
+    "gender": "M",
+    "sector": 8,
+    "address": {
+      "street": "108 Rue Vieille du Temple",
+      "postal_code": "75008",
+      "city": "Paris",
+      "lat": 48.875535,
+      "lon": 2.311534
+    },
+    "phone": "+33 6 79 87 38 72",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 13 59 53"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 61 31 69 26",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "hypertension",
+      "Parkinson",
+      "hypothyroïdie"
+    ],
+    "medications": [
+      "insuline",
+      "diurétique"
+    ],
+    "vulnerability_score": 74,
+    "isolation_level": "high",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-05-18",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B021",
+    "first_name": "Émile",
+    "last_initial": "T",
+    "age": 90,
+    "gender": "M",
+    "sector": 9,
+    "address": {
+      "street": "84 Avenue Parmentier",
+      "postal_code": "75009",
+      "city": "Paris",
+      "lat": 48.874817,
+      "lon": 2.335602
+    },
+    "phone": "+33 6 68 51 53 58",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 63 42 20"
+      }
+    ],
+    "medical_conditions": [
+      "diabète type 2",
+      "hypothyroïdie"
+    ],
+    "medications": [
+      "anxiolytique"
+    ],
+    "vulnerability_score": 54,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-06-18",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B022",
+    "first_name": "Gaston",
+    "last_initial": "H",
+    "age": 92,
+    "gender": "M",
+    "sector": 10,
+    "address": {
+      "street": "6 Rue des Francs-Bourgeois",
+      "postal_code": "75010",
+      "city": "Paris",
+      "lat": 48.86831,
+      "lon": 2.357473
+    },
+    "phone": "+33 6 29 40 26 70",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Bernard",
+        "sector": 10,
+        "phone": "+33 6 37 69 99 42",
+        "proximity": "Same building"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 87 24 30"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 23 84 13 49",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "Alzheimer début"
+    ],
+    "medications": [],
+    "vulnerability_score": 50,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-05-22",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B023",
+    "first_name": "Georgette",
+    "last_initial": "M",
+    "age": 94,
+    "gender": "F",
+    "sector": 11,
+    "address": {
+      "street": "31 Rue des Rosiers",
+      "postal_code": "75011",
+      "city": "Paris",
+      "lat": 48.862503,
+      "lon": 2.380004
+    },
+    "phone": "+33 6 15 54 78 64",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 11,
+        "phone": "+33 6 92 53 11 63",
+        "proximity": "Same building"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 56 91 68"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 65 32 76 93",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "Parkinson"
+    ],
+    "medications": [
+      "anticoagulant",
+      "metformine",
+      "diurétique"
+    ],
+    "vulnerability_score": 58,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-03-20",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B024",
+    "first_name": "Andrée",
+    "last_initial": "P",
+    "age": 86,
+    "gender": "F",
+    "sector": 12,
+    "address": {
+      "street": "119 Rue des Rosiers",
+      "postal_code": "75012",
+      "city": "Paris",
+      "lat": 48.837789,
+      "lon": 2.388508
+    },
+    "phone": "+33 6 88 95 58 53",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 33 72 37"
+      }
+    ],
+    "medical_conditions": [
+      "Parkinson",
+      "insuffisance cardiaque"
+    ],
+    "medications": [
+      "anticoagulant",
+      "metformine"
+    ],
+    "vulnerability_score": 73,
+    "isolation_level": "high",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-03-11",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B025",
+    "first_name": "Victor",
+    "last_initial": "I",
+    "age": 89,
+    "gender": "M",
+    "sector": 1,
+    "address": {
+      "street": "122 Rue de Bretagne",
+      "postal_code": "75001",
+      "city": "Paris",
+      "lat": 48.861152,
+      "lon": 2.335003
+    },
+    "phone": "+33 6 67 12 21 47",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 49 94 84"
+      }
+    ],
+    "medical_conditions": [],
+    "medications": [
+      "metformine",
+      "anticoagulant",
+      "antidépresseur",
+      "antiparkinsonien"
+    ],
+    "vulnerability_score": 50,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-05-17",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B026",
+    "first_name": "Marcel",
+    "last_initial": "S",
+    "age": 82,
+    "gender": "M",
+    "sector": 2,
+    "address": {
+      "street": "81 Rue Oberkampf",
+      "postal_code": "75002",
+      "city": "Paris",
+      "lat": 48.862805,
+      "lon": 2.345313
+    },
+    "phone": "+33 6 78 98 33 34",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 85 77 86"
+      }
+    ],
+    "medical_conditions": [
+      "dépression"
+    ],
+    "medications": [
+      "diurétique"
+    ],
+    "vulnerability_score": 36,
+    "isolation_level": "low",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-01-27",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B027",
+    "first_name": "Robert",
+    "last_initial": "L",
+    "age": 77,
+    "gender": "M",
+    "sector": 3,
+    "address": {
+      "street": "179 Rue Saint-Maur",
+      "postal_code": "75003",
+      "city": "Paris",
+      "lat": 48.865343,
+      "lon": 2.363034
+    },
+    "phone": "+33 6 91 72 23 11",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 3,
+        "phone": "+33 6 66 53 33 16",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 24 18 61"
+      }
+    ],
+    "medical_conditions": [
+      "AVC séquellaire"
+    ],
+    "medications": [
+      "antihypertenseur"
+    ],
+    "vulnerability_score": 33,
+    "isolation_level": "low",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-05-21",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B028",
+    "first_name": "Jeanne",
+    "last_initial": "E",
+    "age": 90,
+    "gender": "F",
+    "sector": 4,
+    "address": {
+      "street": "114 Rue de la Roquette",
+      "postal_code": "75004",
+      "city": "Paris",
+      "lat": 48.858757,
+      "lon": 2.354804
+    },
+    "phone": "+33 6 85 64 49 82",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Bernard",
+        "sector": 4,
+        "phone": "+33 6 22 36 90 37",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 40 32 80"
+      }
+    ],
+    "medical_conditions": [
+      "diabète type 2",
+      "démence légère",
+      "Alzheimer début"
+    ],
+    "medications": [
+      "antidépresseur",
+      "anticoagulant"
+    ],
+    "vulnerability_score": 81,
+    "isolation_level": "high",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-01-14",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B029",
+    "first_name": "Lucienne",
+    "last_initial": "P",
+    "age": 81,
+    "gender": "F",
+    "sector": 5,
+    "address": {
+      "street": "176 Rue du Faubourg du Temple",
+      "postal_code": "75005",
+      "city": "Paris",
+      "lat": 48.84603,
+      "lon": 2.34954
+    },
+    "phone": "+33 6 43 90 85 94",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 5,
+        "phone": "+33 6 24 79 38 92",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 28 19 17"
+      }
+    ],
+    "medical_conditions": [],
+    "medications": [
+      "diurétique"
+    ],
+    "vulnerability_score": 28,
+    "isolation_level": "low",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-03-20",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B030",
+    "first_name": "Lucienne",
+    "last_initial": "J",
+    "age": 86,
+    "gender": "F",
+    "sector": 6,
+    "address": {
+      "street": "111 Rue de Charonne",
+      "postal_code": "75006",
+      "city": "Paris",
+      "lat": 48.852378,
+      "lon": 2.33098
+    },
+    "phone": "+33 6 87 42 13 21",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 83 85 12"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 96 44 83 15",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "insuffisance cardiaque"
+    ],
+    "medications": [
+      "diurétique",
+      "antiparkinsonien",
+      "anxiolytique"
+    ],
+    "vulnerability_score": 58,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-02-16",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B031",
+    "first_name": "Paulette",
+    "last_initial": "I",
+    "age": 77,
+    "gender": "F",
+    "sector": 7,
+    "address": {
+      "street": "42 Rue de Charonne",
+      "postal_code": "75007",
+      "city": "Paris",
+      "lat": 48.854211,
+      "lon": 2.306046
+    },
+    "phone": "+33 6 62 98 73 46",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 7,
+        "phone": "+33 6 80 14 68 21",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 61 75 10"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 79 69 62 16",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "hypothyroïdie",
+      "dépression",
+      "diabète type 2"
+    ],
+    "medications": [
+      "antidépresseur",
+      "insuline"
+    ],
+    "vulnerability_score": 47,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-02-17",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B032",
+    "first_name": "Renée",
+    "last_initial": "P",
+    "age": 92,
+    "gender": "F",
+    "sector": 8,
+    "address": {
+      "street": "179 Rue de Bretagne",
+      "postal_code": "75008",
+      "city": "Paris",
+      "lat": 48.877277,
+      "lon": 2.307381
+    },
+    "phone": "+33 6 25 13 90 87",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Bernard",
+        "sector": 8,
+        "phone": "+33 6 49 80 11 80",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 24 69 25"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 29 73 47 75",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "hypertension",
+      "démence légère"
+    ],
+    "medications": [
+      "antalgique"
+    ],
+    "vulnerability_score": 61,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-06-09",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B033",
+    "first_name": "Paulette",
+    "last_initial": "P",
+    "age": 79,
+    "gender": "F",
+    "sector": 9,
+    "address": {
+      "street": "18 Rue Saint-Ambroise",
+      "postal_code": "75009",
+      "city": "Paris",
+      "lat": 48.878082,
+      "lon": 2.341793
+    },
+    "phone": "+33 6 63 53 74 44",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 9,
+        "phone": "+33 6 48 85 84 94",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 78 71 54"
+      }
+    ],
+    "medical_conditions": [
+      "arthrose",
+      "hypothyroïdie"
+    ],
+    "medications": [
+      "antiarythmique"
+    ],
+    "vulnerability_score": 34,
+    "isolation_level": "low",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-05-13",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B034",
+    "first_name": "Yvonne",
+    "last_initial": "G",
+    "age": 94,
+    "gender": "F",
+    "sector": 10,
+    "address": {
+      "street": "98 Rue du Chemin Vert",
+      "postal_code": "75010",
+      "city": "Paris",
+      "lat": 48.868436,
+      "lon": 2.362447
+    },
+    "phone": "+33 6 94 93 29 73",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 10,
+        "phone": "+33 6 85 52 22 66",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 11 28 62"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 29 19 70 43",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "hypothyroïdie"
+    ],
+    "medications": [
+      "antidépresseur"
+    ],
+    "vulnerability_score": 46,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-03-20",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B035",
+    "first_name": "Solenne",
+    "last_initial": "C",
+    "age": 82,
+    "gender": "F",
+    "sector": 11,
+    "address": {
+      "street": "162 Rue de la Roquette",
+      "postal_code": "75011",
+      "city": "Paris",
+      "lat": 48.854359,
+      "lon": 2.374684
+    },
+    "phone": "+33 6 39 21 65 22",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Bernard",
+        "sector": 11,
+        "phone": "+33 6 22 66 31 98",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 51 17 47"
+      }
+    ],
+    "medical_conditions": [
+      "AVC séquellaire",
+      "hypothyroïdie",
+      "BPCO"
+    ],
+    "medications": [
+      "anxiolytique",
+      "antiparkinsonien"
+    ],
+    "vulnerability_score": 64,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-04-05",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B036",
+    "first_name": "Émile",
+    "last_initial": "T",
+    "age": 93,
+    "gender": "M",
+    "sector": 12,
+    "address": {
+      "street": "150 Rue Saint-Maur",
+      "postal_code": "75012",
+      "city": "Paris",
+      "lat": 48.841197,
+      "lon": 2.386408
+    },
+    "phone": "+33 6 39 69 91 42",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Bernard",
+        "sector": 12,
+        "phone": "+33 6 69 46 96 79",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 54 85 48"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 64 98 42 68",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "arthrose",
+      "Alzheimer début"
+    ],
+    "medications": [
+      "antidépresseur"
+    ],
+    "vulnerability_score": 61,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-03-07",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B037",
+    "first_name": "Thérèse",
+    "last_initial": "P",
+    "age": 75,
+    "gender": "F",
+    "sector": 1,
+    "address": {
+      "street": "102 Rue Saint-Ambroise",
+      "postal_code": "75001",
+      "city": "Paris",
+      "lat": 48.855819,
+      "lon": 2.3409
+    },
+    "phone": "+33 6 11 82 97 16",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Bernard",
+        "sector": 1,
+        "phone": "+33 6 46 39 87 55",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 42 96 94"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 27 90 22 90",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "Parkinson"
+    ],
+    "medications": [
+      "diurétique",
+      "antiarythmique"
+    ],
+    "vulnerability_score": 38,
+    "isolation_level": "low",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-06-02",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B038",
+    "first_name": "Fernand",
+    "last_initial": "B",
+    "age": 90,
+    "gender": "M",
+    "sector": 2,
+    "address": {
+      "street": "52 Rue Saint-Maur",
+      "postal_code": "75002",
+      "city": "Paris",
+      "lat": 48.863767,
+      "lon": 2.342255
+    },
+    "phone": "+33 6 79 56 77 74",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Bernard",
+        "sector": 2,
+        "phone": "+33 6 42 71 47 53",
+        "proximity": "Same building"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 19 28 38"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 96 60 81 56",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "arthrose"
+    ],
+    "medications": [
+      "diurétique"
+    ],
+    "vulnerability_score": 46,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-01-26",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B039",
+    "first_name": "Suzanne",
+    "last_initial": "S",
+    "age": 75,
+    "gender": "F",
+    "sector": 3,
+    "address": {
+      "street": "159 Rue Vieille du Temple",
+      "postal_code": "75003",
+      "city": "Paris",
+      "lat": 48.862348,
+      "lon": 2.362215
+    },
+    "phone": "+33 6 51 88 38 92",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 99 48 93"
+      }
+    ],
+    "medical_conditions": [
+      "Alzheimer début",
+      "insuffisance cardiaque"
+    ],
+    "medications": [
+      "insuline",
+      "metformine"
+    ],
+    "vulnerability_score": 53,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-02-02",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B040",
+    "first_name": "Suzanne",
+    "last_initial": "P",
+    "age": 75,
+    "gender": "F",
+    "sector": 4,
+    "address": {
+      "street": "179 Rue Vieille du Temple",
+      "postal_code": "75004",
+      "city": "Paris",
+      "lat": 48.85471,
+      "lon": 2.360494
+    },
+    "phone": "+33 6 63 85 29 63",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Bernard",
+        "sector": 4,
+        "phone": "+33 6 88 62 45 14",
+        "proximity": "Same building"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 66 40 56"
+      }
+    ],
+    "medical_conditions": [
+      "AVC séquellaire"
+    ],
+    "medications": [
+      "anxiolytique"
+    ],
+    "vulnerability_score": 33,
+    "isolation_level": "low",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-06-12",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B041",
+    "first_name": "Solenne",
+    "last_initial": "L",
+    "age": 73,
+    "gender": "F",
+    "sector": 5,
+    "address": {
+      "street": "13 Rue de Charonne",
+      "postal_code": "75005",
+      "city": "Paris",
+      "lat": 48.845395,
+      "lon": 2.354711
+    },
+    "phone": "+33 6 41 26 82 36",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 36 85 37"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 39 52 28 86",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "démence légère"
+    ],
+    "medications": [
+      "anxiolytique",
+      "metformine",
+      "anticoagulant",
+      "insuline"
+    ],
+    "vulnerability_score": 35,
+    "isolation_level": "low",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-01-09",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B042",
+    "first_name": "Jeanne",
+    "last_initial": "E",
+    "age": 89,
+    "gender": "F",
+    "sector": 6,
+    "address": {
+      "street": "61 Rue des Rosiers",
+      "postal_code": "75006",
+      "city": "Paris",
+      "lat": 48.849318,
+      "lon": 2.328582
+    },
+    "phone": "+33 6 51 12 32 43",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 77 24 18"
+      }
+    ],
+    "medical_conditions": [
+      "arthrose"
+    ],
+    "medications": [
+      "antihypertenseur"
+    ],
+    "vulnerability_score": 46,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-03-17",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B043",
+    "first_name": "Paulette",
+    "last_initial": "R",
+    "age": 79,
+    "gender": "F",
+    "sector": 7,
+    "address": {
+      "street": "110 Rue Oberkampf",
+      "postal_code": "75007",
+      "city": "Paris",
+      "lat": 48.860986,
+      "lon": 2.313473
+    },
+    "phone": "+33 6 72 66 19 20",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 7,
+        "phone": "+33 6 26 45 89 91",
+        "proximity": "Same building"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 58 86 77"
+      }
+    ],
+    "medical_conditions": [
+      "hypertension",
+      "AVC séquellaire",
+      "insuffisance cardiaque"
+    ],
+    "medications": [
+      "antihypertenseur",
+      "antiarythmique"
+    ],
+    "vulnerability_score": 61,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-05-20",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B044",
+    "first_name": "Renée",
+    "last_initial": "D",
+    "age": 92,
+    "gender": "F",
+    "sector": 8,
+    "address": {
+      "street": "107 Rue Oberkampf",
+      "postal_code": "75008",
+      "city": "Paris",
+      "lat": 48.871389,
+      "lon": 2.307535
+    },
+    "phone": "+33 6 50 64 50 95",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 97 70 18"
+      }
+    ],
+    "medical_conditions": [
+      "AVC séquellaire",
+      "démence légère"
+    ],
+    "medications": [
+      "anticoagulant",
+      "antidépresseur"
+    ],
+    "vulnerability_score": 73,
+    "isolation_level": "high",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-01-03",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B045",
+    "first_name": "Monique",
+    "last_initial": "L",
+    "age": 76,
+    "gender": "F",
+    "sector": 9,
+    "address": {
+      "street": "109 Avenue de la République",
+      "postal_code": "75009",
+      "city": "Paris",
+      "lat": 48.876536,
+      "lon": 2.339653
+    },
+    "phone": "+33 6 46 86 49 55",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 29 94 71"
+      }
+    ],
+    "medical_conditions": [
+      "Parkinson",
+      "AVC séquellaire"
+    ],
+    "medications": [
+      "metformine",
+      "antidépresseur"
+    ],
+    "vulnerability_score": 53,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-01-12",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B046",
+    "first_name": "Yvonne",
+    "last_initial": "D",
+    "age": 80,
+    "gender": "F",
+    "sector": 10,
+    "address": {
+      "street": "69 Rue des Lilas",
+      "postal_code": "75010",
+      "city": "Paris",
+      "lat": 48.877291,
+      "lon": 2.363295
+    },
+    "phone": "+33 6 33 44 99 49",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 10,
+        "phone": "+33 6 33 28 82 94",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 91 13 21"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 37 58 63 68",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "hypothyroïdie",
+      "AVC séquellaire"
+    ],
+    "medications": [
+      "antiarythmique",
+      "antiparkinsonien",
+      "antihypertenseur",
+      "diurétique"
+    ],
+    "vulnerability_score": 63,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-03-06",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B047",
+    "first_name": "Monique",
+    "last_initial": "K",
+    "age": 90,
+    "gender": "F",
+    "sector": 11,
+    "address": {
+      "street": "114 Rue Amelot",
+      "postal_code": "75011",
+      "city": "Paris",
+      "lat": 48.854498,
+      "lon": 2.374816
+    },
+    "phone": "+33 6 72 87 66 63",
+    "emergency_contacts": [
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 24 54 65"
+      }
+    ],
+    "medical_conditions": [
+      "hypertension",
+      "arthrose"
+    ],
+    "medications": [
+      "antiarythmique"
+    ],
+    "vulnerability_score": 54,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-06-22",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B048",
+    "first_name": "Andrée",
+    "last_initial": "J",
+    "age": 73,
+    "gender": "F",
+    "sector": 12,
+    "address": {
+      "street": "36 Rue Saint-Ambroise",
+      "postal_code": "75012",
+      "city": "Paris",
+      "lat": 48.838014,
+      "lon": 2.386112
+    },
+    "phone": "+33 6 47 51 25 10",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 12,
+        "phone": "+33 6 26 58 78 39",
+        "proximity": "Same building"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 55 19 60"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 15 65 12 68",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "Parkinson"
+    ],
+    "medications": [
+      "anticoagulant"
+    ],
+    "vulnerability_score": 23,
+    "isolation_level": "low",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-01-28",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B049",
+    "first_name": "Émile",
+    "last_initial": "T",
+    "age": 84,
+    "gender": "M",
+    "sector": 1,
+    "address": {
+      "street": "159 Rue de Turenne",
+      "postal_code": "75001",
+      "city": "Paris",
+      "lat": 48.865262,
+      "lon": 2.334319
+    },
+    "phone": "+33 6 98 56 21 65",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Moreau",
+        "sector": 1,
+        "phone": "+33 6 85 61 77 20",
+        "proximity": "Same street"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Nguyen",
+        "phone": "+33 1 42 53 38 52"
+      },
+      {
+        "type": "family",
+        "name": "Fils/Fille (simulated)",
+        "phone": "+33 6 19 75 91 24",
+        "proximity": "Lives outside Paris"
+      }
+    ],
+    "medical_conditions": [
+      "hypothyroïdie",
+      "insuffisance cardiaque"
+    ],
+    "medications": [
+      "antihypertenseur"
+    ],
+    "vulnerability_score": 51,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-05-17",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  },
+  {
+    "id": "B050",
+    "first_name": "Édouard",
+    "last_initial": "L",
+    "age": 83,
+    "gender": "M",
+    "sector": 2,
+    "address": {
+      "street": "40 Boulevard Voltaire",
+      "postal_code": "75002",
+      "city": "Paris",
+      "lat": 48.86306,
+      "lon": 2.339835
+    },
+    "phone": "+33 6 32 90 73 69",
+    "emergency_contacts": [
+      {
+        "type": "neighbor_referent",
+        "name": "M. Bernard",
+        "sector": 2,
+        "phone": "+33 6 67 97 82 92",
+        "proximity": "Same building"
+      },
+      {
+        "type": "doctor",
+        "name": "Dr Martinez",
+        "phone": "+33 1 42 90 50 29"
+      }
+    ],
+    "medical_conditions": [
+      "Alzheimer début",
+      "arthrose"
+    ],
+    "medications": [
+      "antalgique"
+    ],
+    "vulnerability_score": 51,
+    "isolation_level": "medium",
+    "language": "fr",
+    "notes": null,
+    "last_checkin_at": null,
+    "status": "registered",
+    "registration_date": "2026-04-15",
+    "disclaimer": "SIMULATED — no real beneficiary data"
+  }
+]

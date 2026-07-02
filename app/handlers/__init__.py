@@ -20,7 +20,7 @@ def register_all(app: App) -> None:
     `register(app)` function.
     """
     # Lazy import to avoid circular deps
-    from app.handlers import events, commands, actions, views
+    from app.handlers import actions, commands, events, views
 
     events.register(app)
     commands.register(app)

@@ -14,7 +14,7 @@ or manually by a coordinator via `/vigie start`.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from app.utils.logging import get_logger
@@ -62,7 +62,7 @@ async def assign_checkins(
         }
     """
     if date is None:
-        date = datetime.now(timezone.utc).date().isoformat()
+        date = datetime.now(UTC).date().isoformat()
 
     log.info("vigie.mcp.tool.assign_checkins", date=date, sector=sector_filter)
 
@@ -117,7 +117,7 @@ async def assign_checkins(
             update_beneficiary_status(
                 b["id"],
                 status="being_checked",
-                last_checkin_at=datetime.now(timezone.utc).isoformat(),
+                last_checkin_at=datetime.now(UTC).isoformat(),
             )
 
         assignments.append(
@@ -150,7 +150,7 @@ async def assign_checkins(
         "total_volunteers": len(volunteers),
         "assignments": assignments,
         "unassigned_count": 0,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
     log.info(

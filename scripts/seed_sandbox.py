@@ -20,7 +20,6 @@ Usage:
 from __future__ import annotations
 
 import json
-import sys
 from pathlib import Path
 
 import typer
@@ -28,7 +27,7 @@ from rich.console import Console
 from rich.table import Table
 
 from app.utils.config import get_config
-from app.utils.logging import get_logger, setup_logging
+from app.utils.logging import setup_logging
 
 console = Console()
 log = setup_logging()
@@ -45,7 +44,7 @@ def main(
     """Seed the Vigie sandbox workspace."""
     cfg = get_config()
 
-    console.print(f"\n[bold purple]Vigie — Sandbox Seed[/bold purple]")
+    console.print("\n[bold purple]Vigie — Sandbox Seed[/bold purple]")
     console.print(f"Workspace: [cyan]{cfg.slack.workspace_name}[/cyan]\n")
 
     if not skip_data:
@@ -78,17 +77,17 @@ def _generate_data_files() -> None:
     if not benef_path.exists():
         console.print("[yellow]Generating beneficiaries.json...[/yellow]")
         generate_beneficiaries(benef_path, count=50)
-        console.print(f"  [green]✓[/green] 50 beneficiaries generated")
+        console.print("  [green]✓[/green] 50 beneficiaries generated")
     else:
-        console.print(f"  [dim]beneficiaries.json already exists, skipping[/dim]")
+        console.print("  [dim]beneficiaries.json already exists, skipping[/dim]")
 
     vol_path = data_dir / "volunteers.json"
     if not vol_path.exists():
         console.print("[yellow]Generating volunteers.json...[/yellow]")
         generate_volunteers(vol_path, count=12)
-        console.print(f"  [green]✓[/green] 12 volunteers + 2 coordinators generated")
+        console.print("  [green]✓[/green] 12 volunteers + 2 coordinators generated")
     else:
-        console.print(f"  [dim]volunteers.json already exists, skipping[/dim]")
+        console.print("  [dim]volunteers.json already exists, skipping[/dim]")
 
 
 def _create_channels() -> None:

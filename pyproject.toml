@@ -34,8 +34,7 @@ dependencies = [
     "redis>=5.0.0; python_version >= '3.11'",
     # SQLite fallback if no Redis (built-in)
 
-    # Async support for Slack AI + RTS parallel calls
-    "asyncio-stdlib>=1.5.0",
+    # Async HTTP for external APIs (parallel calls)
     "aiohttp>=3.10.0",
 
     # Logging structured
@@ -48,6 +47,10 @@ dependencies = [
     # Date/time helpers
     "python-dateutil>=2.9.0",
     "pytz>=2024.1",
+
+    # Health endpoint
+    "fastapi>=0.110.0",
+    "uvicorn>=0.30.0",
 
     # CLI for scripts (seed, simulate)
     "typer>=0.12.0",
@@ -72,7 +75,7 @@ vigie-simulate = "scripts.simulate_canicule:main"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 include = ["app*", "mcp_server*", "scripts*"]
@@ -96,6 +99,7 @@ select = [
 ]
 ignore = [
     "E501",  # line too long (handled by formatter)
+    "B008",  # function call in default argument (used by Typer)
 ]
 
 [tool.pytest.ini_options]

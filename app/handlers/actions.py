@@ -76,14 +76,14 @@ def register(app: App) -> None:
         # TODO: MCP update + notify pharmacy channel
 
     # Global shortcuts
-    @appshortcut("vigie_signal_anomaly")
+    @app.shortcut("vigie_signal_anomaly")
     def handle_shortcut_anomaly(ack: Ack, shortcut: dict) -> None:
         """User triggered the 'Signaler une anomalie' shortcut on a message."""
         ack()
         log.info("vigie.shortcut.anomaly", shortcut=shortcut)
         # TODO: open modal to capture anomaly details
 
-    @appshortcut("vigie_reassign")
+    @app.shortcut("vigie_reassign")
     def handle_shortcut_reassign(ack: Ack, shortcut: dict) -> None:
         """User triggered the 'Réassigner ce bénéficiaire' shortcut."""
         ack()
