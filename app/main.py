@@ -28,7 +28,7 @@ from slack_sdk.web.async_client import AsyncWebClient
 
 from app.health import start_health_server
 from app.orchestrator import VigieOrchestrator
-from app.scheduler import start_scheduler, stop_scheduler
+from app.scheduler import start_scheduler
 from app.utils.config import get_config
 from app.utils.logging import setup_logging
 
@@ -106,12 +106,20 @@ def main() -> None:
 
     # Build the orchestrator and start the background scheduler
     orchestrator = get_orchestrator(app)
-    scheduler = start_scheduler(orchestrator)
+    # Only start scheduler if not on Railway (saves memory)
+    if not os.environ.get("MCP_IN_PROCESS", "false").lower() in ("true", "1", "yes"):
+        scheduler = start_scheduler(orchestrator)
+    else:
+        log.info("vigie.scheduler.skipped_railway")
 
     # Graceful shutdown handler
     def shutdown(signum: int, frame: Any) -> None:
         log.info("vigie.shutdown.signal", signal=signum)
-        stop_scheduler()
+        try:
+            from app.scheduler import stop_scheduler
+            stop_scheduler()
+        except Exception:
+            pass
         sys.exit(0)
 
     signal.signal(signal.SIGINT, shutdown)
@@ -122,9 +130,10 @@ def main() -> None:
         log.info("vigie.socket_mode.starting")
 
         async def _run() -> None:
-            # Start the scheduler in the same event loop as the bot
-            scheduler.start()
-            log.info("vigie.scheduler.started")
+            # Start scheduler only if not on Railway (saves ~20MB RAM)
+            if not os.environ.get("MCP_IN_PROCESS", "false").lower() in ("true", "1", "yes"):
+                scheduler.start()
+                log.info("vigie.scheduler.started")
             handler = AsyncSocketModeHandler(
                 app_token=cfg.slack.app_token.get_secret_value(),
                 app=app,
