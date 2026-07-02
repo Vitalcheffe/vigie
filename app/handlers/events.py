@@ -173,12 +173,24 @@ def register(app: AsyncApp) -> None:
         log.debug("vigie.event.reaction_added", reaction=event.get("reaction"))
 
     @app.event("member_joined_channel")
-    async def handle_member_joined(event: dict, say: AsyncSay) -> None:
-        """Welcome new volunteer joining a sector channel."""
-        log.info(
-            "vigie.event.member_joined_channel",
-            channel=event.get("channel"),
-            user=event.get("user"),
-        )
+    async def handle_member_joined(event: dict, say: AsyncSay, client) -> None:
+        """Welcome new volunteer joining a sector channel with a warm DM."""
+        user_id = event.get("user", "")
+        channel = event.get("channel", "")
+        log.info("vigie.event.member_joined_channel", channel=channel, user=user_id)
+
+        # Send a warm welcome DM
+        from app.tone import WELCOME_VOLUNTEER
+        from app.utils.slack_helpers import get_user_info, post_dm
+
+        try:
+            user_info = await get_user_info(client, user_id)
+            name = user_info.get("real_name") or user_info.get("display_name") or "there"
+            first_name = name.split()[0] if name else "there"
+
+            welcome = WELCOME_VOLUNTEER.format(name=first_name)
+            await post_dm(client, user_id, text=welcome)
+        except Exception as e:
+            log.warning("vigie.welcome_failed", user=user_id, error=str(e))
 
     log.debug("vigie.events.registered")

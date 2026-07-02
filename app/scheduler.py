@@ -79,6 +79,16 @@ def start_scheduler(orchestrator: VigieOrchestrator) -> AsyncIOScheduler:
     )
     log.info("scheduler.job_added", job="vigie_rts_refresh", trigger="interval 30 min")
 
+    # Job 4: Check-in reminders every 2 hours (only fires if scenario active)
+    scheduler.add_job(
+        _job_send_reminders,
+        trigger=IntervalTrigger(hours=2),
+        id="vigie_reminders",
+        kwargs={"orchestrator": orchestrator},
+        replace_existing=True,
+    )
+    log.info("scheduler.job_added", job="vigie_reminders", trigger="interval 2h")
+
     return scheduler
 
 
@@ -113,12 +123,25 @@ async def _job_refresh_canvas(orchestrator: VigieOrchestrator) -> None:
 async def _job_refresh_rts(orchestrator: VigieOrchestrator) -> None:
     """Refresh the RTS cache proactively so directives stay fresh."""
     try:
-        # Clear cache then fetch — forces a fresh pull
         orchestrator.rts.clear_cache()
         await orchestrator.rts.get_health_directives(department="75")
         log.debug("scheduler.rts_refresh.done")
     except Exception as e:
         log.warning("scheduler.rts_refresh.failed", error=str(e))
+
+
+async def _job_send_reminders(orchestrator: VigieOrchestrator) -> None:
+    """Send gentle check-in reminders to volunteers with pending check-ins."""
+    state = orchestrator.state
+    if not state.is_scenario_active:
+        return
+
+    try:
+        from app.reminders import send_checkin_reminders
+        result = await send_checkin_reminders(orchestrator.slack)
+        log.info("scheduler.reminders.done", status=result.get("status"))
+    except Exception as e:
+        log.warning("scheduler.reminders.failed", error=str(e))
 
 
 def stop_scheduler() -> None:
