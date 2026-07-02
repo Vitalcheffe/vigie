@@ -187,18 +187,15 @@ _LEVEL_EMOJI = {
 
 async def _generate_context_summary(beneficiary: dict) -> str:
     """
-    Generate a context summary using Slack AI.
+    Generate a context summary for the cellule de crise message.
 
-    TODO: replace stub with Slack AI call that summarizes:
-      - Last 48h of check-ins
-      - Medical history (conditions + medications)
-      - Previous escalations
-      - Current weather alert context
+    Builds a structured summary from the beneficiary's static profile
+    (name, age, sector, medical conditions, medications, isolation).
 
-    Output format:
-      "Mme Dupont, 82 ans, secteur 11. Dernier check-in : il y a 2h, fatiguée,
-      demande renouvellement ordonnance antihypertenseur. Hypertendue, vit
-      seule. Aucun proche référent. Vigilance orange canicule active depuis 7h."
+    A future enhancement would call Slack AI to summarize the last 48h
+    of check-ins + previous escalations + current weather context. For
+    the hackathon demo, the static profile is sufficient and avoids
+    extra latency in the escalation path.
     """
     name = f"{beneficiary['first_name']} {beneficiary['last_initial']}."
     age = beneficiary.get("age", "?")
@@ -211,24 +208,44 @@ async def _generate_context_summary(beneficiary: dict) -> str:
         f"Conditions médicales : {conditions}. "
         f"Traitements : {medications}. "
         f"Vit seule. "
-        f"Vigilance orange canicule active. "
-        f"(Résumé contextuel — génération Slack AI complète.)"
+        f"Vigilance orange canicule active."
     )
 
 
 async def _get_neighbor_referent(beneficiary: dict) -> dict[str, Any] | None:
-    """Get the registered neighbor referent for the beneficiary's sector."""
+    """Get the registered neighbor referent for the beneficiary's sector.
+
+    Loads from mcp_server/data/volunteers.json — a volunteer assigned to
+    the same sector acts as the neighbor referent.
+    """
+    import json
+    import pathlib
+
     sector = beneficiary.get("sector")
     if not sector:
         return None
 
-    # TODO: load from volunteers.json
-    return {
-        "id": f"NR-{sector}",
-        "name": "M. Bernard (simulated)",
-        "sector": sector,
-        "phone": "+33 6 00 00 00 00",
-    }
+    volunteers_path = pathlib.Path(__file__).resolve().parent.parent / "data" / "volunteers.json"
+    if not volunteers_path.exists():
+        log.warning("vigie.mcp.escalate.volunteers_missing", path=str(volunteers_path))
+        return None
+
+    try:
+        with volunteers_path.open("r", encoding="utf-8") as f:
+            volunteers = json.load(f)
+        for v in volunteers:
+            if str(v.get("sector")) == str(sector):
+                return {
+                    "id": v.get("id"),
+                    "name": v.get("name"),
+                    "sector": sector,
+                    "phone": v.get("phone"),
+                    "email": v.get("email"),
+                }
+    except Exception as e:
+        log.warning("vigie.mcp.escalate.referent_load_failed", error=str(e))
+
+    return None
 
 
 def _build_cellule_crise_message(

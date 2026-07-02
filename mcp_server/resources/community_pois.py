@@ -181,12 +181,27 @@ def register(mcp) -> None:
     @mcp.resource("vigie://community-pois/sector/{sector_id}")
     async def get_pois_for_sector(sector_id: str) -> str:
         """Get POIs for a specific Vigie sector (1..12)."""
-        # TODO: load sector centroid from sectors.json
-        # For now, use Paris 11e as default
-        lat, lon = 48.8590, 2.3790
+        # Load the sector centroid from sectors.json
+        import json
+        import pathlib
+
+        sectors_path = pathlib.Path(__file__).resolve().parent.parent / "data" / "sectors.json"
+        lat, lon = 48.8590, 2.3790  # default Paris 11e
+        try:
+            with sectors_path.open("r", encoding="utf-8") as f:
+                sectors = json.load(f)
+            for s in sectors:
+                if str(s["id"]) == str(sector_id):
+                    centroid = s.get("centroid", {})
+                    lat = centroid.get("lat", lat)
+                    lon = centroid.get("lon", lon)
+                    break
+        except Exception as e:
+            log.warning("vigie.mcp.pois.sector_load_failed", error=str(e))
+
         pois = await fetch_pois_around(lat, lon, 1500)
         return json.dumps(
-            {"sector": sector_id, "count": len(pois), "pois": pois},
+            {"sector": sector_id, "center": {"lat": lat, "lon": lon}, "count": len(pois), "pois": pois},
             ensure_ascii=False,
             indent=2,
         )
@@ -199,20 +214,35 @@ def register(mcp) -> None:
         Neighbor referents are community volunteers registered to be
         contacted by Vigie when a beneficiary is unreachable.
         """
-        # TODO: load from volunteers.json
+        import json
+        import pathlib
+
+        volunteers_path = pathlib.Path(__file__).resolve().parent.parent / "data" / "volunteers.json"
+        referents: list[dict[str, Any]] = []
+        try:
+            with volunteers_path.open("r", encoding="utf-8") as f:
+                volunteers = json.load(f)
+            for v in volunteers:
+                if v.get("sector") is None:
+                    continue
+                if str(v.get("sector")) == str(sector_id):
+                    referents.append(
+                        {
+                            "id": v.get("id"),
+                            "name": v.get("name"),
+                            "sector": v.get("sector"),
+                            "phone": v.get("phone"),
+                            "email": v.get("email"),
+                            "languages": v.get("languages", []),
+                        }
+                    )
+        except Exception as e:
+            log.warning("vigie.mcp.pois.referent_load_failed", error=str(e))
+
         return json.dumps(
-            {
-                "sector": sector_id,
-                "referents": [
-                    {
-                        "id": f"NR-{sector_id}",
-                        "name": "M. Bernard (simulated)",
-                        "sector": sector_id,
-                        "phone": "+33 6 00 00 00 00",
-                        "address_proximity": "Same building as beneficiaries B001, B002",
-                    }
-                ],
-            },
+            {"sector": sector_id, "referents": referents or [
+                {"id": f"NR-{sector_id}", "name": "(no referent registered)", "sector": sector_id}
+            ]},
             ensure_ascii=False,
             indent=2,
         )

@@ -89,7 +89,7 @@ async def assign_checkins(
         and not _already_checked_today(b, date)
     ]
 
-    # 4. Load volunteers (stub: we'll load from volunteers.json)
+    # 4. Load volunteers from volunteers.json
     volunteers = _load_volunteers()
     if volunteer_ids:
         volunteers = [v for v in volunteers if v["id"] in volunteer_ids]
@@ -174,7 +174,7 @@ def _already_checked_today(beneficiary: dict, date: str) -> bool:
 
 
 def _load_volunteers() -> list[dict[str, Any]]:
-    """Load volunteers from disk (stub: full implementation)."""
+    """Load volunteers from mcp_server/data/volunteers.json."""
     import pathlib
 
     path = pathlib.Path(__file__).resolve().parent.parent / "data" / "volunteers.json"

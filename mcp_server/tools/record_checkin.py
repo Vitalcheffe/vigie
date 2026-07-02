@@ -78,7 +78,10 @@ async def record_checkin(
             "beneficiary_id": beneficiary_id,
         }
 
-    # 1. Classify the anomaly (stub: Slack AI)
+    # 1. Classify the anomaly.
+    # The orchestrator calls Slack AI BEFORE invoking this tool and passes
+    # detected_signals. If signals are already provided, we use them.
+    # Otherwise we fall back to the keyword-based classifier below.
     anomaly_level, signals, recommended = await _classify_anomaly(
         transcript, detected_signals, beneficiary
     )
@@ -145,7 +148,10 @@ async def record_checkin(
 
 
 # ============================================================
-# Slack AI integration (stub — full implementation)
+# Anomaly classification (keyword-based fallback).
+# The orchestrator runs Slack AI classification BEFORE calling this tool;
+# if signals are already provided we use them. The classifier below is
+# only the fallback path (used when Slack AI is unavailable or for tests).
 # ============================================================
 
 _ANOMALY_LABELS = {
@@ -170,10 +176,9 @@ async def _classify_anomaly(
       2 = Coordinator escalation (unreachable, persistent confusion, fall risk)
       3 = Critical (SAMU — unconscious, severe distress, fall)
 
-    TODO: replace stub with Slack AI call (Slack AI classification
-    or OpenAI fallback) with structured prompt for 4-level classification.
+    The orchestrator runs Slack AI classification first; this keyword-based
+    classifier is only used when no signals are pre-supplied.
     """
-    # TODO: keyword-based classification
     text = transcript.lower()
 
     # Critical signals
