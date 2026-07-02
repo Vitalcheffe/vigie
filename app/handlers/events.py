@@ -45,9 +45,9 @@ def register(app: AsyncApp) -> None:
         """Vigie was @-mentioned — respond with help."""
         log.info("vigie.event.app_mention", user=event.get("user"))
         await say(
-            "Bonjour, je suis Vigie. "
-            "Tapez `/vigie help` pour voir les commandes disponibles. "
-            "En cas d'urgence vitale, appelez le 15 ou le 112."
+            "Hello, I am Vigie. "
+            "Type `/vigie help` to see the available commands. "
+            "In case of life-threatening emergency, call 15 or 112."
         )
 
     @app.event("app_home_opened")
@@ -110,7 +110,7 @@ def register(app: AsyncApp) -> None:
             )
         else:
             log.warning("vigie.event.message.failed", result=result)
-            await say(f":warning: Erreur lors du traitement : {result.get('message', 'unknown')}")
+            await say(f":warning: Error while processing: {result.get('message', 'unknown')}")
 
     @app.event("file_shared")
     async def handle_file_shared(event: dict, client) -> None:
@@ -165,7 +165,7 @@ def register(app: AsyncApp) -> None:
             log.error("vigie.event.file_shared.failed", file_id=file_id, error=str(e))
             # DM the user about the failure
             with contextlib.suppress(Exception):
-                await post_dm_safe(client, user_id, f":warning: Impossible de traiter votre note vocale : {e}")
+                await post_dm_safe(client, user_id, f":warning: Could not process your voice note: {e}")
 
     @app.event("reaction_added")
     async def handle_reaction_added(event: dict) -> None:

@@ -1,7 +1,7 @@
 """
 Vigie — In-memory state store.
 
-Tracks the live state of the cellule de crise: check-ins, escalations,
+Tracks the live state of the crisis cell: check-ins, escalations,
 weak signals, coverage. Used by the orchestrator to:
   - Generate real metrics for the daily report (instead of hardcoded values)
   - Feed the /metrics health endpoint
@@ -32,7 +32,7 @@ _lock = threading.RLock()
 
 
 class VigieState:
-    """Thread-safe in-memory state store for the Vigie cellule de crise."""
+    """Thread-safe in-memory state store for the Vigie crisis cell."""
 
     def __init__(self) -> None:
         self._checkins: list[dict[str, Any]] = []

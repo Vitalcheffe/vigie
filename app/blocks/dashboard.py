@@ -5,8 +5,8 @@ The App Home is the volunteer's personal command center. It shows:
 - Greeting with the volunteer's name
 - Current weather alert banner
 - Today's check-in assignments (compact)
-- Real-time KPIs (cellule de crise view)
-- Quick actions (start calls, view cellule de crise)
+- Real-time KPIs (crisis cell view)
+- Quick actions (start calls, view crisis cell)
 - Personal stats (today's progress)
 
 Updated every time the volunteer opens the App Home tab.
@@ -38,7 +38,7 @@ def build_app_home(
         user_name: Volunteer's display name (greeting)
         assignments: List of today's assigned beneficiaries
         alert: Active weather alert dict (level, phenomenon, departments, ...)
-        kpis: Cellule de crise KPIs (coverage, latencies, counts)
+        kpis: Crisis cell KPIs (coverage, latencies, counts)
         personal_stats: Volunteer's personal stats (today's count, weak signals)
 
     Returns a Slack view dict ready for `client.views_publish()`.
@@ -46,7 +46,7 @@ def build_app_home(
     assignments = assignments or []
     kpis = kpis or {}
     personal_stats = personal_stats or {}
-    first_name = (user_name or "").split()[0] or "bénévole"
+    first_name = (user_name or "").split()[0] or "volunteer"
 
     blocks: list[dict[str, Any]] = []
 
@@ -56,7 +56,7 @@ def build_app_home(
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": f":wave: Bonjour {first_name}",
+                "text": f":wave: Hello {first_name}",
                 "emoji": True,
             },
         }
@@ -68,10 +68,10 @@ def build_app_home(
             "text": {
                 "type": "mrkdwn",
                 "text": (
-                    "Bienvenue dans votre tableau de bord Vigie. "
-                    "Ici, vous trouverez vos check-in du jour, les alertes en cours, "
-                    "et l'état de la cellule de crise.\n\n"
-                    "_Vigie veille pour que personne ne veille seul._"
+                    "Welcome to your Vigie dashboard. "
+                    "Here you'll find your check-ins for today, active alerts, "
+                    "and the state of the crisis cell.\n\n"
+                    "_Vigie watches so that no one watches alone._"
                 ),
             },
         }
@@ -80,7 +80,7 @@ def build_app_home(
     # Alert banner
     if alert:
         level = alert.get("level", "?")
-        phenomenon = alert.get("phenomenon", "canicule")
+        phenomenon = alert.get("phenomenon", "heatwave")
         departments = alert.get("department_name") or ", ".join(alert.get("departments", []))
         max_temp = alert.get("max_temperature", "?")
 
@@ -92,10 +92,10 @@ def build_app_home(
                 "text": {
                     "type": "mrkdwn",
                     "text": (
-                        f"{emoji} *Vigilance {level} — {phenomenon}*\n"
+                        f"{emoji} *{level} vigilance — {phenomenon}*\n"
                         f":round_pushpin: {departments}\n"
-                        f":thermometer: T° max prévue : *{max_temp}°C*\n"
-                        f":clock1: Valide jusqu'à : {alert.get('valid_to', '?')}"
+                        f":thermometer: Max forecast T°: *{max_temp}°C*\n"
+                        f":clock1: Valid until: {alert.get('valid_to', '?')}"
                     ),
                 },
             }
@@ -107,7 +107,7 @@ def build_app_home(
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": ":white_check_mark: *Aucune alerte canicule active.* Vos check-in habituels restent disponibles.",
+                    "text": ":white_check_mark: *No active heatwave alert.* Your usual check-ins remain available.",
                 },
             }
         )
@@ -119,7 +119,7 @@ def build_app_home(
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": f":telephone_receiver: Vos check-in du jour ({len(assignments)})",
+                "text": f":telephone_receiver: Your check-ins for today ({len(assignments)})",
                 "emoji": True,
             },
         }
@@ -147,7 +147,7 @@ def build_app_home(
                     "text": {
                         "type": "mrkdwn",
                         "text": (
-                            f"{status_emoji} *{name}* ({age} ans, secteur {sector})\n"
+                            f"{status_emoji} *{name}* ({age} yrs, sector {sector})\n"
                             f":telephone: `{phone}` — `id: {b.get('id')}`"
                         ),
                     },
@@ -158,36 +158,36 @@ def build_app_home(
             blocks.append(
                 {
                     "type": "section",
-                    "text": {"type": "mrkdwn", "text": f"_... et {len(assignments) - 5} autres. Détails dans le DM._"},
+                    "text": {"type": "mrkdwn", "text": f"_... and {len(assignments) - 5} more. Details in the DM._"},
                 }
             )
     else:
         blocks.append(
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": "_Aucun check-in assigné pour aujourd'hui._"},
+                "text": {"type": "mrkdwn", "text": "_No check-ins assigned for today._"},
             }
         )
 
-    # Cellule de crise KPIs
+    # Crisis cell KPIs
     if kpis:
         blocks.append({"type": "divider"})
         blocks.append(
             {
                 "type": "header",
-                "text": {"type": "plain_text", "text": ":bar_chart: Cellule de crise — vue temps réel", "emoji": True},
+                "text": {"type": "plain_text", "text": ":bar_chart: Crisis cell — real-time view", "emoji": True},
             }
         )
         blocks.append(
             {
                 "type": "section",
                 "fields": [
-                    {"type": "mrkdwn", "text": f"*Couverture (< 2h)*\n{kpis.get('coverage_pct', '?')}%"},
-                    {"type": "mrkdwn", "text": f"*Temps moyen check-in*\n{kpis.get('avg_checkin_time', '?')}"},
-                    {"type": "mrkdwn", "text": f"*Latence escalade*\n{kpis.get('avg_escalade_latency', '?')}"},
-                    {"type": "mrkdwn", "text": f"*Non contactés > 72h*\n{kpis.get('unreachable_72h', '?')}"},
-                    {"type": "mrkdwn", "text": f"*Escalades coord.*\n{kpis.get('coord_count', '?')}"},
-                    {"type": "mrkdwn", "text": f"*Escalades SAMU*\n{kpis.get('samu_count', '?')}"},
+                    {"type": "mrkdwn", "text": f"*Coverage (< 2h)*\n{kpis.get('coverage_pct', '?')}%"},
+                    {"type": "mrkdwn", "text": f"*Avg check-in time*\n{kpis.get('avg_checkin_time', '?')}"},
+                    {"type": "mrkdwn", "text": f"*Escalation latency*\n{kpis.get('avg_escalade_latency', '?')}"},
+                    {"type": "mrkdwn", "text": f"*Not contacted > 72h*\n{kpis.get('unreachable_72h', '?')}"},
+                    {"type": "mrkdwn", "text": f"*Coord. escalations*\n{kpis.get('coord_count', '?')}"},
+                    {"type": "mrkdwn", "text": f"*SAMU escalations*\n{kpis.get('samu_count', '?')}"},
                 ],
             }
         )
@@ -198,17 +198,17 @@ def build_app_home(
         blocks.append(
             {
                 "type": "header",
-                "text": {"type": "plain_text", "text": ":bust_in_silhouette: Vos statistiques", "emoji": True},
+                "text": {"type": "plain_text", "text": ":bust_in_silhouette: Your statistics", "emoji": True},
             }
         )
         blocks.append(
             {
                 "type": "section",
                 "fields": [
-                    {"type": "mrkdwn", "text": f"*Check-in réalisés aujourd'hui*\n{personal_stats.get('today_count', 0)}"},
-                    {"type": "mrkdwn", "text": f"*Signaux faibles détectés*\n{personal_stats.get('weak_signals', 0)}"},
-                    {"type": "mrkdwn", "text": f"*Escalades déclenchées*\n{personal_stats.get('escalations', 0)}"},
-                    {"type": "mrkdwn", "text": f"*Temps moyen (vos check-in)*\n{personal_stats.get('avg_time', '?')}"},
+                    {"type": "mrkdwn", "text": f"*Check-ins completed today*\n{personal_stats.get('today_count', 0)}"},
+                    {"type": "mrkdwn", "text": f"*Weak signals detected*\n{personal_stats.get('weak_signals', 0)}"},
+                    {"type": "mrkdwn", "text": f"*Escalations triggered*\n{personal_stats.get('escalations', 0)}"},
+                    {"type": "mrkdwn", "text": f"*Avg time (your check-ins)*\n{personal_stats.get('avg_time', '?')}"},
                 ],
             }
         )
@@ -221,19 +221,19 @@ def build_app_home(
             "elements": [
                 {
                     "type": "button",
-                    "text": {"type": "plain_text", "text": ":telephone_receiver: Démarrer mes appels", "emoji": True},
+                    "text": {"type": "plain_text", "text": ":telephone_receiver: Start my calls", "emoji": True},
                     "action_id": "vigie_start_calls",
                     "style": "primary",
                     "value": user_id,
                 },
                 {
                     "type": "button",
-                    "text": {"type": "plain_text", "text": ":memo: Mes check-in passés", "emoji": True},
+                    "text": {"type": "plain_text", "text": ":memo: My past check-ins", "emoji": True},
                     "action_id": "vigie_view_my_checkins",
                 },
                 {
                     "type": "button",
-                    "text": {"type": "plain_text", "text": ":rotating_light: Cellule de crise", "emoji": True},
+                    "text": {"type": "plain_text", "text": ":rotating_light: Crisis cell", "emoji": True},
                     "action_id": "vigie_view_cellule_crise",
                 },
             ],
@@ -246,8 +246,8 @@ def build_app_home(
         {
             "type": "context",
             "elements": [
-                {"type": "mrkdwn", "text": "_Vigie — Pour que la canicule ne tue plus en silence._"},
-                {"type": "mrkdwn", "text": "En cas d'urgence vitale, appelez le *15* ou le *112*."},
+                {"type": "mrkdwn", "text": "_Vigie — So the heatwave no longer kills in silence._"},
+                {"type": "mrkdwn", "text": "In case of life-threatening emergency, call *15* or *112*."},
             ],
         }
     )

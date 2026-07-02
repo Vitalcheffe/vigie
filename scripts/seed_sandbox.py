@@ -106,11 +106,11 @@ def _create_channels() -> None:
     table.add_column("Status", style="yellow")
 
     channels_to_create = [
-        ("cellule-crise", "Cellule de crise — vue temps réel"),
+        ("cellule-crise", "Crisis cell — real-time view"),
     ]
     for i in range(1, cfg.slack.num_sectors + 1):
-        channels_to_create.append((f"{cfg.slack.secteur_prefix}{i}", f"Secteur {i} — check-in bénévoles"))
-        channels_to_create.append((f"{cfg.slack.voisins_prefix}{i}", f"Voisins référents secteur {i}"))
+        channels_to_create.append((f"{cfg.slack.secteur_prefix}{i}", f"Sector {i} — volunteer check-ins"))
+        channels_to_create.append((f"{cfg.slack.voisins_prefix}{i}", f"Neighbor referents sector {i}"))
 
     created_ids: dict[str, str] = {}
 

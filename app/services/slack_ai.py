@@ -26,55 +26,55 @@ log = get_logger("vigie.services.slack_ai")
 
 
 # Prompts are kept short and deterministic. We want JSON out, not prose.
-_TRANSCRIBE_HINT = "Transcription en français, sans ponctuation ajoutée, fidèle au texte original."
+_TRANSCRIBE_HINT = "Transcription in English, without added punctuation, faithful to the original text."
 
-_EXTRACT_PROMPT = """Tu es un assistant qui structure des notes de check-in téléphonique de bénévoles.
-À partir du texte suivant, produis un JSON strict avec ces champs :
-  - state : "ok" | "weak_signal" | "needs_escalation" | "critical"
-  - signals : liste de mots-clés parmi [medication_request, fatigue, confusion, unreachable, fall, breathing_issue, distress, isolated, other]
-  - action_required : "none" | "pharmacy_lookup" | "neighbor_referent" | "medical_coordinator" | "samu"
-  - confidence : float entre 0 et 1
+_EXTRACT_PROMPT = """You are an assistant that structures volunteer phone check-in notes.
+From the following text, produce a strict JSON with these fields:
+  - state: "ok" | "weak_signal" | "needs_escalation" | "critical"
+  - signals: list of keywords from [medication_request, fatigue, confusion, unreachable, fall, breathing_issue, distress, isolated, other]
+  - action_required: "none" | "pharmacy_lookup" | "neighbor_referent" | "medical_coordinator" | "samu"
+  - confidence: float between 0 and 1
 
-Texte :
+Text:
 \"\"\"{text}\"\"\"
 
-Réponds UNIQUEMENT avec le JSON, sans texte autour."""
+Respond ONLY with the JSON, no surrounding text."""
 
-_CLASSIFY_PROMPT = """Classifie la gravité d'une note de check-in bénévole en 4 niveaux :
-  0 = OK (rien à signaler)
-  1 = Signal faible (fatigue, demande médicament, isolation ressentie)
-  2 = Escalade coordinateur (injoignable, confusion, chute suspectée)
-  3 = Critique SAMU (inconscient, détresse respiratoire, au sol, urgence vitale)
+_CLASSIFY_PROMPT = """Classify the severity of a volunteer check-in note into 4 levels:
+  0 = OK (nothing to report)
+  1 = Weak signal (fatigue, medication request, perceived isolation)
+  2 = Coordinator escalation (unreachable, confusion, suspected fall)
+  3 = Critical SAMU (unconscious, respiratory distress, on the ground, life-threatening emergency)
 
-Note :
+Note:
 \"\"\"{text}\"\"\"
 
-Réponds avec un JSON : {{"level": 0|1|2|3, "signals": ["..."], "recommended": "ok"|"pharmacy"|"escalade_coord"|"escalade_samu", "confidence": 0.0-1.0}}"""
+Respond with JSON: {{"level": 0|1|2|3, "signals": ["..."], "recommended": "ok"|"pharmacy"|"escalade_coord"|"escalade_samu", "confidence": 0.0-1.0}}"""
 
-_REPORT_PROMPT = """Tu rédiges le rapport quotidien de la cellule de crise Vigie.
+_REPORT_PROMPT = """You write the daily Vigie crisis cell report.
 
-Données du jour :
-- Date : {date}
-- Bénéficiaires à contacter : {total}
-- Bénéficiaires contactés : {contacted} ({coverage_pct}%)
-- Check-in OK : {ok_count}
-- Signaux faibles : {weak_count}
-- Escalades coordinateur : {coord_count}
-- Escalades critiques (SAMU) : {samu_count}
-- Latence moyenne d'escalade : {avg_escalade_latency}
-- Bénéficiaires non contactés > 72h : {unreachable_72h}
-- Signaux faibles à surveiller demain : {weak_signals_list}
+Today's data:
+- Date: {date}
+- Beneficiaries to contact: {total}
+- Beneficiaries contacted: {contacted} ({coverage_pct}%)
+- Check-in OK: {ok_count}
+- Weak signals: {weak_count}
+- Coordinator escalations: {coord_count}
+- Critical escalations (SAMU): {samu_count}
+- Average escalation latency: {avg_escalade_latency}
+- Beneficiaries not contacted > 72h: {unreachable_72h}
+- Weak signals to monitor tomorrow: {weak_signals_list}
 
-Directives sanitaires fraîches (RTS) :
+Fresh health directives (RTS):
 {rts_directives}
 
-Rédige un rapport en 4 paragraphes :
-1. Synthèse du jour (1-2 phrases)
-2. Points d'attention (liste à puces)
-3. Recommandations pour demain (liste à puces)
-4. Sources citées (liste à puces)
+Write a report in 4 paragraphs:
+1. Today's summary (1-2 sentences)
+2. Points of attention (bullet list)
+3. Recommendations for tomorrow (bullet list)
+4. Cited sources (bullet list)
 
-Pas de mark-up Slack, juste du texte brut structuré."""
+No Slack mark-up, just structured plain text."""
 
 
 class SlackAIService:
@@ -169,7 +169,7 @@ class SlackAIService:
         weak_signals_list: list[str],
         rts_directives: list[str],
     ) -> str:
-        """Generate the daily Vigie report for the cellule de crise."""
+        """Generate the daily Vigie report for the crisis cell."""
         coverage_pct = int((contacted / total) * 100) if total > 0 else 0
         prompt = _REPORT_PROMPT.format(
             date=date,
@@ -182,8 +182,8 @@ class SlackAIService:
             samu_count=samu_count,
             avg_escalade_latency=avg_escalade_latency,
             unreachable_72h=unreachable_72h,
-            weak_signals_list=", ".join(weak_signals_list) or "aucun",
-            rts_directives="\n".join(f"- {d}" for d in rts_directives) or "- (aucune directive fraîche)",
+            weak_signals_list=", ".join(weak_signals_list) or "none",
+            rts_directives="\n".join(f"- {d}" for d in rts_directives) or "- (no fresh directives)",
         )
         return await self._chat_complete(prompt, json_mode=False, max_tokens=800)
 
@@ -232,8 +232,8 @@ class SlackAIService:
 
             # Post the prompt to the thread
             prompt = (
-                f"Transcris cette note vocale en français, sans ponctuation ajoutée, "
-                f"fidele au texte original. Le fichier est `{filename}` (id: {file_id})."
+                f"Transcribe this voice note in English, without added punctuation, "
+                f"faithful to the original text. The file is `{filename}` (id: {file_id})."
             )
             await client.chat_postMessage(
                 channel=cfg.slack.cellule_crise_channel_id or "",
@@ -289,7 +289,7 @@ class SlackAIService:
             result = await client.audio.transcriptions.create(
                 model=self.whisper_model,
                 file=(filename, file_bytes),
-                language="fr",
+                language="en",
                 prompt=_TRANSCRIBE_HINT,
             )
             return result.text

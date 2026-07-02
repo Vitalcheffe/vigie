@@ -1,5 +1,5 @@
 """
-Vigie — Block Kit builder for the daily report (posted at 18h00 in #cellule-crise).
+Vigie — Block Kit builder for the daily report (posted at 6 PM in #cellule-crise).
 
 The report aggregates the day's check-ins, escalations, weak signals,
 and cites fresh health directives from the Real-Time Search API.
@@ -48,43 +48,43 @@ def build_daily_report(
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": f":memo: Rapport quotidien Vigie — {date}",
+                "text": f":memo: Vigie daily report — {date}",
                 "emoji": True,
             },
         },
         {
             "type": "context",
             "elements": [
-                {"type": "mrkdwn", "text": "Généré automatiquement à 18h00 • Slack AI + Real-Time Search API"},
+                {"type": "mrkdwn", "text": "Auto-generated at 6:00 PM • Slack AI + Real-Time Search API"},
             ],
         },
         {"type": "divider"},
         {
             "type": "header",
-            "text": {"type": "plain_text", "text": "📊 Indicateurs du jour", "emoji": True},
+            "text": {"type": "plain_text", "text": "📊 Today's indicators", "emoji": True},
         },
         {
             "type": "section",
             "fields": [
-                {"type": "mrkdwn", "text": f"*Couverture (< 2h)*\n:large_green_circle: *{coverage_pct}%* ({contacted}/{total})"},
-                {"type": "mrkdwn", "text": f"*Temps moyen check-in*\n:stopwatch: *{avg_checkin_time}*"},
-                {"type": "mrkdwn", "text": f"*Latence escalade*\n:stopwatch: *{avg_escalade_latency}*"},
-                {"type": "mrkdwn", "text": f"*Non contactés > 72h*\n:warning: *{unreachable_72h}*"},
+                {"type": "mrkdwn", "text": f"*Coverage (< 2h)*\n:large_green_circle: *{coverage_pct}%* ({contacted}/{total})"},
+                {"type": "mrkdwn", "text": f"*Avg check-in time*\n:stopwatch: *{avg_checkin_time}*"},
+                {"type": "mrkdwn", "text": f"*Escalation latency*\n:stopwatch: *{avg_escalade_latency}*"},
+                {"type": "mrkdwn", "text": f"*Not contacted > 72h*\n:warning: *{unreachable_72h}*"},
             ],
         },
         {
             "type": "section",
             "fields": [
                 {"type": "mrkdwn", "text": f"*Check-in OK*\n:large_green_circle: *{ok_count}*"},
-                {"type": "mrkdwn", "text": f"*Signaux faibles*\n:large_yellow_circle: *{weak_count}*"},
-                {"type": "mrkdwn", "text": f"*Escalades coordinateur*\n:large_orange_circle: *{coord_count}*"},
-                {"type": "mrkdwn", "text": f"*Escalades SAMU*\n{samu_emoji} *{samu_count}*"},
+                {"type": "mrkdwn", "text": f"*Weak signals*\n:large_yellow_circle: *{weak_count}*"},
+                {"type": "mrkdwn", "text": f"*Coordinator escalations*\n:large_orange_circle: *{coord_count}*"},
+                {"type": "mrkdwn", "text": f"*SAMU escalations*\n{samu_emoji} *{samu_count}*"},
             ],
         },
         {"type": "divider"},
         {
             "type": "header",
-            "text": {"type": "plain_text", "text": ":brain: Synthèse (Slack AI)", "emoji": True},
+            "text": {"type": "plain_text", "text": ":brain: Summary (Slack AI)", "emoji": True},
         },
         {
             "type": "section",
@@ -97,7 +97,7 @@ def build_daily_report(
         blocks.append(
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": f":eyes: *Signaux faibles à surveiller demain :*\n{signals_text}"},
+                "text": {"type": "mrkdwn", "text": f":eyes: *Weak signals to monitor tomorrow:*\n{signals_text}"},
             }
         )
 
@@ -106,7 +106,7 @@ def build_daily_report(
         blocks.append(
             {
                 "type": "header",
-                "text": {"type": "plain_text", "text": ":globe_with_meridians: Directives sanitaires fraîches", "emoji": True},
+                "text": {"type": "plain_text", "text": ":globe_with_meridians: Fresh health directives", "emoji": True},
             }
         )
         for d in rts_directives[:3]:
@@ -124,7 +124,7 @@ def build_daily_report(
                             f"*{title}*\n"
                             f":newspaper: {source}"
                             + (f" — {published}" if published else "")
-                            + (f"\n<{url}|Lien>" if url else "")
+                            + (f"\n<{url}|Link>" if url else "")
                             + (f"\n> {summary}" if summary else "")
                         ),
                     },
@@ -136,13 +136,13 @@ def build_daily_report(
         {
             "type": "context",
             "elements": [
-                {"type": "mrkdwn", "text": "_Vigie — Pour que la canicule ne tue plus en silence._"},
-                {"type": "mrkdwn", "text": "Données simulées — aucun bénéficiaire réel n'est utilisé dans cette démo."},
+                {"type": "mrkdwn", "text": "_Vigie — So the heatwave no longer kills in silence._"},
+                {"type": "mrkdwn", "text": "Simulated data — no real beneficiary is used in this demo."},
             ],
         }
     )
 
     return {
         "blocks": blocks,
-        "text": f"Rapport Vigie {date} — {coverage_pct}% couverture, {samu_count} SAMU",
+        "text": f"Vigie report {date} — {coverage_pct}% coverage, {samu_count} SAMU",
     }

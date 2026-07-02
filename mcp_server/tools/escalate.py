@@ -3,13 +3,13 @@ Vigie MCP tool — escalate.
 
 Triggers an escalation for a beneficiary:
   - Level 1: weak signal → notify coordinator, monitor
-  - Level 2: coordinator escalation → DM medical coordinator, post in cellule de crise
-  - Level 3: critical → trigger SAMU protocol, escalate to cellule de crise with full context
+  - Level 2: coordinator escalation → DM medical coordinator, post in crisis cell
+  - Level 3: critical → trigger SAMU protocol, escalate to crisis cell with full context
 
 The escalation flow:
   1. Update beneficiary status to "escalated" or "critical"
   2. Generate Slack AI summary of last 48h context
-  3. For level 3: trigger SAMU button in cellule de crise
+  3. For level 3: trigger SAMU button in crisis cell
   4. For level 2: DM medical coordinator with structured briefing
   5. Notify neighbor referent if applicable
   6. Return the escalation record for Slack posting
@@ -122,7 +122,7 @@ async def escalate(
             neighbor_notified = True
             actions_taken.append("neighbor_referent_dm_queued")
 
-    # 5. Build the cellule de crise message
+    # 5. Build the crisis cell message
     cellule_message = _build_cellule_crise_message(
         beneficiary=beneficiary,
         level=level,
@@ -173,9 +173,9 @@ async def escalate(
 # ============================================================
 
 _LEVEL_LABELS = {
-    1: "Signal faible — surveillance renforcée",
-    2: "Escalade coordinateur médical",
-    3: "Escalade critique — protocole SAMU",
+    1: "Weak signal — enhanced monitoring",
+    2: "Medical coordinator escalation",
+    3: "Critical escalation — SAMU protocol",
 }
 
 _LEVEL_EMOJI = {
@@ -187,7 +187,7 @@ _LEVEL_EMOJI = {
 
 async def _generate_context_summary(beneficiary: dict) -> str:
     """
-    Generate a context summary for the cellule de crise message.
+    Generate a context summary for the crisis cell message.
 
     Builds a structured summary from the beneficiary's static profile
     (name, age, sector, medical conditions, medications, isolation).
@@ -200,15 +200,15 @@ async def _generate_context_summary(beneficiary: dict) -> str:
     name = f"{beneficiary['first_name']} {beneficiary['last_initial']}."
     age = beneficiary.get("age", "?")
     sector = beneficiary.get("sector", "?")
-    conditions = ", ".join(beneficiary.get("medical_conditions", [])) or "aucune"
-    medications = ", ".join(beneficiary.get("medications", [])) or "aucun"
+    conditions = ", ".join(beneficiary.get("medical_conditions", [])) or "none"
+    medications = ", ".join(beneficiary.get("medications", [])) or "none"
 
     return (
-        f"{name}, {age} ans, secteur {sector}. "
-        f"Conditions médicales : {conditions}. "
-        f"Traitements : {medications}. "
-        f"Vit seule. "
-        f"Vigilance orange canicule active."
+        f"{name}, {age} yrs, sector {sector}. "
+        f"Medical conditions: {conditions}. "
+        f"Treatments: {medications}. "
+        f"Lives alone. "
+        f"Orange heatwave vigilance active."
     )
 
 
@@ -265,38 +265,38 @@ def _build_cellule_crise_message(
     emoji = _LEVEL_EMOJI.get(level, ":white_circle:")
 
     parts = [
-        f"{emoji} *ESCALADE NIVEAU {level}* — {name}, {age} ans, secteur {sector}",
-        f"_Déclenchée par <@{triggered_by}>_",
+        f"{emoji} *ESCALATION LEVEL {level}* — {name}, {age} yrs, sector {sector}",
+        f"_Triggered by <@{triggered_by}>_",
         "",
-        f"*Contexte :* {context_summary}",
+        f"*Context:* {context_summary}",
         "",
     ]
 
     if reason:
-        parts.append(f"*Motif :* {reason}")
+        parts.append(f"*Reason:* {reason}")
         parts.append("")
 
-    parts.append("*Actions :*")
+    parts.append("*Actions:*")
     if samu_triggered:
-        parts.append("  :rotating_light: Protocole SAMU déclenché — bouton « Appeler le 15 » ci-dessous")
+        parts.append("  :rotating_light: SAMU protocol triggered — \"Call 15\" button below")
     if coordinator_notified:
-        parts.append("  :medical_symbol: Coordinateur médical notifié par DM")
+        parts.append("  :medical_symbol: Medical coordinator notified by DM")
     if neighbor_notified:
-        parts.append("  :house: Voisin référent notifié par DM")
+        parts.append("  :house: Neighbor referent notified by DM")
     parts.append("")
 
-    parts.append("*Procédure :*")
+    parts.append("*Procedure:*")
     if level == 3:
-        parts.append("  1. Appeler le 15 (SAMU) immédiatement")
-        parts.append("  2. Si possible, envoyer un voisin sur place en attendant")
-        parts.append("  3. Rester en ligne avec le SAMU jusqu'à l'arrivée des secours")
+        parts.append("  1. Call 15 (SAMU) immediately")
+        parts.append("  2. If possible, send a neighbor on site while waiting")
+        parts.append("  3. Stay on the line with SAMU until emergency services arrive")
     elif level == 2:
-        parts.append("  1. Coordinateur médical prend contact dans les 15 min")
-        parts.append("  2. Évaluer nécessité de visite à domicile")
-        parts.append("  3. Si aggravation → escalade niveau 3")
+        parts.append("  1. Medical coordinator makes contact within 15 min")
+        parts.append("  2. Assess need for home visit")
+        parts.append("  3. If worsening → escalate to level 3")
     else:
-        parts.append("  1. Surveillance renforcée (check-in toutes les 2h)")
-        parts.append("  2. Si aggravation → escalade niveau 2")
+        parts.append("  1. Enhanced monitoring (check-in every 2h)")
+        parts.append("  2. If worsening → escalate to level 2")
 
     return "\n".join(parts)
 
@@ -317,7 +317,7 @@ def register(mcp) -> None:
 
         Level 1: weak signal — enhanced monitoring
         Level 2: coordinator escalation — medical coordinator + neighbor referent notified
-        Level 3: critical — SAMU protocol triggered, button to call 15 in cellule de crise
+        Level 3: critical — SAMU protocol triggered, button to call 15 in crisis cell
 
         Args:
             beneficiary_id: Beneficiary ID (e.g., "B001")
@@ -326,7 +326,7 @@ def register(mcp) -> None:
             reason: Free-text reason for manual escalation (optional)
             include_neighbor_referent: Whether to alert the registered neighbor referent (default true)
 
-        Returns JSON with escalation record, context summary, and cellule de crise message.
+        Returns JSON with escalation record, context summary, and crisis cell message.
         """
         result = await escalate(
             beneficiary_id=beneficiary_id,

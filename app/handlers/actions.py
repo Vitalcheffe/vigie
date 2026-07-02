@@ -31,7 +31,7 @@ def register(app: AsyncApp) -> None:
 
     @app.action("vigie_start_calls")
     async def handle_start_calls(ack: AsyncAck, action: dict, body: dict) -> None:
-        """Volunteer clicked 'Démarrer les appels' in their DM."""
+        """Volunteer clicked 'Start calls' in their DM."""
         await ack()
         user_id = body["user"]["id"]
         log.info("vigie.action.start_calls", user=user_id)
@@ -54,25 +54,25 @@ def register(app: AsyncApp) -> None:
 
     @app.action("vigie_escalate_1")
     async def handle_escalate_1(ack: AsyncAck, action: dict, body: dict) -> None:
-        """Volunteer clicked 'Escalader niveau 1' (signal faible)."""
+        """Volunteer clicked 'Escalate level 1' (weak signal)."""
         await ack()
         await _do_escalate(action, body, level=1)
 
     @app.action("vigie_escalate_2")
     async def handle_escalate_2(ack: AsyncAck, action: dict, body: dict) -> None:
-        """Volunteer clicked 'Escalader niveau 2' (coordinator)."""
+        """Volunteer clicked 'Escalate level 2' (coordinator)."""
         await ack()
         await _do_escalate(action, body, level=2)
 
     @app.action("vigie_escalate_3")
     async def handle_escalate_3(ack: AsyncAck, action: dict, body: dict) -> None:
-        """Volunteer clicked 'Escalader niveau 3' (critical, SAMU)."""
+        """Volunteer clicked 'Escalate level 3' (critical, SAMU)."""
         await ack()
         await _do_escalate(action, body, level=3)
 
     @app.action("vigie_close_checkin")
     async def handle_close_checkin(ack: AsyncAck, action: dict, body: dict) -> None:
-        """Volunteer clicked 'Clôturer' (check-in OK, no escalation)."""
+        """Volunteer clicked 'Close' (check-in OK, no escalation)."""
         await ack()
         log.info("vigie.action.close_checkin", action_value=action.get("value"))
 
@@ -90,7 +90,7 @@ def register(app: AsyncApp) -> None:
 
     @app.action("vigie_resolve_escalation")
     async def handle_resolve_escalation(ack: AsyncAck, action: dict, body: dict) -> None:
-        """Coordinator clicked 'Marquer résolu' on an escalation."""
+        """Coordinator clicked 'Mark as resolved' on an escalation."""
         await ack()
         log.info("vigie.action.resolve_escalation", user=body["user"]["id"])
 

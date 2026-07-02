@@ -4,11 +4,11 @@ Vigie — Slack Workflow Builder custom steps.
 Defines 2 custom workflow steps that admins can use in Slack's
 Workflow Builder to integrate Vigie into custom automations:
 
-  1. vigie_workflow_checkin — "Vigie — Assigner un check-in"
+  1. vigie_workflow_checkin — "Vigie — Assign a check-in"
      Inputs: beneficiary_id, volunteer_id
      Outputs: checkin_id, anomaly_level
 
-  2. vigie_workflow_alert — "Vigie — Vérifier alerte canicule"
+  2. vigie_workflow_alert — "Vigie — Check heatwave alert"
      Inputs: department
      Outputs: alert_active, alert_level
 
@@ -158,13 +158,13 @@ def register(app: AsyncApp) -> None:
             alerts = await fetch_meteo_france_vigilance()
             dept_alerts = [a for a in alerts if a.get("department") == department]
             alert_active = any(
-                a.get("phenomenon") == "canicule" and a.get("level") in ("orange", "rouge")
+                a.get("phenomenon") == "heatwave" and a.get("level") in ("orange", "red")
                 for a in dept_alerts
             )
             alert_level = max(
-                (a.get("level", "vert") for a in dept_alerts if a.get("phenomenon") == "canicule"),
-                key=lambda x: {"vert": 0, "jaune": 1, "orange": 2, "rouge": 3}.get(x, 0),
-                default="vert",
+                (a.get("level", "green") for a in dept_alerts if a.get("phenomenon") == "heatwave"),
+                key=lambda x: {"green": 0, "yellow": 1, "orange": 2, "red": 3}.get(x, 0),
+                default="green",
             )
 
             await client.api_call(
@@ -206,15 +206,15 @@ def _build_checkin_step_modal(step: dict[str, Any]) -> dict[str, Any]:
         "blocks": [
             {
                 "type": "header",
-                "text": {"type": "plain_text", "text": "Vigie — Assigner un check-in", "emoji": True},
+                "text": {"type": "plain_text", "text": "Vigie — Assign a check-in", "emoji": True},
             },
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
                     "text": (
-                        "Cet étape déclenche un check-in Vigie pour un bénéficiaire donné, "
-                        "affecté à un bénévole. Vous pouvez utiliser des variables de workflow."
+                        "This step triggers a Vigie check-in for a given beneficiary, "
+                        "assigned to a volunteer. You can use workflow variables."
                     ),
                 },
             },
@@ -222,7 +222,7 @@ def _build_checkin_step_modal(step: dict[str, Any]) -> dict[str, Any]:
             {
                 "type": "input",
                 "block_id": "beneficiary_id_block",
-                "label": {"type": "plain_text", "text": "ID du bénéficiaire (ex: B023)"},
+                "label": {"type": "plain_text", "text": "Beneficiary ID (e.g. B023)"},
                 "element": {
                     "type": "plain_text_input",
                     "action_id": "beneficiary_id",
@@ -233,7 +233,7 @@ def _build_checkin_step_modal(step: dict[str, Any]) -> dict[str, Any]:
             {
                 "type": "input",
                 "block_id": "volunteer_id_block",
-                "label": {"type": "plain_text", "text": "ID Slack du bénévole (ex: U0123ABC)"},
+                "label": {"type": "plain_text", "text": "Slack ID of the volunteer (e.g. U0123ABC)"},
                 "element": {
                     "type": "plain_text_input",
                     "action_id": "volunteer_id",
@@ -254,16 +254,16 @@ def _build_alert_step_modal(step: dict[str, Any]) -> dict[str, Any]:
         "blocks": [
             {
                 "type": "header",
-                "text": {"type": "plain_text", "text": "Vigie — Vérifier alerte canicule", "emoji": True},
+                "text": {"type": "plain_text", "text": "Vigie — Check heatwave alert", "emoji": True},
             },
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
                     "text": (
-                        "Cet étape interroge l'API Météo-France pour vérifier si une alerte "
-                        "canicule est active dans le département spécifié. "
-                        "Sorties : `alert_active`, `alert_level`, `alert_count`."
+                        "This step queries the Météo-France API to check whether a heatwave "
+                        "alert is active in the specified department. "
+                        "Outputs: `alert_active`, `alert_level`, `alert_count`."
                     ),
                 },
             },
@@ -271,7 +271,7 @@ def _build_alert_step_modal(step: dict[str, Any]) -> dict[str, Any]:
             {
                 "type": "input",
                 "block_id": "department_block",
-                "label": {"type": "plain_text", "text": "Code département (ex: 75, 93, 13)"},
+                "label": {"type": "plain_text", "text": "Department code (e.g. 75, 93, 13)"},
                 "element": {
                     "type": "plain_text_input",
                     "action_id": "department",

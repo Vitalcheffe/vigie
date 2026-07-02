@@ -6,7 +6,7 @@ during heatwave response:
   - pharmacies (open now)
   - hospitals / clinics
   - drinking water points
-  - cooling centers (mairies, EHPAD with public AC)
+  - cooling centers (town halls, EHPAD with public AC)
   - neighbor referents (community volunteers registered per sector)
 
 URIs:

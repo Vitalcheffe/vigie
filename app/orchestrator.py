@@ -5,7 +5,7 @@ The conductor that wires Slack events/commands to the MCP server, Slack AI,
 and Real-Time Search service. Handlers stay thin; all real logic lives here.
 
 Public API:
-  - start_heatwave(triggered_by) — trigger the canicule scenario
+  - start_heatwave(triggered_by) — trigger the heatwave scenario
   - process_volunteer_message(volunteer_id, text, file_id=None) — handle a DM
   - trigger_escalation(beneficiary_id, level, triggered_by, reason)
   - generate_daily_report()
@@ -65,7 +65,7 @@ class VigieOrchestrator:
 
     async def start_heatwave(self, triggered_by: str, *, force_alert: bool = False) -> dict[str, Any]:
         """
-        Trigger the canicule scenario:
+        Trigger the heatwave scenario:
           1. Read active weather alerts from MCP (real Météo-France + NWS API)
           2. If no alert and force_alert=True, use the scenario alert from
              mcp_server/data/scenario_canicule_juillet.json (clearly labeled
@@ -77,8 +77,8 @@ class VigieOrchestrator:
         Returns a summary dict for the responding user.
 
         The `force_alert` flag is used by /vigie-simulate to replay the
-        canicule scenario even when no real alert is active. The alert
-        banner clearly indicates "SCÉNARIO" when force_alert is used.
+        heatwave scenario even when no real alert is active. The alert
+        banner clearly indicates "SCENARIO" when force_alert is used.
         """
         log.info("vigie.start_heatwave", triggered_by=triggered_by, force_alert=force_alert)
 
@@ -91,8 +91,8 @@ class VigieOrchestrator:
                         return {
                             "status": "no_alert",
                             "message": (
-                                "Aucune alerte canicule active détectée par Météo-France. "
-                                "Utilisez `/vigie-simulate canicule_juillet` pour forcer le scénario."
+                                "No active heatwave alert detected by Météo-France. "
+                                "Use `/vigie-simulate canicule_juillet` to force the scenario."
                             ),
                         }
                     # Load the scenario alert from disk (clearly labeled as scenario)
@@ -107,19 +107,19 @@ class VigieOrchestrator:
                 total_volunteers = assignments_result.get("total_volunteers", 0)
                 date = assignments_result.get("date", datetime.now(UTC).date().isoformat())
 
-            # Post alert banner in cellule de crise
+            # Post alert banner in crisis cell
             alert = alerts[0]
             is_scenario = force_alert or alert.get("source", "").startswith("Scenario")
-            banner_prefix = ":film_projector: *SCÉNARIO DÉMO* — " if is_scenario else ""
+            banner_prefix = ":film_projector: *DEMO SCENARIO* — " if is_scenario else ""
             alert_text = (
-                f"{banner_prefix}:rotating_light: *Vigilance {alert.get('level', '?').upper()} canicule* "
-                f"{'(scénario)' if is_scenario else 'détectée par Météo-France'}.\n"
+                f"{banner_prefix}:rotating_light: *{alert.get('level', '?').upper()} heatwave vigilance* "
+                f"{'(scenario)' if is_scenario else 'detected by Météo-France'}.\n"
                 f":round_pushpin: {alert.get('department_name', alert.get('department', '?'))}\n"
-                f":thermometer: T° max prévue : *{alert.get('max_temperature', '?')}°C*\n"
-                f":clock1: Valide jusqu'à : {alert.get('valid_to', '?')}\n\n"
-                f"*{total_beneficiaries} bénéficiaires* à contacter aujourd'hui.\n"
-                f"*{total_volunteers} bénévoles* affectés automatiquement.\n"
-                f"_Déclenché par <@{triggered_by}>_"
+                f":thermometer: Max forecast T°: *{alert.get('max_temperature', '?')}°C*\n"
+                f":clock1: Valid until: {alert.get('valid_to', '?')}\n\n"
+                f"*{total_beneficiaries} beneficiaries* to contact today.\n"
+                f"*{total_volunteers} volunteers* assigned automatically.\n"
+                f"_Triggered by <@{triggered_by}>_"
             )
             await post_to_cellule_crise(self.slack, text=alert_text)
 
@@ -209,7 +209,7 @@ class VigieOrchestrator:
         Process a DM from a volunteer (a check-in note).
 
         The volunteer must mention the beneficiary ID in their message
-        (e.g., "B023: Mme Dupont fatiguée"). If voice note, transcribe first.
+        (e.g., "B023: Mrs. Dupont tired"). If voice note, transcribe first.
 
         Steps:
           1. Transcribe (if voice) via Slack AI / Whisper
@@ -235,8 +235,8 @@ class VigieOrchestrator:
                 self.slack,
                 volunteer_id,
                 text=(
-                    "Je n'arrive pas à identifier le bénéficiaire dans votre message. "
-                    "Commencez par l'ID (ex : `B023: Mme Dupont va bien`)."
+                    "I couldn't identify the beneficiary in your message. "
+                    "Start with the ID (e.g.: `B023: Mrs. Dupont is doing well`)."
                 ),
             )
             return {"status": "no_beneficiary_id"}
@@ -266,7 +266,7 @@ class VigieOrchestrator:
             await post_dm(
                 self.slack,
                 volunteer_id,
-                text=f"Erreur pour {beneficiary_id} : {result.get('error')}",
+                text=f"Error for {beneficiary_id}: {result.get('error')}",
             )
             return result
 
@@ -312,10 +312,10 @@ class VigieOrchestrator:
             self.slack,
             volunteer_id,
             text=(
-                f"{level_emoji.get(anomaly_level, ':white_circle:')} Check-in enregistré pour "
-                f"{beneficiary_id} — niveau {anomaly_level}. "
-                f"Message publié dans #secteur-{sector}." if sector else
-                f"{level_emoji.get(anomaly_level, ':white_circle:')} Check-in enregistré pour {beneficiary_id}."
+                f"{level_emoji.get(anomaly_level, ':white_circle:')} Check-in recorded for "
+                f"{beneficiary_id} — level {anomaly_level}. "
+                f"Message posted in #secteur-{sector}." if sector else
+                f"{level_emoji.get(anomaly_level, ':white_circle:')} Check-in recorded for {beneficiary_id}."
             ),
         )
 
@@ -395,7 +395,7 @@ class VigieOrchestrator:
         if "error" in result:
             return result
 
-        # Build the cellule de crise message
+        # Build the crisis cell message
         beneficiary = {
             "id": beneficiary_id,
             "first_name": result.get("beneficiary", {}).get("name", "?").split()[0] if result.get("beneficiary") else "?",
@@ -475,14 +475,14 @@ class VigieOrchestrator:
 
     async def generate_daily_report(self) -> dict[str, Any]:
         """
-        Generate and post the daily report at 18h00.
+        Generate and post the daily report at 6 PM.
 
         Aggregates the day's check-ins, escalations, weak signals from the
         in-memory state store, generates an AI narrative, fetches fresh RTS
         directives, and posts a Block Kit report in #cellule-crise.
 
         Returns an error if no scenario is active (no point generating a
-        report for an empty cellule de crise).
+        report for an empty crisis cell).
         """
         log.info("vigie.generate_daily_report")
 
@@ -490,7 +490,7 @@ class VigieOrchestrator:
         if not metrics.get("scenario_active"):
             return {
                 "status": "no_scenario",
-                "message": "Aucun scénario actif. Tapez /vigie start pour démarrer.",
+                "message": "No active scenario. Type /vigie start to start.",
             }
 
         total = metrics["total_assigned"]
@@ -503,7 +503,7 @@ class VigieOrchestrator:
         avg_checkin_time = metrics.get("avg_checkin_time", "—")
         avg_escalade_latency = metrics.get("avg_escalade_latency", "—")
         weak_signals_list = self.state.get_weak_signals_summary() or [
-            "Aucun signal faible enregistré aujourd'hui."
+            "No weak signal recorded today."
         ]
         date = datetime.now(UTC).date().isoformat()
 
@@ -534,8 +534,8 @@ class VigieOrchestrator:
         except Exception as e:
             log.warning("vigie.report.ai_failed", error=str(e))
             ai_report_text = (
-                f"Synthèse indisponible ({e}). "
-                f"Voir les KPI ci-dessus pour les chiffres complets."
+                f"Summary unavailable ({e}). "
+                f"See the KPIs above for the full figures."
             )
 
         msg = build_daily_report(
@@ -647,7 +647,7 @@ class VigieOrchestrator:
     # ============================================================
 
     async def reset_scenario(self, triggered_by: str) -> dict[str, Any]:
-        """Reset the cellule de crise state. Admin only."""
+        """Reset the crisis cell state. Admin only."""
         log.info("vigie.reset_scenario", triggered_by=triggered_by)
         self.state.reset()
         from app.health import update_metrics
@@ -661,7 +661,7 @@ class VigieOrchestrator:
         return {"status": "ok", "reset": True}
 
     # ============================================================
-    # Canvas publishing (real-time cellule de crise view)
+    # Canvas publishing (real-time crisis cell view)
     # ============================================================
 
     async def _update_cellule_crise_canvas(self) -> None:
@@ -697,7 +697,7 @@ class VigieOrchestrator:
         canvas_blocks = build_cellule_crise_canvas(
             date=datetime.now(UTC).date().isoformat(),
             alert_level=alert.get("level", "orange"),
-            alert_phenomenon=alert.get("phenomenon", "canicule"),
+            alert_phenomenon=alert.get("phenomenon", "heatwave"),
             alert_departments=[alert.get("department", "75")],
             total_beneficiaries=metrics["total_assigned"],
             contacted=metrics["contacted"],
@@ -720,7 +720,7 @@ class VigieOrchestrator:
         success = await publish_canvas(
             self.slack,
             channel_id=channel_id,
-            title="Cellule de crise — Vigie",
+            title="Crisis cell — Vigie",
             blocks=canvas_blocks,
         )
         if success:
@@ -758,9 +758,9 @@ def _load_scenario_alert() -> dict[str, Any]:
         log.error("vigie.scenario_file_missing", path=str(scenario_path))
         return {
             "level": "orange",
-            "phenomenon": "canicule",
+            "phenomenon": "heatwave",
             "department": "75",
-            "department_name": "Paris (scénario)",
+            "department_name": "Paris (scenario)",
             "max_temperature": 38,
             "valid_from": "2026-07-15T06:00:00+02:00",
             "valid_to": "2026-07-18T22:00:00+02:00",
@@ -776,9 +776,9 @@ def _load_scenario_alert() -> dict[str, Any]:
         return {
             "id": "scenario-canicule-juillet-2026",
             "level": alert.get("level", "orange"),
-            "phenomenon": alert.get("phenomenon", "canicule"),
+            "phenomenon": alert.get("phenomenon", "heatwave"),
             "department": "75",
-            "department_name": "Paris (scénario démo)",
+            "department_name": "Paris (demo scenario)",
             "max_temperature": alert.get("max_temperature", 38),
             "min_temperature_night": alert.get("min_temperature_night", 23),
             "valid_from": alert.get("valid_from"),
@@ -786,18 +786,18 @@ def _load_scenario_alert() -> dict[str, Any]:
             "source": "Scenario (demo)",
             "url": "https://vigilance.meteofrance.fr/",
             "recommendation": (
-                "Passez au moins 3 heures par jour dans un lieu frais. "
-                "Buvez régulièrement de l'eau même sans soif. "
-                "Évitez les efforts physiques aux heures chaudes."
+                "Spend at least 3 hours per day in a cool place. "
+                "Drink water regularly even without thirst. "
+                "Avoid physical exertion during the hottest hours."
             ),
         }
     except Exception as e:
         log.error("vigie.scenario_load_failed", error=str(e))
         return {
             "level": "orange",
-            "phenomenon": "canicule",
+            "phenomenon": "heatwave",
             "department": "75",
-            "department_name": "Paris (scénario)",
+            "department_name": "Paris (scenario)",
             "max_temperature": 38,
             "valid_from": "2026-07-15T06:00:00+02:00",
             "valid_to": "2026-07-18T22:00:00+02:00",

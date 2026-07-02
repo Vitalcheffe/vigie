@@ -137,13 +137,13 @@ class RTSService:
         Args:
             department: Optional French department code (e.g., "75") to scope results.
 
-        Uses a 30-day freshness window — health directives (ARS communiqués,
+        Uses a 30-day freshness window — health directives (ARS press releases,
         Ministry recommendations) remain valid for weeks during heatwave
         season. Tighter windows would miss foundational directives.
         """
-        query = "canicule directives sanitaires ARS"
+        query = "heatwave health directives ARS"
         if department:
-            query += f" département {department}"
+            query += f" department {department}"
         return await self.search(query, max_results=5, freshness_hours=720)
 
     async def get_local_news(self, sector_label: str) -> list[dict[str, Any]]:
@@ -154,15 +154,15 @@ class RTSService:
             sector_label: e.g., "Paris 11e"
         """
         return await self.search(
-            f"canicule {sector_label} actualités",
+            f"heatwave {sector_label} news",
             max_results=3,
             freshness_hours=12,
         )
 
     async def get_municipal_alerts(self, city: str) -> list[dict[str, Any]]:
-        """Get municipal cooling centers / îlots de fraîcheur updates."""
+        """Get municipal cooling centers / cooling spots updates."""
         return await self.search(
-            f"{city} îlot fraîcheur canicule ouverture",
+            f"{city} cooling center heatwave opening",
             max_results=3,
             freshness_hours=12,
         )
@@ -230,8 +230,8 @@ class RTSService:
         and freshness, returns normalized dicts.
         """
         query_terms = {t.lower() for t in query.split() if len(t) > 2}
-        # Don't require all terms — heatwave + ars + 75 → keep "canicule" + "ARS" only
-        required_terms = {t for t in query_terms if t in {"canicule", "chaleur", "heatwave", "heat", "directives"}}
+        # Don't require all terms — heatwave + ars + 75 → keep "heatwave" + "ARS" only
+        required_terms = {t for t in query_terms if t in {"heatwave", "heat", "directives", "cooling", "ars"}}
 
         cutoff = time.time() - (freshness_hours * 3600)
 

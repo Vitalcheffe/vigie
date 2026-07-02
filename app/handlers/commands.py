@@ -3,7 +3,7 @@ Vigie — Slash command handlers (async).
 
 Commands:
 - /vigie start            — trigger the heatwave scenario
-- /vigie status           — current state of the cellule de crise
+- /vigie status           — current state of the crisis cell
 - /vigie report           — generate the daily report now
 - /vigie reset            — reset the simulation (admin only)
 - /vigie help             — show help
@@ -59,7 +59,7 @@ def register(app: AsyncApp) -> None:
         elif subcommand == "reset":
             await _cmd_reset(respond, user_id)
         else:
-            await respond(f"Sous-commande inconnue: `{subcommand}`. Tapez `/vigie help` pour la liste.")
+            await respond(f"Unknown subcommand: `{subcommand}`. Type `/vigie help` for the list.")
 
     @app.command("/vigie-checkin")
     async def handle_checkin_command(ack: AsyncAck, command: dict, respond: AsyncRespond, body: dict, client) -> None:
@@ -67,7 +67,7 @@ def register(app: AsyncApp) -> None:
         await ack()
         beneficiary_id = command.get("text", "").strip()
         if not beneficiary_id:
-            await respond("Usage: `/vigie-checkin <beneficiary_id>` (ex: `/vigie-checkin B023`)")
+            await respond("Usage: `/vigie-checkin <beneficiary_id>` (e.g.: `/vigie-checkin B023`)")
             return
 
         from app.blocks.modals import build_checkin_modal
@@ -80,7 +80,7 @@ def register(app: AsyncApp) -> None:
         try:
             await client.views_open(trigger_id=body["trigger_id"], view=modal)
         except Exception as e:
-            await respond(f":warning: Impossible d'ouvrir le modal : {e}")
+            await respond(f":warning: Could not open the modal: {e}")
 
     @app.command("/vigie-escalate")
     async def handle_escalate_command(ack: AsyncAck, command: dict, respond: AsyncRespond) -> None:
@@ -97,7 +97,7 @@ def register(app: AsyncApp) -> None:
         try:
             level = int(parts[1])
         except ValueError:
-            await respond("Le niveau doit être 1, 2 ou 3.")
+            await respond("The level must be 1, 2, or 3.")
             return
         reason = " ".join(parts[2:]) if len(parts) > 2 else None
         user_id = command.get("user_id", "unknown")
@@ -112,11 +112,11 @@ def register(app: AsyncApp) -> None:
 
         if result.get("status") == "ok":
             await respond(
-                f":rotating_light: Escalade niveau {level} déclenchée pour `{beneficiary_id}`. "
-                f"Message publié dans #cellule-crise."
+                f":rotating_light: Escalation level {level} triggered for `{beneficiary_id}`. "
+                f"Message posted in #cellule-crise."
             )
         else:
-            await respond(f":warning: Erreur : {result.get('message', result)}")
+            await respond(f":warning: Error: {result.get('message', result)}")
 
     @app.command("/vigie-report")
     async def handle_report_command(ack: AsyncAck, command: dict, respond: AsyncRespond) -> None:
@@ -127,17 +127,17 @@ def register(app: AsyncApp) -> None:
         result = await orch.generate_daily_report()
 
         if result.get("status") == "ok":
-            await respond(":memo: Rapport quotidien publié dans #cellule-crise.")
+            await respond(":memo: Daily report posted in #cellule-crise.")
         else:
-            await respond(f":warning: Erreur : {result.get('message', result)}")
+            await respond(f":warning: Error: {result.get('message', result)}")
 
     @app.command("/vigie-simulate")
     async def handle_simulate_command(ack: AsyncAck, command: dict, respond: AsyncRespond) -> None:
-        """Run a simulation scenario by replaying the canicule events in Slack.
+        """Run a simulation scenario by replaying the heatwave events in Slack.
 
         Uses force_alert=True so the scenario can run even without a real
-        Météo-France canicule alert. The alert banner is clearly labeled
-        "SCÉNARIO DÉMO" to avoid any confusion with real data.
+        Météo-France heatwave alert. The alert banner is clearly labeled
+        "DEMO SCENARIO" to avoid any confusion with real data.
         """
         await ack()
         scenario_name = command.get("text", "").strip() or "canicule_juillet"
@@ -150,15 +150,15 @@ def register(app: AsyncApp) -> None:
 
         if result.get("status") == "ok":
             await respond(
-                f":movie_camera: Scénario `{scenario_name}` démarré (mode démo — alerte clairement étiquetée).\n"
-                f"• Bénéficiaires affectés : *{result.get('total_beneficiaries', 0)}*\n"
-                f"• Bénévoles notifiés : *{result.get('volunteers_notified', 0)}*\n\n"
-                f"Pour simuler un check-in, envoyez-moi un DM : `B023: Mme Dupont fatiguée`.\n"
-                f"Pour simuler une escalade : `/vigie-escalate B003 3 \"Au sol, inconsciente\"`.\n"
-                f"Pour générer le rapport : `/vigie report`."
+                f":movie_camera: Scenario `{scenario_name}` started (demo mode — alert clearly labeled).\n"
+                f"• Beneficiaries assigned: *{result.get('total_beneficiaries', 0)}*\n"
+                f"• Volunteers notified: *{result.get('volunteers_notified', 0)}*\n\n"
+                f"To simulate a check-in, send me a DM: `B023: Mrs. Dupont tired`.\n"
+                f"To simulate an escalation: `/vigie-escalate B003 3 \"On the ground, unconscious\"`.\n"
+                f"To generate the report: `/vigie report`."
             )
         else:
-            await respond(f":warning: Erreur : {result.get('message', result)}")
+            await respond(f":warning: Error: {result.get('message', result)}")
 
     log.debug("vigie.commands.registered")
 
@@ -173,35 +173,35 @@ async def _cmd_help(respond: AsyncRespond) -> None:
         blocks=[
             {
                 "type": "header",
-                "text": {"type": "plain_text", "text": "Vigie — Aide"},
+                "text": {"type": "plain_text", "text": "Vigie — Help"},
             },
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
                     "text": (
-                        "*Commandes disponibles:*\n\n"
-                        "• `/vigie start` — Déclencher le scénario canicule\n"
-                        "• `/vigie status` — État de la cellule de crise\n"
-                        "• `/vigie report` — Générer le rapport quotidien\n"
-                        "• `/vigie reset` — Réinitialiser la simulation (admin)\n"
-                        "• `/vigie-checkin <id>` — Démarrer un check-in\n"
-                        "• `/vigie-escalate <id> <1|2|3>` — Escalade manuelle\n"
-                        "• `/vigie-simulate <name>` — Lancer un scénario\n"
-                        "• `/vigie help` — Cette aide\n\n"
-                        "_En cas d'urgence vitale, appelez le 15 ou le 112._"
+                        "*Available commands:*\n\n"
+                        "• `/vigie start` — Trigger the heatwave scenario\n"
+                        "• `/vigie status` — State of the crisis cell\n"
+                        "• `/vigie report` — Generate the daily report\n"
+                        "• `/vigie reset` — Reset the simulation (admin)\n"
+                        "• `/vigie-checkin <id>` — Start a check-in\n"
+                        "• `/vigie-escalate <id> <1|2|3>` — Manual escalation\n"
+                        "• `/vigie-simulate <name>` — Launch a scenario\n"
+                        "• `/vigie help` — This help\n\n"
+                        "_In case of life-threatening emergency, call 15 or 112._"
                     ),
                 },
             },
         ],
-        text="Vigie — Aide",
+        text="Vigie — Help",
     )
 
 
 async def _cmd_start(respond: AsyncRespond, user_id: str) -> None:
     """Start the heatwave scenario using REAL Météo-France alerts.
 
-    If no canicule alert is currently active, the user is invited to use
+    If no heatwave alert is currently active, the user is invited to use
     /vigie-simulate to force the demo scenario (clearly labeled as such).
     """
     log.info("vigie.command.start", user=user_id)
@@ -212,25 +212,25 @@ async def _cmd_start(respond: AsyncRespond, user_id: str) -> None:
     if result.get("status") == "ok":
         await respond(
             text=(
-                f":rotating_light: *Canicule réelle détectée — scénario démarré.*\n"
-                f"• Niveau d'alerte : *{result.get('alert_level', '?')}* (source : Météo-France)\n"
-                f"• Bénéficiaires à contacter : *{result.get('total_beneficiaries', 0)}*\n"
-                f"• Bénévoles notifiés : *{result.get('volunteers_notified', 0)}*\n"
-                f"• Message publié dans #cellule-crise\n"
-                f"• DM envoyés à chaque bénévole avec leur liste du jour"
+                f":rotating_light: *Real heatwave detected — scenario started.*\n"
+                f"• Alert level: *{result.get('alert_level', '?')}* (source: Météo-France)\n"
+                f"• Beneficiaries to contact: *{result.get('total_beneficiaries', 0)}*\n"
+                f"• Volunteers notified: *{result.get('volunteers_notified', 0)}*\n"
+                f"• Message posted in #cellule-crise\n"
+                f"• DMs sent to each volunteer with their list for today"
             )
         )
     elif result.get("status") == "no_alert":
         await respond(
-            ":information_source: Aucune alerte canicule active détectée par Météo-France. "
-            "Pour démarrer le scénario de démo, tapez `/vigie-simulate canicule_juillet`."
+            ":information_source: No active heatwave alert detected by Météo-France. "
+            "To start the demo scenario, type `/vigie-simulate canicule_juillet`."
         )
     else:
-        await respond(f":warning: Erreur : {result.get('message', result)}")
+        await respond(f":warning: Error: {result.get('message', result)}")
 
 
 async def _cmd_status(respond: AsyncRespond) -> None:
-    """Show current cellule de crise status."""
+    """Show current crisis cell status."""
     from app.state import get_state
 
     state = get_state()
@@ -239,25 +239,25 @@ async def _cmd_status(respond: AsyncRespond) -> None:
 
     if not metrics.get("scenario_active"):
         await respond(
-            ":bar_chart: *Aucun scénario actif.* Tapez `/vigie start` pour déclencher une alerte canicule simulée."
+            ":bar_chart: *No active scenario.* Type `/vigie start` to trigger a simulated heatwave alert."
         )
         return
 
     await respond(
         text=(
-            f":bar_chart: *Cellule de crise — vue d'ensemble*\n"
-            f":rotating_light: Alerte : *{metrics['alert']['level']}* ({metrics['alert'].get('phenomenon', 'canicule')})\n"
-            f":busts_in_silhouette: Bénéficiaires assignés : *{metrics['total_assigned']}*\n"
-            f":white_check_mark: Contactés : *{metrics['contacted']}* ({metrics['coverage_pct']}%)\n"
-            f":large_green_circle: Check-in OK : *{metrics['ok_count']}*\n"
-            f":large_yellow_circle: Signaux faibles : *{metrics['weak_count']}*\n"
-            f":large_orange_circle: Escalades coordinateur : *{metrics['coord_escalations']}*\n"
-            f":red_circle: Escalades SAMU : *{metrics['samu_escalations']}*\n"
-            f":stopwatch: Temps moyen check-in : *{metrics['avg_checkin_time']}*\n"
-            f":stopwatch: Latence escalade : *{metrics['avg_escalade_latency']}*\n"
-            f":warning: Non contactés > 72h : *{metrics['unreachable_72h']}*\n"
-            f":hourglass: Escalades actives non résolues : *{len(active_esc)}*\n\n"
-            f"Pour le détail, ouvrez l'App Home de Vigie."
+            f":bar_chart: *Crisis cell — overview*\n"
+            f":rotating_light: Alert: *{metrics['alert']['level']}* ({metrics['alert'].get('phenomenon', 'canicule')})\n"
+            f":busts_in_silhouette: Beneficiaries assigned: *{metrics['total_assigned']}*\n"
+            f":white_check_mark: Contacted: *{metrics['contacted']}* ({metrics['coverage_pct']}%)\n"
+            f":large_green_circle: Check-in OK: *{metrics['ok_count']}*\n"
+            f":large_yellow_circle: Weak signals: *{metrics['weak_count']}*\n"
+            f":large_orange_circle: Coordinator escalations: *{metrics['coord_escalations']}*\n"
+            f":red_circle: SAMU escalations: *{metrics['samu_escalations']}*\n"
+            f":stopwatch: Avg check-in time: *{metrics['avg_checkin_time']}*\n"
+            f":stopwatch: Escalation latency: *{metrics['avg_escalade_latency']}*\n"
+            f":warning: Not contacted > 72h: *{metrics['unreachable_72h']}*\n"
+            f":hourglass: Unresolved active escalations: *{len(active_esc)}*\n\n"
+            f"For details, open Vigie's App Home."
         )
     )
 
@@ -267,9 +267,9 @@ async def _cmd_report(respond: AsyncRespond) -> None:
     orch = _get_orchestrator()
     result = await orch.generate_daily_report()
     if result.get("status") == "ok":
-        await respond(":memo: Rapport quotidien publié dans #cellule-crise.")
+        await respond(":memo: Daily report posted in #cellule-crise.")
     else:
-        await respond(f":warning: Erreur : {result.get('message', result)}")
+        await respond(f":warning: Error: {result.get('message', result)}")
 
 
 async def _cmd_reset(respond: AsyncRespond, user_id: str) -> None:
@@ -278,6 +278,6 @@ async def _cmd_reset(respond: AsyncRespond, user_id: str) -> None:
     orch = _get_orchestrator()
     result = await orch.reset_scenario(triggered_by=user_id)
     if result.get("status") == "ok":
-        await respond(":wastebasket: Cellule de crise réinitialisée. État remis à zéro.")
+        await respond(":wastebasket: Crisis cell reset. State cleared.")
     else:
-        await respond(f":warning: Erreur : {result.get('message', result)}")
+        await respond(f":warning: Error: {result.get('message', result)}")

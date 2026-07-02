@@ -17,9 +17,9 @@ log = get_logger("vigie.blocks.checkin")
 # Slack color codes for the anomaly levels (used in attachments/sections)
 ANOMALY_VISUALS = {
     0: {"emoji": ":large_green_circle:", "label": "OK", "color": "#2EB67D"},
-    1: {"emoji": ":large_yellow_circle:", "label": "Signal faible", "color": "#ECB22E"},
-    2: {"emoji": ":large_orange_circle:", "label": "Escalade coordinateur", "color": "#E01E5A"},
-    3: {"emoji": ":red_circle:", "label": "Critique — SAMU", "color": "#E01E5A"},
+    1: {"emoji": ":large_yellow_circle:", "label": "Weak signal", "color": "#ECB22E"},
+    2: {"emoji": ":large_orange_circle:", "label": "Coordinator escalation", "color": "#E01E5A"},
+    3: {"emoji": ":red_circle:", "label": "Critical — SAMU", "color": "#E01E5A"},
 }
 
 
@@ -59,15 +59,15 @@ def build_checkin_message(
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": f"{visual['emoji']} Check-in — {name}, {age} ans, secteur {sector}",
+                "text": f"{visual['emoji']} Check-in — {name}, {age} yrs, sector {sector}",
                 "emoji": True,
             },
         },
         {
             "type": "context",
             "elements": [
-                {"type": "mrkdwn", "text": f"_Bénévole : <@{volunteer_id}>_"},
-                {"type": "mrkdwn", "text": f"• Niveau : *{visual['label']}*"},
+                {"type": "mrkdwn", "text": f"_Volunteer: <@{volunteer_id}>_"},
+                {"type": "mrkdwn", "text": f"• Level: *{visual['label']}*"},
             ],
         },
         {"type": "divider"},
@@ -82,7 +82,7 @@ def build_checkin_message(
         blocks.append(
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": f"*Signaux détectés :* {badges}"},
+                "text": {"type": "mrkdwn", "text": f"*Detected signals:* {badges}"},
             }
         )
 
@@ -96,7 +96,7 @@ def build_checkin_message(
         blocks.append(
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": f"*POIs à proximité :*\n{poi_text}"},
+                "text": {"type": "mrkdwn", "text": f"*Nearby POIs:*\n{poi_text}"},
             }
         )
 
@@ -109,7 +109,7 @@ def build_checkin_message(
         actions.append(
             {
                 "type": "button",
-                "text": {"type": "plain_text", "text": "Confirmer pharmacie", "emoji": True},
+                "text": {"type": "plain_text", "text": "Confirm pharmacy", "emoji": True},
                 "style": "primary",
                 "action_id": "vigie_confirm_pharmacy",
                 "value": json.dumps({"beneficiary_id": beneficiary_id, "poi_id": poi_list[0].get("id")}),
@@ -120,7 +120,7 @@ def build_checkin_message(
         actions.append(
             {
                 "type": "button",
-                "text": {"type": "plain_text", "text": "Escalader coordinateur", "emoji": True},
+                "text": {"type": "plain_text", "text": "Escalate to coordinator", "emoji": True},
                 "action_id": "vigie_escalate_2",
                 "value": json.dumps({"beneficiary_id": beneficiary_id, "level": 2}),
                 "style": "danger",
@@ -142,7 +142,7 @@ def build_checkin_message(
     actions.append(
         {
             "type": "button",
-            "text": {"type": "plain_text", "text": "Clôturer", "emoji": True},
+            "text": {"type": "plain_text", "text": "Close", "emoji": True},
             "action_id": "vigie_close_checkin",
             "value": json.dumps({"beneficiary_id": beneficiary_id, "checkin_id": checkin_id or ""}),
         }
@@ -170,7 +170,7 @@ def build_volunteer_dm(
     The DM contains:
       - Greeting + alert context
       - List of assigned beneficiaries (compact, with phone)
-      - 'Démarrer les appels' button
+      - 'Start calls' button
     """
     visual = ":large_orange_circle:" if alert_level == "orange" else ":red_circle:"
     count = len(assignments)
@@ -180,7 +180,7 @@ def build_volunteer_dm(
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": f"{visual} Bonjour {volunteer_name.split()[0]} — {count} check-in pour aujourd'hui",
+                "text": f"{visual} Hello {volunteer_name.split()[0]} — {count} check-ins for today",
                 "emoji": True,
             },
         },
@@ -189,18 +189,18 @@ def build_volunteer_dm(
             "text": {
                 "type": "mrkdwn",
                 "text": (
-                    f"Vigilance *{alert_level} canicule* active depuis ce matin 7h. "
-                    f"Vous avez *{count} bénéficiaires* à contacter avant 14h. "
-                    f"Date : *{date}*.\n\n"
-                    "Après chaque appel, postez-moi une note (texte ou vocale) avec ce que vous avez observé. "
-                    "Je m'occupe de l'analyse, des pharmacies, et des escalades."
+                    f"Orange *heatwave vigilance* active since 7 AM this morning. "
+                    f"You have *{count} beneficiaries* to contact before 2 PM. "
+                    f"Date: *{date}*.\n\n"
+                    "After each call, send me a note (text or voice) with what you observed. "
+                    "I handle analysis, pharmacies, and escalations."
                 ),
             },
         },
         {"type": "divider"},
         {
             "type": "header",
-            "text": {"type": "plain_text", "text": "📋 Votre liste du jour", "emoji": True},
+            "text": {"type": "plain_text", "text": "📋 Your list for today", "emoji": True},
         },
     ]
 
@@ -219,16 +219,16 @@ def build_volunteer_dm(
                 "text": {
                     "type": "mrkdwn",
                     "text": (
-                        f"*{name}* ({age} ans, secteur {sector}) — `id: {b.get('id')}`\n"
+                        f"*{name}* ({age} yrs, sector {sector}) — `id: {b.get('id')}`\n"
                         f":telephone: `{phone}`\n"
-                        f":heart: Vulnérabilité : *{vuln}/100*"
-                        + (f" — Conditions : {', '.join(conditions)}" if conditions else "")
-                        + (f"\n:pill: Traitements : {', '.join(meds)}" if meds else "")
+                        f":heart: Vulnerability: *{vuln}/100*"
+                        + (f" — Conditions: {', '.join(conditions)}" if conditions else "")
+                        + (f"\n:pill: Treatments: {', '.join(meds)}" if meds else "")
                     ),
                 },
                 "accessory": {
                     "type": "button",
-                    "text": {"type": "plain_text", "text": "Fiche complète", "emoji": True},
+                    "text": {"type": "plain_text", "text": "Full profile", "emoji": True},
                     "action_id": "vigie_view_beneficiary",
                     "value": b.get("id", ""),
                 },
@@ -243,7 +243,7 @@ def build_volunteer_dm(
             "elements": [
                 {
                     "type": "button",
-                    "text": {"type": "plain_text", "text": ":telephone_receiver: Démarrer les appels", "emoji": True},
+                    "text": {"type": "plain_text", "text": ":telephone_receiver: Start calls", "emoji": True},
                     "style": "primary",
                     "action_id": "vigie_start_calls",
                     "value": json.dumps({"volunteer_id": volunteer_id, "date": date}),
@@ -254,5 +254,5 @@ def build_volunteer_dm(
 
     return {
         "blocks": blocks,
-        "text": f"Vigie — {count} check-in pour aujourd'hui",
+        "text": f"Vigie — {count} check-ins for today",
     }

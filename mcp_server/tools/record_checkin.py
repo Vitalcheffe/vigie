@@ -156,9 +156,9 @@ async def record_checkin(
 
 _ANOMALY_LABELS = {
     0: "OK",
-    1: "Signal faible",
-    2: "Escalade coordinateur",
-    3: "Escalade critique (SAMU)",
+    1: "Weak signal",
+    2: "Coordinator escalation",
+    3: "Critical escalation (SAMU)",
 }
 
 
@@ -182,21 +182,38 @@ async def _classify_anomaly(
     text = transcript.lower()
 
     # Critical signals
-    critical_keywords = ["au sol", "inconscient", "ne respire pas", "samu", "15", "112", "urgence vitale"]
+    critical_keywords = [
+        "au sol", "on the ground", "inconscient", "unconscious",
+        "ne respire pas", "not breathing", "samu", "15", "112",
+        "urgence vitale", "life-threatening emergency",
+    ]
     if any(k in text for k in critical_keywords):
         return 3, ["critical_keyword"], "escalate_samu"
 
     # Coordinator escalation
-    coord_keywords = ["pas de réponse", "pas répondu", "injoignable", "confuse", "désorientée", "chute"]
+    coord_keywords = [
+        "pas de réponse", "no answer", "pas répondu", "injoignable",
+        "unreachable", "confuse", "désorientée", "disoriented",
+        "chute", "fall",
+    ]
     if any(k in text for k in coord_keywords):
-        signals = ["unreachable"] if "pas de réponse" in text or "pas répondu" in text else ["cognitive_distress"]
+        signals = (
+            ["unreachable"]
+            if "pas de réponse" in text or "pas répondu" in text
+            or "no answer" in text or "unreachable" in text
+            else ["cognitive_distress"]
+        )
         return 2, signals, "escalate_coord"
 
     # Weak signals
-    weak_keywords = ["fatiguée", "fatigue", "médicament", "ordonnance", "difficile", "seule", "peur"]
+    weak_keywords = [
+        "fatiguée", "tired", "fatigue", "médicament", "medication",
+        "ordonnance", "prescription", "difficile", "difficult",
+        "seule", "alone", "peur", "afraid",
+    ]
     weak_hits = [k for k in weak_keywords if k in text]
     if weak_hits:
-        if any(k in weak_hits for k in ["médicament", "ordonnance"]):
+        if any(k in weak_hits for k in ["médicament", "ordonnance", "medication", "prescription"]):
             return 1, ["medication_request"], "pharmacy"
         return 1, ["weak_signal"], "ok"
 
@@ -241,20 +258,20 @@ def _build_sector_message(
     emoji = level_emoji.get(anomaly_level, ":white_circle:")
 
     msg_parts = [
-        f"{emoji} *Check-in — {name}*, {age} ans, secteur {sector}",
-        f"_Bénévole : <@{volunteer_id}>_",
+        f"{emoji} *Check-in — {name}*, {age} yrs, sector {sector}",
+        f"_Volunteer: <@{volunteer_id}>_",
         "",
         f"> {transcript}",
         "",
-        f"*Niveau anomalie :* {_ANOMALY_LABELS.get(anomaly_level, '?')}",
+        f"*Anomaly level:* {_ANOMALY_LABELS.get(anomaly_level, '?')}",
     ]
 
     if signals:
-        msg_parts.append(f"*Signaux détectés :* {', '.join(signals)}")
+        msg_parts.append(f"*Detected signals:* {', '.join(signals)}")
 
     if suggested_pois:
         msg_parts.append("")
-        msg_parts.append("*POIs suggérés :*")
+        msg_parts.append("*Suggested POIs:*")
         for poi in suggested_pois:
             distance = poi.get("distance_m")
             distance_str = f" ({distance:.0f} m)" if distance else ""

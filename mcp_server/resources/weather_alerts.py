@@ -30,23 +30,23 @@ log = get_logger("vigie.mcp.resources.weather_alerts")
 
 # Météo-France vigilance phenomena codes → human labels
 _PHENOMENA_LABELS = {
-    1: "vent violent",
-    2: "pluie-inondation",
-    3: "orages",
-    4: "crues",
-    5: "neige-verglas",
-    6: "canicule",
-    7: "grand-froid",
+    1: "violent wind",
+    2: "rain-flood",
+    3: "thunderstorms",
+    4: "floods",
+    5: "snow-ice",
+    6: "heatwave",
+    7: "extreme cold",
     8: "avalanches",
-    9: "vagues-submersion",
+    9: "waves-submersion",
 }
 
 # Météo-France vigilance levels → normalized strings
 _LEVEL_LABELS = {
-    1: "vert",
-    2: "jaune",
+    1: "green",
+    2: "yellow",
     3: "orange",
-    4: "rouge",
+    4: "red",
 }
 
 
@@ -55,8 +55,8 @@ async def fetch_meteo_france_vigilance() -> list[dict[str, Any]]:
     Fetch the Météo-France vigilance map and parse active alerts.
 
     Calls the public Météo-France DPVigilance API. Returns a list of
-    normalized alert dicts. Only returns alerts with level >= jaune
-    (level 2+), since 'vert' is the default 'no alert' state.
+    normalized alert dicts. Only returns alerts with level >= yellow
+    (level 2+), since 'green' is the default 'no alert' state.
 
     If the API call fails or returns an unexpected schema, returns an
     empty list (we DO NOT fall back to fake data — that would mask a
@@ -107,7 +107,7 @@ def _parse_meteo_france_response(data: dict[str, Any]) -> list[dict[str, Any]]:
             dept = region.get("domain_id") or region.get("department")
             color_max = region.get("color_max", 0)
             if color_max < 2:
-                continue  # vert = no alert
+                continue  # green = no alert
 
             # Each phenomenon has its own color
             for ph in region.get("phenomenons", []) or []:
@@ -120,9 +120,9 @@ def _parse_meteo_france_response(data: dict[str, Any]) -> list[dict[str, Any]]:
                     {
                         "id": f"mf-vig-{dept}-{ph_id}-{timelag}",
                         "department": str(dept),
-                        "department_name": _DEPARTMENT_NAMES.get(str(dept), f"Département {dept}"),
-                        "level": _LEVEL_LABELS.get(ph_color, "jaune"),
-                        "phenomenon": _PHENOMENA_LABELS.get(ph_id, f"phénomène {ph_id}"),
+                        "department_name": _DEPARTMENT_NAMES.get(str(dept), f"Department {dept}"),
+                        "level": _LEVEL_LABELS.get(ph_color, "yellow"),
+                        "phenomenon": _PHENOMENA_LABELS.get(ph_id, f"phenomenon {ph_id}"),
                         "valid_from": begin_time,
                         "valid_to": end_time,
                         "source": "Météo-France",
@@ -143,8 +143,8 @@ def _parse_meteo_france_response(data: dict[str, Any]) -> list[dict[str, Any]]:
                 {
                     "id": f"mf-vig-{dept}-{ph_id}",
                     "department": str(dept),
-                    "department_name": _DEPARTMENT_NAMES.get(str(dept), f"Département {dept}"),
-                    "level": _LEVEL_LABELS.get(color, "jaune"),
+                    "department_name": _DEPARTMENT_NAMES.get(str(dept), f"Department {dept}"),
+                    "level": _LEVEL_LABELS.get(color, "yellow"),
                     "phenomenon": _PHENOMENA_LABELS.get(ph_id, "unknown"),
                     "valid_from": props.get("begin_validity_time"),
                     "valid_to": props.get("end_validity_time"),
@@ -155,11 +155,11 @@ def _parse_meteo_france_response(data: dict[str, Any]) -> list[dict[str, Any]]:
 
     # Add recommendations for heatwave alerts
     for alert in alerts:
-        if alert["phenomenon"] == "canicule":
+        if alert["phenomenon"] == "heatwave":
             alert["recommendation"] = (
-                "Passez au moins 3 heures par jour dans un lieu frais. "
-                "Buvez régulièrement de l'eau même sans soif. "
-                "Évitez les efforts physiques aux heures chaudes."
+                "Spend at least 3 hours per day in a cool place. "
+                "Drink water regularly even without thirst. "
+                "Avoid physical exertion during the hottest hours."
             )
             # Estimate max temperature from the alert level
             alert["max_temperature"] = 38 if alert["level"] == "orange" else 40
@@ -169,7 +169,7 @@ def _parse_meteo_france_response(data: dict[str, Any]) -> list[dict[str, Any]]:
     return alerts
 
 
-# INSEE department code → name (metropolitan France + DOM)
+# INSEE department code → name (metropolitan France + overseas departments)
 _DEPARTMENT_NAMES = {
     "01": "Ain", "02": "Aisne", "03": "Allier", "04": "Alpes-de-Haute-Provence",
     "05": "Hautes-Alpes", "06": "Alpes-Maritimes", "07": "Ardèche", "08": "Ardennes",
@@ -233,7 +233,7 @@ async def fetch_nws_alerts(state: str | None = None) -> list[dict[str, Any]]:
 
         # Map NWS severity to our level system
         severity = props.get("severity", "").lower()
-        level = "orange" if severity in ("moderate", "severe") else "rouge" if severity == "extreme" else "jaune"
+        level = "orange" if severity in ("moderate", "severe") else "red" if severity == "extreme" else "yellow"
 
         alerts.append(
             {
@@ -241,7 +241,7 @@ async def fetch_nws_alerts(state: str | None = None) -> list[dict[str, Any]]:
                 "department": state or "US",
                 "department_name": props.get("areaDesc", state or "United States"),
                 "level": level,
-                "phenomenon": "canicule",
+                "phenomenon": "heatwave",
                 "valid_from": props.get("onset"),
                 "valid_to": props.get("expires"),
                 "source": "NWS",
@@ -262,8 +262,8 @@ def register(mcp) -> None:
         """
         Get all active weather vigilance alerts (Météo-France + NWS).
 
-        Returns only heatwave (canicule) and other severe weather alerts
-        (level jaune or higher). Each alert includes the level, phenomenon,
+        Returns only heatwave and other severe weather alerts
+        (level yellow or higher). Each alert includes the level, phenomenon,
         affected area, validity times, and source URL.
         """
         log.debug("vigie.mcp.resource.weather_alerts.read")
@@ -288,7 +288,7 @@ def register(mcp) -> None:
         return json.dumps(
             {
                 "department": department,
-                "department_name": _DEPARTMENT_NAMES.get(department, f"Département {department}"),
+                "department_name": _DEPARTMENT_NAMES.get(department, f"Department {department}"),
                 "count": len(filtered),
                 "alerts": filtered,
             },
@@ -309,10 +309,10 @@ async def get_active_alerts() -> list[dict[str, Any]]:
 
 
 async def is_heatwave_active() -> bool:
-    """Quick check: is there an active canicule alert (orange or rouge)?"""
+    """Quick check: is there an active heatwave alert (orange or red)?"""
     alerts = await fetch_meteo_france_vigilance()
     return any(
-        a.get("phenomenon") == "canicule"
-        and a.get("level") in ("orange", "rouge")
+        a.get("phenomenon") == "heatwave"
+        and a.get("level") in ("orange", "red")
         for a in alerts
     )

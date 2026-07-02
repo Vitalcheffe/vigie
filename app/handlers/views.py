@@ -41,7 +41,7 @@ def register(app: AsyncApp) -> None:
 
     @app.action("vigie_view_beneficiary")
     async def handle_open_checkin_modal(ack: AsyncAck, action: dict, body: dict, client) -> None:
-        """Volunteer clicked 'Fiche complète' / wants to submit a structured check-in."""
+        """Volunteer clicked 'Full profile' / wants to submit a structured check-in."""
         await ack()
         beneficiary_id = action.get("value", "")
         if not beneficiary_id:
@@ -61,7 +61,7 @@ def register(app: AsyncApp) -> None:
 
     @app.shortcut("vigie_signal_anomaly")
     async def handle_shortcut_anomaly(ack: AsyncAck, shortcut: dict, body: dict, client) -> None:
-        """User triggered the 'Signaler une anomalie' shortcut on a message."""
+        """User triggered the 'Report an anomaly' shortcut on a message."""
         await ack()
         message_ts = shortcut.get("message", {}).get("ts", "")
         channel = shortcut.get("channel", {}).get("id", "")
@@ -72,7 +72,7 @@ def register(app: AsyncApp) -> None:
 
     @app.shortcut("vigie_reassign")
     async def handle_shortcut_reassign(ack: AsyncAck, shortcut: dict, body: dict, client) -> None:
-        """User triggered the 'Réassigner ce bénéficiaire' shortcut."""
+        """User triggered the 'Reassign this beneficiary' shortcut."""
         await ack()
         # The shortcut is triggered from a message — try to extract a beneficiary ID
         text = shortcut.get("message", {}).get("text", "")
@@ -142,7 +142,7 @@ def register(app: AsyncApp) -> None:
         if result.get("status") != "ok":
             log.warning("vigie.view.checkin_failed", result=result)
             await ack(response_action="errors", errors={
-                "state_block": "Erreur lors de l'enregistrement. Réessayez ou contactez un coordinateur.",
+                "state_block": "Error while saving. Try again or contact a coordinator.",
             })
             return
 
@@ -173,7 +173,7 @@ def register(app: AsyncApp) -> None:
 
         if not beneficiary_id:
             await ack(response_action="errors", errors={
-                "beneficiary_block": "ID du bénéficiaire requis.",
+                "beneficiary_block": "Beneficiary ID is required.",
             })
             return
 
@@ -205,7 +205,7 @@ def register(app: AsyncApp) -> None:
 
         if not new_volunteer:
             await ack(response_action="errors", errors={
-                "volunteer_block": "ID du nouveau bénévole requis.",
+                "volunteer_block": "New volunteer ID is required.",
             })
             return
 

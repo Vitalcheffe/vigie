@@ -28,18 +28,18 @@ def build_checkin_modal(
         "type": "modal",
         "callback_id": "vigie_modal_checkin",
         "private_metadata": private_metadata,
-        "title": {"type": "plain_text", "text": "Check-in bénéficiaire", "emoji": True},
-        "submit": {"type": "plain_text", "text": "Enregistrer", "emoji": True},
-        "close": {"type": "plain_text", "text": "Annuler", "emoji": True},
+        "title": {"type": "plain_text", "text": "Beneficiary check-in", "emoji": True},
+        "submit": {"type": "plain_text", "text": "Save", "emoji": True},
+        "close": {"type": "plain_text", "text": "Cancel", "emoji": True},
         "blocks": [
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
                     "text": (
-                        f"*Bénéficiaire :* {beneficiary_name} (`{beneficiary_id}`)\n"
-                        + (f"*Secteur :* {sector}\n" if sector else "")
-                        + "Renseignez l'état observé après votre appel téléphonique."
+                        f"*Beneficiary:* {beneficiary_name} (`{beneficiary_id}`)\n"
+                        + (f"*Sector:* {sector}\n" if sector else "")
+                        + "Report the observed state after your phone call."
                     ),
                 },
             },
@@ -47,17 +47,17 @@ def build_checkin_modal(
             {
                 "type": "input",
                 "block_id": "state_block",
-                "label": {"type": "plain_text", "text": "État général"},
+                "label": {"type": "plain_text", "text": "General state"},
                 "element": {
                     "type": "static_select",
                     "action_id": "state",
-                    "placeholder": {"type": "plain_text", "text": "Sélectionnez un état"},
+                    "placeholder": {"type": "plain_text", "text": "Select a state"},
                     "options": [
-                        {"text": {"type": "plain_text", "text": "OK — va bien"}, "value": "ok"},
-                        {"text": {"type": "plain_text", "text": "Signal faible (fatigue, médicament...)"}, "value": "weak"},
-                        {"text": {"type": "plain_text", "text": "Injoignable (3 appels sans réponse)"}, "value": "unreachable"},
-                        {"text": {"type": "plain_text", "text": "Confus / désorienté"}, "value": "confused"},
-                        {"text": {"type": "plain_text", "text": "Critique (au sol, inconscient...)"}, "value": "critical"},
+                        {"text": {"type": "plain_text", "text": "OK — doing well"}, "value": "ok"},
+                        {"text": {"type": "plain_text", "text": "Weak signal (fatigue, medication...)"}, "value": "weak"},
+                        {"text": {"type": "plain_text", "text": "Unreachable (3 calls unanswered)"}, "value": "unreachable"},
+                        {"text": {"type": "plain_text", "text": "Confused / disoriented"}, "value": "confused"},
+                        {"text": {"type": "plain_text", "text": "Critical (on the ground, unconscious...)"}, "value": "critical"},
                     ],
                 },
             },
@@ -65,29 +65,29 @@ def build_checkin_modal(
                 "type": "input",
                 "block_id": "notes_block",
                 "optional": True,
-                "label": {"type": "plain_text", "text": "Notes (observations libres)"},
+                "label": {"type": "plain_text", "text": "Notes (free observations)"},
                 "element": {
                     "type": "plain_text_input",
                     "action_id": "notes",
                     "multiline": True,
-                    "placeholder": {"type": "plain_text", "text": "Ex: Mme Dupont fatiguée, demande renouvellement ordonnance antihypertenseur."},
+                    "placeholder": {"type": "plain_text", "text": "e.g. Mrs. Dupont tired, asking for antihypertensive prescription renewal."},
                 },
             },
             {
                 "type": "input",
                 "block_id": "action_block",
                 "optional": True,
-                "label": {"type": "plain_text", "text": "Action recommandée"},
+                "label": {"type": "plain_text", "text": "Recommended action"},
                 "element": {
                     "type": "static_select",
                     "action_id": "action",
-                    "placeholder": {"type": "plain_text", "text": "Laissez Vigie décider"},
+                    "placeholder": {"type": "plain_text", "text": "Let Vigie decide"},
                     "options": [
-                        {"text": {"type": "plain_text", "text": "Aucune (clôturer)"}, "value": "ok"},
-                        {"text": {"type": "plain_text", "text": "Recherche pharmacie"}, "value": "pharmacy"},
-                        {"text": {"type": "plain_text", "text": "Contacter voisin référent"}, "value": "neighbor"},
-                        {"text": {"type": "plain_text", "text": "Escalader coordinateur médical"}, "value": "coord"},
-                        {"text": {"type": "plain_text", "text": "Escalader SAMU (15)"}, "value": "samu"},
+                        {"text": {"type": "plain_text", "text": "None (close)"}, "value": "ok"},
+                        {"text": {"type": "plain_text", "text": "Find a pharmacy"}, "value": "pharmacy"},
+                        {"text": {"type": "plain_text", "text": "Contact neighbor referent"}, "value": "neighbor"},
+                        {"text": {"type": "plain_text", "text": "Escalate to medical coordinator"}, "value": "coord"},
+                        {"text": {"type": "plain_text", "text": "Escalate to SAMU (15)"}, "value": "samu"},
                     ],
                 },
             },
@@ -96,27 +96,27 @@ def build_checkin_modal(
 
 
 def build_anomaly_modal(trigger_message_ts: str, trigger_channel: str) -> dict[str, Any]:
-    """Modal for the 'Signaler une anomalie' shortcut."""
+    """Modal for the 'Report an anomaly' shortcut."""
     private_metadata = f"anomaly:{trigger_channel}:{trigger_message_ts}"
     return {
         "type": "modal",
         "callback_id": "vigie_modal_anomaly",
         "private_metadata": private_metadata,
-        "title": {"type": "plain_text", "text": "Signaler une anomalie", "emoji": True},
-        "submit": {"type": "plain_text", "text": "Envoyer", "emoji": True},
-        "close": {"type": "plain_text", "text": "Annuler", "emoji": True},
+        "title": {"type": "plain_text", "text": "Report an anomaly", "emoji": True},
+        "submit": {"type": "plain_text", "text": "Send", "emoji": True},
+        "close": {"type": "plain_text", "text": "Cancel", "emoji": True},
         "blocks": [
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "Décrivez l'anomalie observée. Vigie l'analysera et proposera une action.",
+                    "text": "Describe the observed anomaly. Vigie will analyze it and suggest an action.",
                 },
             },
             {
                 "type": "input",
                 "block_id": "beneficiary_block",
-                "label": {"type": "plain_text", "text": "ID du bénéficiaire (ex: B023)"},
+                "label": {"type": "plain_text", "text": "Beneficiary ID (e.g. B023)"},
                 "element": {
                     "type": "plain_text_input",
                     "action_id": "beneficiary_id",
@@ -126,21 +126,21 @@ def build_anomaly_modal(trigger_message_ts: str, trigger_channel: str) -> dict[s
             {
                 "type": "input",
                 "block_id": "level_block",
-                "label": {"type": "plain_text", "text": "Niveau de gravité estimé"},
+                "label": {"type": "plain_text", "text": "Estimated severity level"},
                 "element": {
                     "type": "static_select",
                     "action_id": "level",
                     "options": [
-                        {"text": {"type": "plain_text", "text": "Signal faible (niveau 1)"}, "value": "1"},
-                        {"text": {"type": "plain_text", "text": "Escalade coordinateur (niveau 2)"}, "value": "2"},
-                        {"text": {"type": "plain_text", "text": "Critique SAMU (niveau 3)"}, "value": "3"},
+                        {"text": {"type": "plain_text", "text": "Weak signal (level 1)"}, "value": "1"},
+                        {"text": {"type": "plain_text", "text": "Coordinator escalation (level 2)"}, "value": "2"},
+                        {"text": {"type": "plain_text", "text": "Critical SAMU (level 3)"}, "value": "3"},
                     ],
                 },
             },
             {
                 "type": "input",
                 "block_id": "reason_block",
-                "label": {"type": "plain_text", "text": "Motif / observation"},
+                "label": {"type": "plain_text", "text": "Reason / observation"},
                 "element": {
                     "type": "plain_text_input",
                     "action_id": "reason",
@@ -158,21 +158,21 @@ def build_reassign_modal(beneficiary_id: str) -> dict[str, Any]:
         "type": "modal",
         "callback_id": "vigie_modal_reassign",
         "private_metadata": private_metadata,
-        "title": {"type": "plain_text", "text": "Réassigner le bénéficiaire", "emoji": True},
-        "submit": {"type": "plain_text", "text": "Réassigner", "emoji": True},
-        "close": {"type": "plain_text", "text": "Annuler", "emoji": True},
+        "title": {"type": "plain_text", "text": "Reassign beneficiary", "emoji": True},
+        "submit": {"type": "plain_text", "text": "Reassign", "emoji": True},
+        "close": {"type": "plain_text", "text": "Cancel", "emoji": True},
         "blocks": [
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"Réassigner `{beneficiary_id}` à un autre bénévole.",
+                    "text": f"Reassign `{beneficiary_id}` to another volunteer.",
                 },
             },
             {
                 "type": "input",
                 "block_id": "volunteer_block",
-                "label": {"type": "plain_text", "text": "ID Slack du nouveau bénévole (ex: U12345)"},
+                "label": {"type": "plain_text", "text": "Slack ID of the new volunteer (e.g. U12345)"},
                 "element": {
                     "type": "plain_text_input",
                     "action_id": "volunteer_id",
@@ -183,7 +183,7 @@ def build_reassign_modal(beneficiary_id: str) -> dict[str, Any]:
                 "type": "input",
                 "block_id": "reason_block",
                 "optional": True,
-                "label": {"type": "plain_text", "text": "Motif (optionnel)"},
+                "label": {"type": "plain_text", "text": "Reason (optional)"},
                 "element": {
                     "type": "plain_text_input",
                     "action_id": "reason",
@@ -200,40 +200,40 @@ def build_escalate_modal(beneficiary_id: str) -> dict[str, Any]:
         "type": "modal",
         "callback_id": "vigie_modal_escalate",
         "private_metadata": private_metadata,
-        "title": {"type": "plain_text", "text": "Escalade manuelle", "emoji": True},
-        "submit": {"type": "plain_text", "text": "Confirmer l'escalade", "emoji": True},
-        "close": {"type": "plain_text", "text": "Annuler", "emoji": True},
+        "title": {"type": "plain_text", "text": "Manual escalation", "emoji": True},
+        "submit": {"type": "plain_text", "text": "Confirm escalation", "emoji": True},
+        "close": {"type": "plain_text", "text": "Cancel", "emoji": True},
         "blocks": [
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f":rotating_light: Vous allez déclencher une escalade pour `{beneficiary_id}`.",
+                    "text": f":rotating_light: You are about to trigger an escalation for `{beneficiary_id}`.",
                 },
             },
             {
                 "type": "input",
                 "block_id": "level_block",
-                "label": {"type": "plain_text", "text": "Niveau d'escalade"},
+                "label": {"type": "plain_text", "text": "Escalation level"},
                 "element": {
                     "type": "static_select",
                     "action_id": "level",
                     "options": [
-                        {"text": {"type": "plain_text", "text": "1 — Signal faible (surveillance renforcée)"}, "value": "1"},
-                        {"text": {"type": "plain_text", "text": "2 — Coordinateur médical"}, "value": "2"},
-                        {"text": {"type": "plain_text", "text": "3 — Critique SAMU (15)"}, "value": "3"},
+                        {"text": {"type": "plain_text", "text": "1 — Weak signal (enhanced monitoring)"}, "value": "1"},
+                        {"text": {"type": "plain_text", "text": "2 — Medical coordinator"}, "value": "2"},
+                        {"text": {"type": "plain_text", "text": "3 — Critical SAMU (15)"}, "value": "3"},
                     ],
                 },
             },
             {
                 "type": "input",
                 "block_id": "reason_block",
-                "label": {"type": "plain_text", "text": "Motif détaillé"},
+                "label": {"type": "plain_text", "text": "Detailed reason"},
                 "element": {
                     "type": "plain_text_input",
                     "action_id": "reason",
                     "multiline": True,
-                    "placeholder": {"type": "plain_text", "text": "Décrivez la situation observée."},
+                    "placeholder": {"type": "plain_text", "text": "Describe the observed situation."},
                 },
             },
         ],

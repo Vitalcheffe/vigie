@@ -2,7 +2,7 @@
 Vigie — Block Kit builders for escalation messages.
 
 Messages posted in #cellule-crise when an escalation is triggered.
-Level 3 (SAMU) escalations include a prominent "Appeler le 15" button.
+Level 3 (SAMU) escalations include a prominent "Call 15" button.
 """
 
 from __future__ import annotations
@@ -15,9 +15,9 @@ from app.utils.logging import get_logger
 log = get_logger("vigie.blocks.escalation")
 
 LEVEL_LABELS = {
-    1: ("Signal faible", ":large_yellow_circle:"),
-    2: ("Escalade coordinateur", ":large_orange_circle:"),
-    3: ("Critique — SAMU", ":red_circle:"),
+    1: ("Weak signal", ":large_yellow_circle:"),
+    2: ("Coordinator escalation", ":large_orange_circle:"),
+    3: ("Critical — SAMU", ":red_circle:"),
 }
 
 
@@ -66,30 +66,30 @@ def build_escalation_message(
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": f"{emoji} ESCALADE NIVEAU {level} — {name}",
+                "text": f"{emoji} ESCALATION LEVEL {level} — {name}",
                 "emoji": True,
             },
         },
         {
             "type": "context",
             "elements": [
-                {"type": "mrkdwn", "text": f"*{age} ans* — secteur {sector} — `id: {beneficiary.get('id')}`"},
-                {"type": "mrkdwn", "text": f"Déclenchée par <@{triggered_by}>"},
+                {"type": "mrkdwn", "text": f"*{age} yrs* — sector {sector} — `id: {beneficiary.get('id')}`"},
+                {"type": "mrkdwn", "text": f"Triggered by <@{triggered_by}>"},
             ],
         },
         {"type": "divider"},
         {
             "type": "section",
-            "text": {"type": "mrkdwn", "text": f":round_pushpin: *Adresse :* {address_str}"},
+            "text": {"type": "mrkdwn", "text": f":round_pushpin: *Address:* {address_str}"},
         },
         {
             "type": "section",
-            "text": {"type": "mrkdwn", "text": f":telephone: *Téléphone :* `{phone}`"},
+            "text": {"type": "mrkdwn", "text": f":telephone: *Phone:* `{phone}`"},
         },
         {"type": "divider"},
         {
             "type": "section",
-            "text": {"type": "mrkdwn", "text": f":brain: *Contexte (synthèse Vigie) :*\n> {context_summary}"},
+            "text": {"type": "mrkdwn", "text": f":brain: *Context (Vigie summary):*\n> {context_summary}"},
         },
     ]
 
@@ -97,7 +97,7 @@ def build_escalation_message(
         blocks.append(
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": f":memo: *Motif :* {reason}"},
+                "text": {"type": "mrkdwn", "text": f":memo: *Reason:* {reason}"},
             }
         )
 
@@ -106,20 +106,20 @@ def build_escalation_message(
     # Actions taken
     actions_taken = []
     if samu_triggered:
-        actions_taken.append(":rotating_light: Protocole SAMU déclenché — bouton « Appeler le 15 » ci-dessous")
+        actions_taken.append(":rotating_light: SAMU protocol triggered — \"Call 15\" button below")
     if coordinator_notified:
-        actions_taken.append(":medical_symbol: Coordinateur médical notifié par DM")
+        actions_taken.append(":medical_symbol: Medical coordinator notified by DM")
     if neighbor_notified:
-        actions_taken.append(":house: Voisin référent notifié par DM")
+        actions_taken.append(":house: Neighbor referent notified by DM")
     if not actions_taken:
-        actions_taken.append(":eyes: Surveillance renforcée activée")
+        actions_taken.append(":eyes: Enhanced monitoring activated")
 
     blocks.append(
         {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "*Actions effectuées :*\n" + "\n".join(f"  • {a}" for a in actions_taken),
+                "text": "*Actions taken:*\n" + "\n".join(f"  • {a}" for a in actions_taken),
             },
         }
     )
@@ -127,21 +127,21 @@ def build_escalation_message(
     # Procedure
     if level == 3:
         procedure = [
-            "1. Appeler le *15 (SAMU)* immédiatement — bouton ci-dessous",
-            "2. Si possible, envoyer un voisin sur place en attendant",
-            "3. Rester en ligne avec le SAMU jusqu'à l'arrivée des secours",
-            "4. Documenter l'heure d'arrivée des secours dans ce thread",
+            "1. Call *15 (SAMU)* immediately — button below",
+            "2. If possible, send a neighbor on site while waiting",
+            "3. Stay on the line with SAMU until emergency services arrive",
+            "4. Document the time of arrival of emergency services in this thread",
         ]
     elif level == 2:
         procedure = [
-            "1. Le coordinateur médical prend contact dans les *15 minutes*",
-            "2. Évaluer la nécessité d'une visite à domicile",
-            "3. Si aggravation → cliquer « Escalader SAMU » ci-dessous",
+            "1. The medical coordinator makes contact within *15 minutes*",
+            "2. Assess the need for a home visit",
+            "3. If worsening → click \"Escalate to SAMU\" below",
         ]
     else:
         procedure = [
-            "1. Surveillance renforcée (check-in toutes les 2h)",
-            "2. Si aggravation → cliquer « Escalader coordinateur » ci-dessous",
+            "1. Enhanced monitoring (check-in every 2h)",
+            "2. If worsening → click \"Escalate to coordinator\" below",
         ]
 
     blocks.append(
@@ -149,7 +149,7 @@ def build_escalation_message(
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "*Procédure :*\n" + "\n".join(procedure),
+                "text": "*Procedure:*\n" + "\n".join(procedure),
             },
         }
     )
@@ -162,7 +162,7 @@ def build_escalation_message(
         actions.append(
             {
                 "type": "button",
-                "text": {"type": "plain_text", "text": ":rotating_light: Appeler le 15 (SAMU)", "emoji": True},
+                "text": {"type": "plain_text", "text": ":rotating_light: Call 15 (SAMU)", "emoji": True},
                 "style": "danger",
                 "action_id": "vigie_call_samu",
                 "value": json.dumps({"beneficiary_id": beneficiary.get("id"), "escalation_id": escalation_id or ""}),
@@ -173,7 +173,7 @@ def build_escalation_message(
         actions.append(
             {
                 "type": "button",
-                "text": {"type": "plain_text", "text": "Escalader SAMU", "emoji": True},
+                "text": {"type": "plain_text", "text": "Escalate to SAMU", "emoji": True},
                 "style": "danger",
                 "action_id": "vigie_escalate_3",
                 "value": json.dumps({"beneficiary_id": beneficiary.get("id"), "level": 3}),
@@ -183,7 +183,7 @@ def build_escalation_message(
         actions.append(
             {
                 "type": "button",
-                "text": {"type": "plain_text", "text": "Escalader coordinateur", "emoji": True},
+                "text": {"type": "plain_text", "text": "Escalate to coordinator", "emoji": True},
                 "action_id": "vigie_escalate_2",
                 "value": json.dumps({"beneficiary_id": beneficiary.get("id"), "level": 2}),
             }
@@ -192,7 +192,7 @@ def build_escalation_message(
     actions.append(
         {
             "type": "button",
-            "text": {"type": "plain_text", "text": "Marquer résolu", "emoji": True},
+            "text": {"type": "plain_text", "text": "Mark as resolved", "emoji": True},
             "style": "primary",
             "action_id": "vigie_resolve_escalation",
             "value": json.dumps({"beneficiary_id": beneficiary.get("id"), "escalation_id": escalation_id or ""}),
@@ -203,7 +203,7 @@ def build_escalation_message(
 
     return {
         "blocks": blocks,
-        "text": f"ESCALADE NIVEAU {level} — {name}",
+        "text": f"ESCALATION LEVEL {level} — {name}",
     }
 
 

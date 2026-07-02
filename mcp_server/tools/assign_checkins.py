@@ -2,7 +2,7 @@
 Vigie MCP tool — assign_checkins.
 
 Assigns daily check-in lists to volunteers based on:
-  - Active weather alert (orange/rouge)
+  - Active weather alert (orange/red)
   - Beneficiary registry (filtered by sector)
   - Volunteer availability
   - Previous day's assignments (rotation)
@@ -74,7 +74,7 @@ async def assign_checkins(
             log.warning("vigie.mcp.tool.assign_checkins.no_heatwave")
             return {
                 "error": "no_active_heatwave",
-                "message": "No active canicule alert. Use force=true to override.",
+                "message": "No active heatwave alert. Use force=true to override.",
                 "date": date,
             }
 
