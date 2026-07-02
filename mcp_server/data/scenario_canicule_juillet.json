@@ -1,0 +1,96 @@
+{
+  "scenario_name": "canicule_juillet",
+  "date": "2026-07-15",
+  "department": "75",
+  "city": "Paris",
+  "alert": {
+    "level": "orange",
+    "phenomenon": "canicule",
+    "departments": ["75", "93"],
+    "max_temperature": 38,
+    "min_temperature_night": 23,
+    "valid_from": "2026-07-15T06:00:00+02:00",
+    "valid_to": "2026-07-18T22:00:00+02:00"
+  },
+  "events": [
+    {
+      "time": "07:00",
+      "type": "alert_detected",
+      "actor": "vigie",
+      "description": "Météo-France vigilance orange canicule détectée sur Paris (75), Seine-Saint-Denis (93)",
+      "payload": {"level": "orange", "departments": ["75", "93"], "max_temp": 38}
+    },
+    {
+      "time": "07:30",
+      "type": "dm_sent",
+      "actor": "vigie",
+      "description": "12 bénévoles reçoivent leur DM avec 5 check-in chacun (50 au total)",
+      "payload": {"volunteers": 12, "beneficiaries_per_volunteer": 5}
+    },
+    {
+      "time": "08:15",
+      "type": "checkin_recorded",
+      "actor": "V01",
+      "description": "V01 appelle B023 (Mme Dupont, 82 ans, secteur 11). Fatiguée, demande renouvellement ordonnance antihypertenseur.",
+      "payload": {"beneficiary_id": "B023", "volunteer_id": "V01", "anomaly_level": 1, "recommended": "pharmacy", "transcript": "Mme Dupont fatiguée, demande renouvellement ordonnance antihypertenseur"}
+    },
+    {
+      "time": "09:30",
+      "type": "checkin_recorded",
+      "actor": "V03",
+      "description": "V03 appelle B007 (M. Bernard, 79 ans, secteur 3). Tout va bien.",
+      "payload": {"beneficiary_id": "B007", "volunteer_id": "V03", "anomaly_level": 0}
+    },
+    {
+      "time": "10:45",
+      "type": "checkin_recorded",
+      "actor": "V07",
+      "description": "V07 appelle B014 (Mme Leroy, 85 ans, secteur 7). Confuse, désorientée.",
+      "payload": {"beneficiary_id": "B014", "volunteer_id": "V07", "anomaly_level": 2, "recommended": "escalade_coord", "transcript": "Mme Leroy semble confuse et désorientée, ne sait plus quel jour on est"}
+    },
+    {
+      "time": "11:20",
+      "type": "escalation_triggered",
+      "actor": "V03",
+      "description": "B003 (Mme Martin, 81 ans, secteur 3) — 3e appel sans réponse. Voisin référent notifié.",
+      "payload": {"beneficiary_id": "B003", "level": 2, "neighbor_notified": true, "reason": "Pas de réponse × 3 appels"}
+    },
+    {
+      "time": "13:45",
+      "type": "escalation_triggered",
+      "actor": "NR-3",
+      "description": "M. Bernard (voisin référent) trouve Mme Martin au sol, consciente mais incapable de se lever.",
+      "payload": {"beneficiary_id": "B003", "level": 3, "samu_triggered": true, "reason": "Au sol, consciente, incapable de se lever"}
+    },
+    {
+      "time": "14:00",
+      "type": "checkin_recorded",
+      "actor": "V11",
+      "description": "V11 appelle B042 (M. Petit, 78 ans, secteur 11). OK.",
+      "payload": {"beneficiary_id": "B042", "volunteer_id": "V11", "anomaly_level": 0}
+    },
+    {
+      "time": "15:00",
+      "type": "milestone",
+      "actor": "vigie",
+      "description": "95 % des bénéficiaires contactés (47/50). 3 escalades actives, 1 critique (SAMU).",
+      "payload": {"coverage": 0.95, "active_escalations": 3, "samu_count": 1}
+    },
+    {
+      "time": "18:00",
+      "type": "report_published",
+      "actor": "vigie",
+      "description": "Rapport quotidien publié dans #cellule-crise avec citations ARS Île-de-France.",
+      "payload": {"coverage": 0.95, "samu_count": 1, "weak_signals": 7}
+    }
+  ],
+  "expected_metrics": {
+    "coverage_pct": 95,
+    "avg_checkin_time": "2 min 10 s",
+    "avg_escalade_latency": "4 min 30 s",
+    "unreachable_72h": 0,
+    "weak_signals_detected": 7,
+    "coord_escalations": 2,
+    "samu_escalations": 1
+  }
+}
