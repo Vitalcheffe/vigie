@@ -32,4 +32,4 @@ RUN useradd -r -u 1000 -g root vigie && chown -R vigie:root /app
 USER vigie
 
 # No HEALTHCHECK — Socket Mode uses WebSocket
-CMD ["python", "start.py"]
+CMD ["python", "-m", "app.main"]
