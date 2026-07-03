@@ -1,6 +1,6 @@
 # Vigie
 
-> _Pour que la canicule ne tue plus en silence._
+> _So the heatwave no longer kills in silence._
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
@@ -13,6 +13,31 @@
 [![Stack: Slack AI + MCP + RTS](https://img.shields.io/badge/stack-Slack%20AI%20%2B%20MCP%20%2B%20RTS-36C5F0.svg)](docs/architecture.md)
 
 **Vigie** is a Slack agent that transforms any nonprofit or local government workspace into an augmented watch center during heatwaves. It detects Météo-France alerts, automatically assigns phone check-ins to volunteers, transcribes and semantically analyzes their returns in real-time, and triggers critical escalations in under 5 minutes — against 45 minutes without it.
+
+---
+
+## 🧪 Live Sandbox (for judges)
+
+**Workspace:** [Reseau-Soligarde-Paris](https://reseausoligar-uvv9699.slack.com)
+**App ID:** A0BERBRLBKN
+**Bot:** @vigie (online 24/7 on Railway)
+
+**Quick test — type these in Slack:**
+
+| Command | What it does |
+|---------|-------------|
+| `/vigie help` | See all commands |
+| `/vigie-simulate canicule_juillet` | Start the heatwave scenario (50 elders, 14 volunteers, DMs with Check-in buttons) |
+| `/vigie status` | See live metrics + your personal progress |
+| `/vigie report` | Generate the daily report with AI narrative + impact section |
+| `/vigie-escalate B003 3 "On the ground"` | Trigger a critical SAMU escalation |
+| DM Vigie: `B023: Mrs Dupont tired, requests medication` | Test a volunteer check-in (AI classifies, finds pharmacy) |
+
+**What to explore:**
+- `#cellule-crise` — alert banner, SAMU escalation, daily report with AI narrative
+- `#secteur-1` through `#secteur-12` — volunteer check-in messages with OpenStreetMap pharmacy lookups
+- Your DMs with Vigie — assignment lists with personal stories + Check-in buttons
+- App Home (click Vigie in sidebar) — live dashboard with KPIs
 
 ---
 
@@ -243,4 +268,4 @@ MIT — see [LICENSE](LICENSE).
 
 This project is dedicated to the 14,802 people who died alone during the August 2003 heatwave in France, and to the 61,672 who died across Europe in summer 2022. Every line of code in this repository exists because they existed.
 
-> _Pour que la canicule ne tue plus en silence._
+> _So the heatwave no longer kills in silence._
