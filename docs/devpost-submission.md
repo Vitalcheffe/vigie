@@ -70,7 +70,7 @@ into an augmented watch center during heatwaves. Vigie:
    registry (MCP resource) — 50 simulated profiles in the demo.
 3. **Assigns** each volunteer their daily list of 5 elders via Slack DM,
    with full context (age, medical conditions, medications, emergency
-   contacts) and a "Démarrer les appels" Block Kit button.
+   contacts) and a "Start calls" Block Kit button.
 4. **Transcribes** volunteer voice notes (Slack AI, with OpenAI Whisper
    fallback) and structures them as JSON (state, signals, action).
 5. **Classifies anomalies** on a 4-level scale: OK, weak signal,
@@ -113,10 +113,10 @@ A typical check-in flow:
 - 7:00 — Vigie detects orange vigilance, posts alert banner in
   #cellule-crise, calls `assign_checkins`, DMs each volunteer their list.
 - 8:15 — Volunteer posts a voice note in DM: "Mme Dupont fatiguée,
-  demande médicaments". Slack AI transcribes, classifies level 1
+  requests medication". Slack AI transcribes, classifies level 1
   (medication_request), MCP server fetches nearest pharmacy via
   OpenStreetMap (200m away), Vigie posts structured message in
-  #secteur-11 with buttons "Confirmer pharmacie / Escalader / Clôturer".
+  #secteur-11 with buttons "Confirm pharmacy / Escalate / Close".
 - 11:20 — Mme Martin (B003) unreachable × 3. Vigie identifies the
   registered neighbor referent, DMs #voisins-3.
 - 13:45 — Neighbor finds Mme Martin on the ground. Vigie triggers
