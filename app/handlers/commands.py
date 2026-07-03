@@ -57,7 +57,7 @@ def register(app: AsyncApp) -> None:
         elif subcommand == "demo":
             await _cmd_demo(respond, user_id)
         elif subcommand == "status":
-            await _cmd_status(respond)
+            await _cmd_status(respond, user_id)
         elif subcommand == "report":
             await _cmd_report(respond)
         elif subcommand == "reset":
@@ -318,8 +318,8 @@ async def _cmd_demo(respond: AsyncRespond, user_id: str) -> None:
     )
 
 
-async def _cmd_status(respond: AsyncRespond) -> None:
-    """Show current crisis cell status."""
+async def _cmd_status(respond: AsyncRespond, user_id: str = None) -> None:
+    """Show current crisis cell status + volunteer personal progress."""
     from app.state import get_state
 
     state = get_state()
@@ -328,27 +328,39 @@ async def _cmd_status(respond: AsyncRespond) -> None:
 
     if not metrics.get("scenario_active"):
         await respond(
-            ":bar_chart: *No active scenario.* Type `/vigie start` to trigger a simulated heatwave alert."
+            ":bar_chart: *No active heatwave alert right now.*\n\n"
+            "I'm here if you need me — type `/vigie help` anytime.\n\n"
+            "_So the heatwave no longer kills in silence._"
         )
         return
 
-    await respond(
-        text=(
-            f":bar_chart: *Crisis cell — overview*\n"
-            f":rotating_light: Alert: *{metrics['alert']['level']}* ({metrics['alert'].get('phenomenon', 'canicule')})\n"
-            f":busts_in_silhouette: Beneficiaries assigned: *{metrics['total_assigned']}*\n"
-            f":white_check_mark: Contacted: *{metrics['contacted']}* ({metrics['coverage_pct']}%)\n"
-            f":large_green_circle: Check-in OK: *{metrics['ok_count']}*\n"
-            f":large_yellow_circle: Weak signals: *{metrics['weak_count']}*\n"
-            f":large_orange_circle: Coordinator escalations: *{metrics['coord_escalations']}*\n"
-            f":red_circle: SAMU escalations: *{metrics['samu_escalations']}*\n"
-            f":stopwatch: Avg check-in time: *{metrics['avg_checkin_time']}*\n"
-            f":stopwatch: Escalation latency: *{metrics['avg_escalade_latency']}*\n"
-            f":warning: Not contacted > 72h: *{metrics['unreachable_72h']}*\n"
-            f":hourglass: Unresolved active escalations: *{len(active_esc)}*\n\n"
-            f"For details, open Vigie's App Home."
-        )
-    )
+    status_parts = [
+        f":bar_chart: *Crisis cell — live status*\n",
+        f":rotating_light: Alert: *{metrics['alert']['level']}* (heatwave)\n",
+        f":busts_in_silhouette: Elders assigned: *{metrics['total_assigned']}*\n",
+        f":white_check_mark: Contacted: *{metrics['contacted']}* ({metrics['coverage_pct']}%)\n",
+        f":large_green_circle: OK: *{metrics['ok_count']}*\n",
+        f":large_yellow_circle: Weak signals: *{metrics['weak_count']}*\n",
+        f":large_orange_circle: Coordinator escalations: *{metrics['coord_escalations']}*\n",
+        f":red_circle: SAMU escalations: *{metrics['samu_escalations']}*\n",
+        f":stopwatch: Avg check-in time: *{metrics['avg_checkin_time']}*\n",
+        f":stopwatch: Avg escalation latency: *{metrics['avg_escalade_latency']}*\n",
+        f":warning: Not contacted > 72h: *{metrics['unreachable_72h']}*\n",
+        f":hourglass: Active escalations: *{len(active_esc)}*\n",
+    ]
+
+    # Personal progress
+    if user_id:
+        try:
+            from app.progress import get_volunteer_progress, build_progress_message
+            progress = get_volunteer_progress(user_id)
+            if progress["total_assigned"] > 0 or progress["completed"] > 0:
+                status_parts.append(f"\n{'─' * 30}\n")
+                status_parts.append(build_progress_message("volunteer", progress))
+        except Exception as e:
+            log.warning("vigie.status.progress_failed", error=str(e))
+
+    await respond(text="".join(status_parts))
 
 
 async def _cmd_report(respond: AsyncRespond) -> None:
