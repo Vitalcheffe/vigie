@@ -1,0 +1,287 @@
+{
+  "run": 1,
+  "startedAt": "2026-07-03T06:06:31.730295+00:00",
+  "endedAt": "2026-07-03T06:10:20.921978+00:00",
+  "totalMs": 229191.65811399944,
+  "results": [
+    {
+      "index": 0,
+      "ok": true,
+      "latencyMs": 12446.013721999407,
+      "content": "{\n  \"COVERAGE_PERCENT\": \"94%\",\n  \"AVG_LATENCY_MIN\": \"7\",\n  \"L2_COUNT\": 2,\n  \"L3_COUNT\": 1,\n  \"CRISIS_MSG_COUNT\": 43,\n  \"TOP_SECTORS\": [\"secteur-1\", \"secteur-2\", \"secteur-3\"],\n  \"ACTIVE_ALERTS\": [\n    {\"name\": \"B018 - Monique B.\", \"level\": \"L3\"},\n    {\"name\": \"B007 - Lucien P.\", \"level\": \"L2\"},\n    {\"name\": \"B012 - Henri L.\", \"level\": \"L2\"}\n  ],\n  \"DASHBOARD_HEALTH\": \"ALERT\",\n  \"SUMMARY\": \"Le dashboard Vigie montre une couverture à 94% avec une latence moyenne de 7 minutes, mais une escalade L3 (inconscient) et deux escalades L2 (sans réponse) sont en cours, déclenchant une alerte.\"\n}",
+      "parsed": {
+        "COVERAGE_PERCENT": "94%",
+        "AVG_LATENCY_MIN": "7",
+        "L2_COUNT": 2,
+        "L3_COUNT": 1,
+        "CRISIS_MSG_COUNT": 43,
+        "TOP_SECTORS": [
+          "secteur-1",
+          "secteur-2",
+          "secteur-3"
+        ],
+        "ACTIVE_ALERTS": [
+          {
+            "name": "B018 - Monique B.",
+            "level": "L3"
+          },
+          {
+            "name": "B007 - Lucien P.",
+            "level": "L2"
+          },
+          {
+            "name": "B012 - Henri L.",
+            "level": "L2"
+          }
+        ],
+        "DASHBOARD_HEALTH": "ALERT",
+        "SUMMARY": "Le dashboard Vigie montre une couverture à 94% avec une latence moyenne de 7 minutes, mais une escalade L3 (inconscient) et deux escalades L2 (sans réponse) sont en cours, déclenchant une alerte."
+      },
+      "retries": 0
+    },
+    {
+      "index": 1,
+      "ok": true,
+      "latencyMs": 76686.10185599937,
+      "content": "{\n  \"COVERAGE_PERCENT\": \"94\",\n  \"AVG_LATENCY_MIN\": \"7\",\n  \"L2_COUNT\": 2,\n  \"L3_COUNT\": 1,\n  \"CRISIS_MSG_COUNT\": 43,\n  \"TOP_SECTORS\": [\"secteur-1\", \"secteur-2\", \"secteur-3\"],\n  \"ACTIVE_ALERTS\": [\n    {\"name\": \"B018 - Monique B.\", \"level\": \"L3\"}\n  ],\n  \"DASHBOARD_HEALTH\": \"ALERT\",\n  \"SUMMARY\": \"Le dashboard Vigie affiche une couverture de 94% et une latence moyenne de 7 minutes, mais une escalade L3 (inconscient) est en cours, déclenchant une alerte.\"\n}",
+      "parsed": {
+        "COVERAGE_PERCENT": "94",
+        "AVG_LATENCY_MIN": "7",
+        "L2_COUNT": 2,
+        "L3_COUNT": 1,
+        "CRISIS_MSG_COUNT": 43,
+        "TOP_SECTORS": [
+          "secteur-1",
+          "secteur-2",
+          "secteur-3"
+        ],
+        "ACTIVE_ALERTS": [
+          {
+            "name": "B018 - Monique B.",
+            "level": "L3"
+          }
+        ],
+        "DASHBOARD_HEALTH": "ALERT",
+        "SUMMARY": "Le dashboard Vigie affiche une couverture de 94% et une latence moyenne de 7 minutes, mais une escalade L3 (inconscient) est en cours, déclenchant une alerte."
+      },
+      "retries": 3
+    },
+    {
+      "index": 2,
+      "ok": false,
+      "latencyMs": 70374.61645700023,
+      "error": "rc=1 stderr=Failed to make vision API request: 143 |                 headers: headers,\n144 |                 body: JSON.stringify(requestBody),\n145 |             });\n146 |             if (!response.ok) {\n147 |                 const errorBody = await response.text();\n148 |                 throw new Error(`API re"
+    },
+    {
+      "index": 3,
+      "ok": true,
+      "latencyMs": 4923.622127998897,
+      "content": "{\"COVERAGE_PERCENT\": \"94%\", \"AVG_LATENCY_MIN\": \"7\", \"L2_COUNT\": 2, \"L3_COUNT\": 1, \"CRISIS_MSG_COUNT\": 5, \"TOP_SECTORS\": [\"secteur-1\", \"secteur-2\", \"secteur-3\"], \"ACTIVE_ALERTS\": [{\"name\": \"Monique B.\", \"level\": \"L3\"}], \"DASHBOARD_HEALTH\": \"ALERT\", \"SUMMARY\": \"Le dashboard Vigie affiche une couverture de 94% avec une latence moyenne de 7 min, mais présente 1 escalade L3 (inconscient) et 2 escalades L2, ce qui déclenche une alerte.\"}",
+      "parsed": {
+        "COVERAGE_PERCENT": "94%",
+        "AVG_LATENCY_MIN": "7",
+        "L2_COUNT": 2,
+        "L3_COUNT": 1,
+        "CRISIS_MSG_COUNT": 5,
+        "TOP_SECTORS": [
+          "secteur-1",
+          "secteur-2",
+          "secteur-3"
+        ],
+        "ACTIVE_ALERTS": [
+          {
+            "name": "Monique B.",
+            "level": "L3"
+          }
+        ],
+        "DASHBOARD_HEALTH": "ALERT",
+        "SUMMARY": "Le dashboard Vigie affiche une couverture de 94% avec une latence moyenne de 7 min, mais présente 1 escalade L3 (inconscient) et 2 escalades L2, ce qui déclenche une alerte."
+      },
+      "retries": 0
+    },
+    {
+      "index": 4,
+      "ok": true,
+      "latencyMs": 8063.87189400084,
+      "content": "{\"COVERAGE_PERCENT\": \"94%\", \"AVG_LATENCY_MIN\": \"7\", \"L2_COUNT\": 2, \"L3_COUNT\": 1, \"CRISIS_MSG_COUNT\": 0, \"TOP_SECTORS\": [\"1\", \"2\", \"3\"], \"ACTIVE_ALERTS\": [{\"name\": \"Monique B.\", \"level\": \"L3\"}], \"DASHBOARD_HEALTH\": \"ALERT\", \"SUMMARY\": \"Le dashboard Vigie montre une couverture de 94% et une latence moyenne de 7 minutes, mais avec 1 escalade L3 (inconscient) et 2 escalades L2 (sans réponse), indiquant une situation critique nécessitant une attention immédiate.\"}",
+      "parsed": {
+        "COVERAGE_PERCENT": "94%",
+        "AVG_LATENCY_MIN": "7",
+        "L2_COUNT": 2,
+        "L3_COUNT": 1,
+        "CRISIS_MSG_COUNT": 0,
+        "TOP_SECTORS": [
+          "1",
+          "2",
+          "3"
+        ],
+        "ACTIVE_ALERTS": [
+          {
+            "name": "Monique B.",
+            "level": "L3"
+          }
+        ],
+        "DASHBOARD_HEALTH": "ALERT",
+        "SUMMARY": "Le dashboard Vigie montre une couverture de 94% et une latence moyenne de 7 minutes, mais avec 1 escalade L3 (inconscient) et 2 escalades L2 (sans réponse), indiquant une situation critique nécessitant une attention immédiate."
+      },
+      "retries": 0
+    },
+    {
+      "index": 5,
+      "ok": true,
+      "latencyMs": 6423.237122999126,
+      "content": "{\n  \"COVERAGE_PERCENT\": \"94%\",\n  \"AVG_LATENCY_MIN\": \"7\",\n  \"L2_COUNT\": 2,\n  \"L3_COUNT\": 1,\n  \"CRISIS_MSG_COUNT\": 0,\n  \"TOP_SECTORS\": [\"secteur-1\", \"secteur-2\", \"secteur-3\"],\n  \"ACTIVE_ALERTS\": [\n    {\"name\": \"Monique B.\", \"level\": \"L3\"}\n  ],\n  \"DASHBOARD_HEALTH\": \"ALERT\",\n  \"SUMMARY\": \"Le dashboard Vigie montre une couverture de 94% et une latence moyenne de 7 min, mais une escalade L3 (inconscient) est en cours, déclenchant une alerte.\"\n}",
+      "parsed": {
+        "COVERAGE_PERCENT": "94%",
+        "AVG_LATENCY_MIN": "7",
+        "L2_COUNT": 2,
+        "L3_COUNT": 1,
+        "CRISIS_MSG_COUNT": 0,
+        "TOP_SECTORS": [
+          "secteur-1",
+          "secteur-2",
+          "secteur-3"
+        ],
+        "ACTIVE_ALERTS": [
+          {
+            "name": "Monique B.",
+            "level": "L3"
+          }
+        ],
+        "DASHBOARD_HEALTH": "ALERT",
+        "SUMMARY": "Le dashboard Vigie montre une couverture de 94% et une latence moyenne de 7 min, mais une escalade L3 (inconscient) est en cours, déclenchant une alerte."
+      },
+      "retries": 0
+    },
+    {
+      "index": 6,
+      "ok": true,
+      "latencyMs": 17036.272970999562,
+      "content": "{\"COVERAGE_PERCENT\": \"94%\", \"AVG_LATENCY_MIN\": \"7\", \"L2_COUNT\": 2, \"L3_COUNT\": 1, \"CRISIS_MSG_COUNT\": 0, \"TOP_SECTORS\": [\"1\", \"2\", \"3\"], \"ACTIVE_ALERTS\": [{\"name\": \"Monique B.\", \"level\": \"L3\"}], \"DASHBOARD_HEALTH\": \"ALERT\", \"SUMMARY\": \"Le dashboard Vigie affiche une couverture de 94% et une latence moyenne de 7 minutes, mais avec 1 escalade L3 (inconscient) et 2 escalades L2 (sans réponse), le statut est en alerte.\"}",
+      "parsed": {
+        "COVERAGE_PERCENT": "94%",
+        "AVG_LATENCY_MIN": "7",
+        "L2_COUNT": 2,
+        "L3_COUNT": 1,
+        "CRISIS_MSG_COUNT": 0,
+        "TOP_SECTORS": [
+          "1",
+          "2",
+          "3"
+        ],
+        "ACTIVE_ALERTS": [
+          {
+            "name": "Monique B.",
+            "level": "L3"
+          }
+        ],
+        "DASHBOARD_HEALTH": "ALERT",
+        "SUMMARY": "Le dashboard Vigie affiche une couverture de 94% et une latence moyenne de 7 minutes, mais avec 1 escalade L3 (inconscient) et 2 escalades L2 (sans réponse), le statut est en alerte."
+      },
+      "retries": 0
+    },
+    {
+      "index": 7,
+      "ok": true,
+      "latencyMs": 5906.775772000401,
+      "content": "{\n  \"COVERAGE_PERCENT\": \"94%\",\n  \"AVG_LATENCY_MIN\": \"7\",\n  \"L2_COUNT\": 2,\n  \"L3_COUNT\": 1,\n  \"CRISIS_MSG_COUNT\": 0,\n  \"TOP_SECTORS\": [\"secteur-1\", \"secteur-2\", \"secteur-3\"],\n  \"ACTIVE_ALERTS\": [\n    {\"name\": \"Monique B.\", \"level\": \"L3\"}\n  ],\n  \"DASHBOARD_HEALTH\": \"ALERT\",\n  \"SUMMARY\": \"Le dashboard Vigie montre une couverture de 94% avec une latence moyenne de 7 minutes, 2 escalades L2 et 1 escalade L3, indiquant un état d'alerte.\"\n}",
+      "parsed": {
+        "COVERAGE_PERCENT": "94%",
+        "AVG_LATENCY_MIN": "7",
+        "L2_COUNT": 2,
+        "L3_COUNT": 1,
+        "CRISIS_MSG_COUNT": 0,
+        "TOP_SECTORS": [
+          "secteur-1",
+          "secteur-2",
+          "secteur-3"
+        ],
+        "ACTIVE_ALERTS": [
+          {
+            "name": "Monique B.",
+            "level": "L3"
+          }
+        ],
+        "DASHBOARD_HEALTH": "ALERT",
+        "SUMMARY": "Le dashboard Vigie montre une couverture de 94% avec une latence moyenne de 7 minutes, 2 escalades L2 et 1 escalade L3, indiquant un état d'alerte."
+      },
+      "retries": 0
+    },
+    {
+      "index": 8,
+      "ok": true,
+      "latencyMs": 15461.806990000696,
+      "content": "{\n  \"COVERAGE_PERCENT\": \"94\",\n  \"AVG_LATENCY_MIN\": \"7\",\n  \"L2_COUNT\": 2,\n  \"L3_COUNT\": 1,\n  \"CRISIS_MSG_COUNT\": 0,\n  \"TOP_SECTORS\": [\"secteur-1\", \"secteur-2\", \"secteur-3\"],\n  \"ACTIVE_ALERTS\": [\n    {\"name\": \"Monique B.\", \"level\": \"L3\"}\n  ],\n  \"DASHBOARD_HEALTH\": \"ALERT\",\n  \"SUMMARY\": \"Le dashboard Vigie montre une couverture de 94% avec une latence moyenne de 7 minutes, mais une escalade L3 (inconscient) est en cours, déclenchant une alerte.\"\n}",
+      "parsed": {
+        "COVERAGE_PERCENT": "94",
+        "AVG_LATENCY_MIN": "7",
+        "L2_COUNT": 2,
+        "L3_COUNT": 1,
+        "CRISIS_MSG_COUNT": 0,
+        "TOP_SECTORS": [
+          "secteur-1",
+          "secteur-2",
+          "secteur-3"
+        ],
+        "ACTIVE_ALERTS": [
+          {
+            "name": "Monique B.",
+            "level": "L3"
+          }
+        ],
+        "DASHBOARD_HEALTH": "ALERT",
+        "SUMMARY": "Le dashboard Vigie montre une couverture de 94% avec une latence moyenne de 7 minutes, mais une escalade L3 (inconscient) est en cours, déclenchant une alerte."
+      },
+      "retries": 0
+    },
+    {
+      "index": 9,
+      "ok": true,
+      "latencyMs": 7361.616230000436,
+      "content": "{\"COVERAGE_PERCENT\": \"94%\", \"AVG_LATENCY_MIN\": \"7\", \"L2_COUNT\": 2, \"L3_COUNT\": 1, \"CRISIS_MSG_COUNT\": 0, \"TOP_SECTORS\": [\"1\", \"2\", \"3\"], \"ACTIVE_ALERTS\": [{\"name\": \"Monique B.\", \"level\": \"L3\"}], \"DASHBOARD_HEALTH\": \"ALERT\", \"SUMMARY\": \"Le dashboard Vigie montre une couverture de 94% et une latence moyenne de 7 minutes, avec 2 escalades L2 et 1 escalade L3 en cours, indiquant une situation d'alerte.\"}",
+      "parsed": {
+        "COVERAGE_PERCENT": "94%",
+        "AVG_LATENCY_MIN": "7",
+        "L2_COUNT": 2,
+        "L3_COUNT": 1,
+        "CRISIS_MSG_COUNT": 0,
+        "TOP_SECTORS": [
+          "1",
+          "2",
+          "3"
+        ],
+        "ACTIVE_ALERTS": [
+          {
+            "name": "Monique B.",
+            "level": "L3"
+          }
+        ],
+        "DASHBOARD_HEALTH": "ALERT",
+        "SUMMARY": "Le dashboard Vigie montre une couverture de 94% et une latence moyenne de 7 minutes, avec 2 escalades L2 et 1 escalade L3 en cours, indiquant une situation d'alerte."
+      },
+      "retries": 0
+    }
+  ],
+  "stats": {
+    "successRate": 0.9,
+    "p50Ms": 8063.87189400084,
+    "p95Ms": 76686.10185599937,
+    "p99Ms": 76686.10185599937,
+    "avgMs": 17145.47985399986,
+    "minMs": 4923.622127998897,
+    "maxMs": 76686.10185599937,
+    "parseRate": 1.0,
+    "uniqueResponses": 9,
+    "responseHashCounts": {
+      "2b470013c3043333125a0a28148c4410": 1,
+      "fe2241441b2e6cb8890f8fa592394fe3": 1,
+      "66777681c6ec48c715cabac5c6146311": 1,
+      "cef5df5a218fb39741c6aed4909951bf": 1,
+      "6e02ffcbb01208ae8724df2ad11cdfea": 1,
+      "59ee8ac904c4e92ade6b15169d7198ed": 1,
+      "5114dbb805cdb45765a9d4f62867b231": 1,
+      "c378a3024c1ae17e4ee82f2c760c20ca": 1,
+      "9bfd064b925adb619e6f94e27ef7bae1": 1
+    }
+  }
+}

@@ -62,6 +62,8 @@ def register(app: AsyncApp) -> None:
             await _cmd_report(respond)
         elif subcommand == "reset":
             await _cmd_reset(respond, user_id)
+        elif subcommand == "inspect":
+            await _cmd_inspect(respond, args)
         else:
             await respond(f"Unknown subcommand: `{subcommand}`. Type `/vigie help` for the list.")
 
@@ -190,6 +192,7 @@ async def _cmd_help(respond: AsyncRespond) -> None:
                         "• `/vigie-simulate canicule_juillet` — Start the heatwave scenario\n"
                         "• `/vigie status` — See who's been contacted and who hasn't\n"
                         "• `/vigie report` — Generate today's report with KPIs\n"
+                        "• `/vigie inspect <image_path>` — VLM analysis of a dashboard screenshot\n"
                         "• `/vigie reset` — Start over\n"
                         "• `/vigie-escalate B003 3 \"reason\"` — Trigger a SAMU escalation\n\n"
                         "*For volunteers:*\n"
@@ -382,3 +385,77 @@ async def _cmd_reset(respond: AsyncRespond, user_id: str) -> None:
         await respond(":wastebasket: Crisis cell reset. State cleared.")
     else:
         await respond(f":warning: Error: {result.get('message', result)}")
+
+
+async def _cmd_inspect(respond: AsyncRespond, args: list[str]) -> None:
+    """Analyze a dashboard screenshot using the Vigie VLM service.
+
+    Usage:
+        /vigie inspect <image_path>     — analyze a local file
+        /vigie inspect                  — analyze the default boot screenshot (if configured)
+
+    The VLM extracts: coverage %, L2/L3 counts, crisis messages, active alerts,
+    and computes a dashboard health verdict (OK / ALERT).
+    """
+    from app.services.vlm import get_vlm_service
+
+    image_path = args[0] if args else ""
+    if not image_path:
+        # Fall back to env-configured boot image
+        from app.utils.config import get_config
+        image_path = get_config().deployment.vigie_vlm_boot_image if hasattr(get_config().deployment, "vigie_vlm_boot_image") else ""
+
+    if not image_path:
+        await respond(
+            ":eyes: *Vigie VLM inspect*\n\n"
+            "Usage: `/vigie inspect <image_path>`\n\n"
+            "Provide the absolute path to a PNG/JPG screenshot of a Vigie dashboard. "
+            "The VLM will extract coverage %, L2/L3 counts, active alerts, and a health verdict."
+        )
+        return
+
+    # Resolve ~ and relative paths
+    import os
+    image_path = os.path.expanduser(image_path)
+    if not os.path.isabs(image_path):
+        image_path = os.path.abspath(image_path)
+
+    if not os.path.exists(image_path):
+        await respond(f":warning: Image not found: `{image_path}`")
+        return
+
+    await respond(f":eyes: Analyzing `{image_path}` with Vigie-VLM (this takes ~5-10s)...")
+
+    service = get_vlm_service()
+    analysis = await service.analyze_screenshot(image_path)
+
+    if analysis.parse_error:
+        await respond(
+            f":warning: VLM analysis failed: `{analysis.parse_error}`\n"
+            f"Latency: {analysis.latency_ms:.0f} ms"
+        )
+        return
+
+    # Build a Slack-formatted summary
+    health_emoji = ":white_check_mark:" if analysis.dashboard_health == "OK" else ":rotating_light:"
+    alerts_text = (
+        "\n".join(f"  • {a['name']} — {a['level']}" for a in analysis.active_alerts)
+        if analysis.active_alerts
+        else "  (none)"
+    )
+    sectors_text = ", ".join(analysis.top_sectors) if analysis.top_sectors else "(none)"
+
+    await respond(
+        text=(
+            f"{health_emoji} *Vigie-VLM analysis* ({analysis.latency_ms:.0f} ms)\n\n"
+            f"*Dashboard health:* {analysis.dashboard_health}\n"
+            f"*Coverage:* {analysis.coverage_percent if analysis.coverage_percent is not None else 'N/A'}%\n"
+            f"*Avg check-in latency:* {analysis.avg_latency_min if analysis.avg_latency_min is not None else 'N/A'} min\n"
+            f"*L2 (no answer):* {analysis.l2_count if analysis.l2_count is not None else 'N/A'}\n"
+            f"*L3 (unconscious):* {analysis.l3_count if analysis.l3_count is not None else 'N/A'}\n"
+            f"*#cellule-crise messages:* {analysis.crisis_msg_count if analysis.crisis_msg_count is not None else 'N/A'}\n"
+            f"*Sectors visible:* {sectors_text}\n"
+            f"*Active alerts:*\n{alerts_text}\n\n"
+            f"_Summary:_ {analysis.summary}"
+        )
+    )

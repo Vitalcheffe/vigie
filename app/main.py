@@ -96,6 +96,26 @@ def main() -> None:
         socket_mode=bool(cfg.slack.app_token),
     )
 
+    # VLM boot self-check — verifies z-ai vision CLI is reachable and that
+    # a real screenshot can be analyzed. Non-blocking: failures are logged
+    # but do not prevent the bot from starting.
+    import asyncio as _asyncio
+    from app.services.vlm import boot_self_check
+
+    vlm_probe_path = os.environ.get("VIGIE_VLM_BOOT_IMAGE", "")
+    try:
+        vlm_check = _asyncio.run(boot_self_check(vlm_probe_path or None))
+        if vlm_check.get("ok"):
+            log.info("vigie.vlm.boot.ok", step=vlm_check.get("step"))
+        else:
+            log.warning(
+                "vigie.vlm.boot.failed",
+                step=vlm_check.get("step"),
+                error=vlm_check.get("error"),
+            )
+    except Exception as e:
+        log.warning("vigie.vlm.boot.exception", error=str(e))
+
     app = create_app()
 
     # Start the health endpoint (skip on Railway to avoid port conflicts)
