@@ -12,6 +12,7 @@ as the Bolt app.
 
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -89,6 +90,19 @@ def start_scheduler(orchestrator: VigieOrchestrator) -> AsyncIOScheduler:
     )
     log.info("scheduler.job_added", job="vigie_reminders", trigger="interval 2h")
 
+    # Job 5: VLM dashboard snapshot every 15 minutes during an active scenario.
+    # Captures the App Home dashboard, runs VLM analysis, logs to audit.
+    # Disabled by default — enable via env var VIGIE_VLM_SNAPSHOT_ENABLED=true.
+    if os.environ.get("VIGIE_VLM_SNAPSHOT_ENABLED", "false").lower() in ("true", "1", "yes"):
+        scheduler.add_job(
+            _job_vlm_snapshot,
+            trigger=IntervalTrigger(minutes=15),
+            id="vigie_vlm_snapshot",
+            kwargs={"orchestrator": orchestrator},
+            replace_existing=True,
+        )
+        log.info("scheduler.job_added", job="vigie_vlm_snapshot", trigger="interval 15 min")
+
     return scheduler
 
 
@@ -142,6 +156,89 @@ async def _job_send_reminders(orchestrator: VigieOrchestrator) -> None:
         log.info("scheduler.reminders.done", status=result.get("status"))
     except Exception as e:
         log.warning("scheduler.reminders.failed", error=str(e))
+
+
+async def _job_vlm_snapshot(orchestrator: VigieOrchestrator) -> None:
+    """Capture a dashboard snapshot and run VLM analysis every 15 minutes.
+
+    Only fires if a scenario is active AND VIGIE_VLM_SNAPSHOT_ENABLED=true.
+    Captures the App Home dashboard, runs VLM analysis, and logs to audit.
+    If the VLM detects an ALERT state, posts a warning in #cellule-crise.
+    """
+    state = orchestrator.state
+    if not state.is_scenario_active:
+        return
+
+    log.info("scheduler.vlm_snapshot.firing")
+
+    try:
+        from app.services.snapshot import capture_app_home_screenshot
+        from app.services.vlm import get_vlm_service
+        from app.utils.config import get_config
+
+        cfg = get_config()
+        # Use the bot's own user ID for the App Home snapshot
+        # (the bot can always read its own App Home)
+        bot_user_id = os.environ.get("VIGIE_BOT_USER_ID", "")
+        if not bot_user_id:
+            log.debug("scheduler.vlm_snapshot.skipped_no_bot_user_id")
+            return
+
+        # Capture screenshot
+        snapshot_path = await capture_app_home_screenshot(
+            slack_client=orchestrator.slack,
+            user_id=bot_user_id,
+            output_path=f"/tmp/vigie_vlm_snapshot_{int(__import__('time').time())}.png",
+        )
+
+        # Run VLM analysis (use_cache=False since the dashboard changes over time)
+        service = get_vlm_service()
+        analysis = await service.analyze_screenshot(snapshot_path, use_cache=False)
+
+        log.info(
+            "scheduler.vlm_snapshot.done",
+            health=analysis.dashboard_health,
+            coverage=analysis.coverage_percent,
+            l3=analysis.l3_count,
+            latency_ms=analysis.latency_ms,
+        )
+
+        # If ALERT state, post a warning in #cellule-crise
+        if analysis.dashboard_health == "ALERT" and analysis.l3_count and analysis.l3_count > 0:
+            try:
+                await orchestrator.slack.chat_postMessage(
+                    channel=cfg.slack.cellule_crise_channel_id or "",
+                    text=(
+                        f":eyes: *Vigie-VLM snapshot alert*\n"
+                        f"Dashboard health: *ALERT*\n"
+                        f"Coverage: {analysis.coverage_percent}%\n"
+                        f"L2 (no answer): {analysis.l2_count}\n"
+                        f"L3 (unconscious): {analysis.l3_count}\n\n"
+                        f"_Summary:_ {analysis.summary}\n\n"
+                        f"_Automated snapshot analysis — see audit log for details._"
+                    ),
+                )
+            except Exception as post_err:
+                log.warning("scheduler.vlm_snapshot.post_failed", error=str(post_err))
+
+        # Clean up the snapshot file (keep last 3 for debugging)
+        _cleanup_old_snapshots(keep=3)
+
+    except Exception as e:
+        log.warning("scheduler.vlm_snapshot.failed", error=str(e))
+
+
+def _cleanup_old_snapshots(keep: int = 3) -> None:
+    """Keep only the `keep` most recent VLM snapshots in /tmp."""
+    import glob
+    import time
+    pattern = "/tmp/vigie_vlm_snapshot_*.png"
+    files = sorted(glob.glob(pattern), key=os.path.getmtime, reverse=True)
+    for old_file in files[keep:]:
+        try:
+            os.unlink(old_file)
+        except OSError:
+            pass
 
 
 def stop_scheduler() -> None:

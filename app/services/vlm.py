@@ -105,6 +105,50 @@ class DashboardAnalysis:
 # ============================================================
 
 
+def _audit_vlm_call(analysis: "DashboardAnalysis", latency_ms: float, image_path: str) -> None:
+    """Record a VLM analysis in the audit log.
+
+    Each call to analyze_screenshot produces one audit entry with:
+      - actor: "vigie-vlm" (system)
+      - action: "vlm_analyze"
+      - target: image path
+      - result: "ok" | "parse_error" | "subprocess_error"
+      - metadata: { coverage, l2, l3, health, latency_ms, parse_error }
+    """
+    try:
+        from app.audit import log_action
+
+        result = "ok"
+        if analysis.parse_error:
+            if "rc=" in analysis.parse_error or "exc=" in analysis.parse_error:
+                result = "subprocess_error"
+            else:
+                result = "parse_error"
+
+        log_action(
+            actor="vigie-vlm",
+            action="vlm_analyze",
+            target=image_path,
+            reason=None,
+            result=result,
+            metadata={
+                "coverage_percent": analysis.coverage_percent,
+                "avg_latency_min": analysis.avg_latency_min,
+                "l2_count": analysis.l2_count,
+                "l3_count": analysis.l3_count,
+                "crisis_msg_count": analysis.crisis_msg_count,
+                "dashboard_health": analysis.dashboard_health,
+                "active_alerts_count": len(analysis.active_alerts),
+                "top_sectors_count": len(analysis.top_sectors),
+                "vlm_latency_ms": round(latency_ms, 1),
+                "parse_error": analysis.parse_error,
+            },
+        )
+    except Exception as e:
+        # Never let audit logging break the VLM call
+        log.debug("vigie.vlm.audit_failed", error=str(e))
+
+
 class VigieVLMService:
     """Vision Language Model service for Vigie dashboard analysis."""
 
@@ -182,10 +226,12 @@ class VigieVLMService:
                     error=err,
                     latency_ms=latency_ms,
                 )
-                return DashboardAnalysis(
+                failed_analysis = DashboardAnalysis(
                     parse_error=f"rc={proc.returncode}: {err}",
                     latency_ms=latency_ms,
                 )
+                _audit_vlm_call(failed_analysis, latency_ms, image_path)
+                return failed_analysis
 
             raw = stdout.decode("utf-8", errors="replace")
             content = self._extract_content(raw)
@@ -215,12 +261,21 @@ class VigieVLMService:
                 latency_ms=latency_ms,
                 cached=False,
             )
+
+            # Record in audit log for compliance / forensics
+            _audit_vlm_call(analysis, latency_ms, image_path)
+
             return analysis
 
         except asyncio.TimeoutError:
             latency_ms = (asyncio.get_event_loop().time() - start) * 1000.0
             self._stats["calls_failed"] += 1
             log.warning("vigie.vlm.timeout", timeout=self.timeout, latency_ms=latency_ms)
+            _audit_vlm_call(
+                DashboardAnalysis(parse_error=f"timeout_{self.timeout}s", latency_ms=latency_ms),
+                latency_ms,
+                image_path,
+            )
             return DashboardAnalysis(
                 parse_error=f"timeout_{self.timeout}s",
                 latency_ms=latency_ms,
@@ -229,6 +284,11 @@ class VigieVLMService:
             latency_ms = (asyncio.get_event_loop().time() - start) * 1000.0
             self._stats["calls_failed"] += 1
             log.warning("vigie.vlm.error", error=str(e), latency_ms=latency_ms)
+            _audit_vlm_call(
+                DashboardAnalysis(parse_error=f"exc={type(e).__name__}:{str(e)[:200]}", latency_ms=latency_ms),
+                latency_ms,
+                image_path,
+            )
             return DashboardAnalysis(
                 parse_error=f"exc={type(e).__name__}:{str(e)[:200]}",
                 latency_ms=latency_ms,

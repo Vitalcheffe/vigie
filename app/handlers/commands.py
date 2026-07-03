@@ -39,7 +39,7 @@ def register(app: AsyncApp) -> None:
     """Register all slash command handlers."""
 
     @app.command("/vigie")
-    async def handle_vigie_command(ack: AsyncAck, command: dict, respond: AsyncRespond) -> None:
+    async def handle_vigie_command(ack: AsyncAck, command: dict, respond: AsyncRespond, client) -> None:
         """Main Vigie command dispatcher."""
         await ack()
 
@@ -63,7 +63,7 @@ def register(app: AsyncApp) -> None:
         elif subcommand == "reset":
             await _cmd_reset(respond, user_id)
         elif subcommand == "inspect":
-            await _cmd_inspect(respond, args)
+            await _cmd_inspect(respond, args, client)
         else:
             await respond(f"Unknown subcommand: `{subcommand}`. Type `/vigie help` for the list.")
 
@@ -387,7 +387,7 @@ async def _cmd_reset(respond: AsyncRespond, user_id: str) -> None:
         await respond(f":warning: Error: {result.get('message', result)}")
 
 
-async def _cmd_inspect(respond: AsyncRespond, args: list[str]) -> None:
+async def _cmd_inspect(respond: AsyncRespond, args: list[str], client=None) -> None:
     """Analyze a dashboard screenshot using the Vigie VLM service.
 
     Usage:
@@ -396,6 +396,9 @@ async def _cmd_inspect(respond: AsyncRespond, args: list[str]) -> None:
 
     The VLM extracts: coverage %, L2/L3 counts, crisis messages, active alerts,
     and computes a dashboard health verdict (OK / ALERT).
+
+    If a Slack client is provided, the screenshot is also uploaded as an image
+    attachment alongside the structured analysis.
     """
     from app.services.vlm import get_vlm_service
 
@@ -424,7 +427,7 @@ async def _cmd_inspect(respond: AsyncRespond, args: list[str]) -> None:
         await respond(f":warning: Image not found: `{image_path}`")
         return
 
-    await respond(f":eyes: Analyzing `{image_path}` with Vigie-VLM (this takes ~5-10s)...")
+    await respond(f":eyes: Analyzing `{image_path}` with Vigie-VLM (this takes ~5-15s)...")
 
     service = get_vlm_service()
     analysis = await service.analyze_screenshot(image_path)
@@ -436,7 +439,7 @@ async def _cmd_inspect(respond: AsyncRespond, args: list[str]) -> None:
         )
         return
 
-    # Build a Slack-formatted summary
+    # Build a Slack-formatted summary using Block Kit
     health_emoji = ":white_check_mark:" if analysis.dashboard_health == "OK" else ":rotating_light:"
     alerts_text = (
         "\n".join(f"  • {a['name']} — {a['level']}" for a in analysis.active_alerts)
@@ -445,17 +448,89 @@ async def _cmd_inspect(respond: AsyncRespond, args: list[str]) -> None:
     )
     sectors_text = ", ".join(analysis.top_sectors) if analysis.top_sectors else "(none)"
 
-    await respond(
-        text=(
-            f"{health_emoji} *Vigie-VLM analysis* ({analysis.latency_ms:.0f} ms)\n\n"
-            f"*Dashboard health:* {analysis.dashboard_health}\n"
-            f"*Coverage:* {analysis.coverage_percent if analysis.coverage_percent is not None else 'N/A'}%\n"
-            f"*Avg check-in latency:* {analysis.avg_latency_min if analysis.avg_latency_min is not None else 'N/A'} min\n"
-            f"*L2 (no answer):* {analysis.l2_count if analysis.l2_count is not None else 'N/A'}\n"
-            f"*L3 (unconscious):* {analysis.l3_count if analysis.l3_count is not None else 'N/A'}\n"
-            f"*#cellule-crise messages:* {analysis.crisis_msg_count if analysis.crisis_msg_count is not None else 'N/A'}\n"
-            f"*Sectors visible:* {sectors_text}\n"
-            f"*Active alerts:*\n{alerts_text}\n\n"
-            f"_Summary:_ {analysis.summary}"
-        )
-    )
+    # If we have a Slack client, upload the screenshot as an image attachment
+    image_url = None
+    if client is not None:
+        try:
+            from app.utils.config import get_config
+            cfg = get_config()
+            channel = cfg.slack.cellule_crise_channel_id or ""
+            if channel:
+                with open(image_path, "rb") as f:
+                    upload = await client.files_upload_v2(
+                        file=f,
+                        filename=os.path.basename(image_path),
+                        title=f"Vigie-VLM analysis — {analysis.dashboard_health}",
+                        channel=channel,
+                        initial_comment=(
+                            f"{health_emoji} *Vigie-VLM analysis* ({analysis.latency_ms:.0f} ms)\n"
+                            f"*Health:* {analysis.dashboard_health} | "
+                            f"*Coverage:* {analysis.coverage_percent}% | "
+                            f"*L2:* {analysis.l2_count} | *L3:* {analysis.l3_count}\n"
+                            f"_{analysis.summary}_"
+                        ),
+                    )
+                # Get the permalink to the uploaded file
+                image_url = upload.get("file", {}).get("permalink", "")
+        except Exception as e:
+            log.warning("vigie.inspect.upload_failed", error=str(e))
+
+    # Always send the structured analysis via respond (works without client too)
+    blocks = [
+        {
+            "type": "header",
+            "text": {
+                "type": "plain_text",
+                "text": f"{health_emoji} Vigie-VLM — {analysis.dashboard_health}",
+                "emoji": True,
+            },
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": (
+                    f"*Coverage:* {analysis.coverage_percent if analysis.coverage_percent is not None else 'N/A'}%\n"
+                    f"*Avg check-in latency:* {analysis.avg_latency_min if analysis.avg_latency_min is not None else 'N/A'} min\n"
+                    f"*L2 (no answer):* {analysis.l2_count if analysis.l2_count is not None else 'N/A'}\n"
+                    f"*L3 (unconscious):* {analysis.l3_count if analysis.l3_count is not None else 'N/A'}\n"
+                    f"*#cellule-crise messages:* {analysis.crisis_msg_count if analysis.crisis_msg_count is not None else 'N/A'}\n"
+                    f"*Sectors visible:* {sectors_text}"
+                ),
+            },
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f"*Active alerts:*\n{alerts_text}",
+            },
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f"_{analysis.summary}_",
+            },
+        },
+        {
+            "type": "context",
+            "elements": [
+                {
+                    "type": "mrkdwn",
+                    "text": f"Latency: {analysis.latency_ms:.0f} ms · Source: `{image_path}`",
+                }
+            ],
+        },
+    ]
+
+    if image_url:
+        blocks.append({
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f":frame_with_picture: <{image_url}|View screenshot>",
+            },
+        })
+
+    await respond(blocks=blocks, text=f"Vigie-VLM — {analysis.dashboard_health}")
