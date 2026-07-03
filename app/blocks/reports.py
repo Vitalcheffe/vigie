@@ -131,12 +131,47 @@ def build_daily_report(
                 }
             )
 
+    # Impact section — human stories, not just numbers
+    blocks.append({"type": "divider"})
+    blocks.append(
+        {
+            "type": "header",
+            "text": {"type": "plain_text", "text": ":purple_heart: Today's impact", "emoji": True},
+        }
+    )
+
+    impact_parts = []
+    if ok_count > 0:
+        impact_parts.append(f":white_check_mark: *{ok_count} elders* heard a friendly voice today. They know someone is watching over them.")
+    if weak_count > 0:
+        impact_parts.append(f":warning: *{weak_count} weak signals* caught early — a volunteer noticed something before it became an emergency.")
+    if samu_count > 0:
+        impact_parts.append(f":rotating_light: *{samu_count} critical escalations* — someone may have been saved because a volunteer acted fast.")
+    if coord_count > 0:
+        impact_parts.append(f":medical_symbol: *{coord_count} medical coordinator interventions* — a professional was alerted in time.")
+    if coverage_pct >= 80:
+        impact_parts.append(f":tada: *{coverage_pct}% coverage* — nearly every isolated elder was contacted within 2 hours.")
+    elif coverage_pct >= 50:
+        impact_parts.append(f":heart: *{coverage_pct}% coverage* — more than half reached. Every call matters.")
+    
+    if not impact_parts:
+        impact_parts.append(":seedling: Today was quiet. The watch continues. Every day without a crisis is a victory.")
+
+    impact_text = "\n".join(impact_parts)
+    blocks.append(
+        {
+            "type": "section",
+            "text": {"type": "mrkdwn", "text": impact_text},
+        }
+    )
+
     blocks.append({"type": "divider"})
     blocks.append(
         {
             "type": "context",
             "elements": [
                 {"type": "mrkdwn", "text": "_Vigie — So the heatwave no longer kills in silence._"},
+                {"type": "mrkdwn", "text": f"_{contacted} check-ins completed by {total - unreachable_72h} volunteers. Every number here is a person._"},
                 {"type": "mrkdwn", "text": "Simulated data — no real beneficiary is used in this demo."},
             ],
         }
