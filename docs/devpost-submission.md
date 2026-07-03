@@ -133,7 +133,7 @@ All three hackathon technologies are used simultaneously. Each is
 
 | Technology | Role | Why it's required |
 |------------|------|-------------------|
-| **Slack AI capabilities** | Cognitive layer | Transcribes voice notes (200/day), extracts structured JSON from free text, classifies 4-level anomalies, generates daily report. Without it: manual triage caps at ~80 check-ins/day per coordinator. |
+| **Slack AI capabilities** | Cognitive layer (Z-AI LLM fallback — no API key needed) | Transcribes voice notes (200/day), extracts structured JSON from free text, classifies 4-level anomalies, generates daily report. Without it: manual triage caps at ~80 check-ins/day per coordinator. |
 | **MCP server integration** | Memory & external data | Exposes `beneficiary_registry`, `weather_alerts`, `community_pois`. Without it: volunteers manually check 3–4 external sources per call, check-in time goes from 2 min to 8 min. |
 | **Real-Time Search API** | Contextual freshness | Surfaces current ARS directives, municipal alerts, local news. Without it: agent is frozen on pre-programmed rules, useless the moment a new health directive is published. |
 
