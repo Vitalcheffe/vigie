@@ -59,15 +59,15 @@ def build_checkin_message(
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": f"{visual['emoji']} Check-in — {name}, {age} yrs, sector {sector}",
+                "text": f"{visual['emoji']} {name}, {age} — {visual['label']}",
                 "emoji": True,
             },
         },
         {
             "type": "context",
             "elements": [
-                {"type": "mrkdwn", "text": f"_Volunteer: <@{volunteer_id}>_"},
-                {"type": "mrkdwn", "text": f"• Level: *{visual['label']}*"},
+                {"type": "mrkdwn", "text": f":bust_in_silhouette: Called by <@{volunteer_id}>"},
+                {"type": "mrkdwn", "text": f":round_pushpin: Sector {sector}"},
             ],
         },
         {"type": "divider"},
@@ -82,21 +82,21 @@ def build_checkin_message(
         blocks.append(
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": f"*Detected signals:* {badges}"},
+                "text": {"type": "mrkdwn", "text": f":mag_right: *What I detected:* {badges}"},
             }
         )
 
     if poi_list:
         poi_text = "\n".join(
-            f"  • *{p.get('name', '?')}* — {p.get('type', '?')}"
-            + (f" ({p['distance_m']:.0f} m)" if p.get("distance_m") else "")
-            + (f" — `{p.get('opening_hours', '?')}`" if p.get("opening_hours") else "")
+            f"  :heavy_plus_sign: *{p.get('name', '?')}* — {p.get('type', '?')}"
+            + (f" ({p['distance_m']:.0f} m away)" if p.get("distance_m") else "")
+            + (f"\n    :clock1: {p.get('opening_hours', '?')}" if p.get("opening_hours") else "")
             for p in poi_list[:3]
         )
         blocks.append(
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": f"*Nearby POIs:*\n{poi_text}"},
+                "text": {"type": "mrkdwn", "text": f":mappin: *Nearby help found via OpenStreetMap:*\n{poi_text}"},
             }
         )
 
