@@ -1,0 +1,25 @@
+"""
+Vigie — Sectors data (Paris arrondissements 1-12 as Vigie sectors).
+
+Each sector has:
+  - id (1-12)
+  - arrondissement
+  - postal_code
+  - centroid (lat, lon)
+  - estimated senior population
+"""
+
+SECTORS = [
+    {"id": 1, "name": "Secteur 1 — Louvre", "arrondissement": "1er", "postal_code": "75001", "centroid": {"lat": 48.8606, "lon": 2.3376}, "senior_population": 1850},
+    {"id": 2, "name": "Secteur 2 — Bourse", "arrondissement": "2e", "postal_code": "75002", "centroid": {"lat": 48.8655, "lon": 2.3431}, "senior_population": 1620},
+    {"id": 3, "name": "Secteur 3 — Temple", "arrondissement": "3e", "postal_code": "75003", "centroid": {"lat": 48.8606, "lon": 2.3625}, "senior_population": 1740},
+    {"id": 4, "name": "Secteur 4 — Hôtel de Ville", "arrondissement": "4e", "postal_code": "75004", "centroid": {"lat": 48.8560, "lon": 2.3560}, "senior_population": 1380},
+    {"id": 5, "name": "Secteur 5 — Panthéon", "arrondissement": "5e", "postal_code": "75005", "centroid": {"lat": 48.8440, "lon": 2.3500}, "senior_population": 2950},
+    {"id": 6, "name": "Secteur 6 — Luxembourg", "arrondissement": "6e", "postal_code": "75006", "centroid": {"lat": 48.8530, "lon": 2.3300}, "senior_population": 2410},
+    {"id": 7, "name": "Secteur 7 — Palais Bourbon", "arrondissement": "7e", "postal_code": "75007", "centroid": {"lat": 48.8560, "lon": 2.3100}, "senior_population": 2680},
+    {"id": 8, "name": "Secteur 8 — Élysée", "arrondissement": "8e", "postal_code": "75008", "centroid": {"lat": 48.8730, "lon": 2.3080}, "senior_population": 2120},
+    {"id": 9, "name": "Secteur 9 — Opéra", "arrondissement": "9e", "postal_code": "75009", "centroid": {"lat": 48.8780, "lon": 2.3380}, "senior_population": 2340},
+    {"id": 10, "name": "Secteur 10 — Enclos Saint-Laurent", "arrondissement": "10e", "postal_code": "75010", "centroid": {"lat": 48.8730, "lon": 2.3600}, "senior_population": 2890},
+    {"id": 11, "name": "Secteur 11 — Popincourt", "arrondissement": "11e", "postal_code": "75011", "centroid": {"lat": 48.8590, "lon": 2.3790}, "senior_population": 3520},
+    {"id": 12, "name": "Secteur 12 — Reuilly", "arrondissement": "12e", "postal_code": "75012", "centroid": {"lat": 48.8400, "lon": 2.3890}, "senior_population": 3180},
+]

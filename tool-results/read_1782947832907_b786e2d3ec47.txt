@@ -1,0 +1,311 @@
+     1→   100→   100→   100→
+     2→   101→   101→   101→Submission Requirements: 
+     3→   102→   102→   102→
+     4→   103→   103→   103→Submissions to the Hackathon must meet the following requirements:
+     5→   104→   104→   104→
+     6→   105→   105→   105→Include a Project built with the required developer environments and tools through provisioned environments that meets the above Project Requirements. 
+     7→   106→   106→   106→
+     8→   107→   107→   107→Identify which track you are submitting to.
+     9→   108→   108→   108→
+    10→   109→   109→   109→Include a text description that should explain the features and functionality of your Project.
+    11→   110→   110→   110→
+    12→   111→   111→   111→For the Agent for Good track: describe the impact of the project in the submission form. 
+    13→   112→   112→   112→
+    14→   113→   113→   113→Include a demonstration video of your Project. The video portion of the submission:
+    15→   114→   114→   114→
+    16→   115→   115→   115→should be less than three (3) minutes (Note judges are not required to watch beyond 3 minutes)
+    17→   116→   116→   116→
+    18→   117→   117→   117→should include footage that shows the Project functioning on the device for which it was built
+    19→   118→   118→   118→
+    20→   119→   119→   119→must be uploaded to and made publicly visible on YouTube, Vimeo, Facebook Video, or Youku, and a link to the video must be provided on the submission form on the Hackathon Website
+    21→   120→   120→   120→
+    22→   121→   121→   121→must not include third-party trademarks, or copyrighted music or other third-party material unless the Entrant has permission to use such material
+    23→   122→   122→   122→
+    24→   123→   123→   123→Must not include confidential, proprietary or other sensitive information
+    25→   124→   124→   124→
+    26→   125→   125→   125→Include an Architecture diagram.
+    27→   126→   126→   126→
+    28→   127→   127→   127→Include a URL to the Entrants' Slack developer sandbox. Entrants must provide test access to their Slack developer sandbox to slackhack@salesforce.com and testing@devpost.com. 
+    29→   128→   128→   128→
+    30→   129→   129→   129→Be the original work of the Entrants, be solely owned by the Entrants, and not violate the Intellectual Property rights of any other person or entity.
+    31→   130→   130→   130→
+    32→   131→   131→   131→For Submissions entered into the “Slack Agents for Organizations Track” which is a new app: provide your Slack App ID.
+    33→   132→   132→   132→
+    34→   133→   133→   133→For submissions entered into the “Slack Agents for Organizations Track” which updated an existing app: 
+    35→   134→   134→   134→
+    36→   135→   135→   135→Describe updates made during the Hackathon Submission Period. 
+    37→   136→   136→   136→
+    38→   137→   137→   137→Provide your Slack App ID
+    39→   138→   138→   138→
+    40→   139→   139→   139→
+    41→   140→   140→   140→Multiple Submissions: An Entrant may submit more than one Submission, however, each Submission must be unique and substantially different from each of the Entrant’s other Submissions, as determined by the Sponsor and Devpost in their sole discretion.
+    42→   141→   141→   141→
+    43→   142→   142→   142→
+    44→   143→   143→   143→Language Requirements: All Submission materials must be in English or, if not in English, the Entrant must provide an English translation of the demonstration video, text description, and testing instructions as well as all other materials submitted. 
+    45→   144→   144→   144→
+    46→   145→   145→   145→Team Representation: If a team or organization is entering the Hackathon, they must appoint and authorize one individual (the “Representative”) to represent, act, and enter a Submission, on their behalf. The Representative must meet the eligibility requirements above. By entering a Submission on the Hackathon Website on behalf of a team or organization you represent and warrant that you are the Representative authorized to act on behalf of your team or organization and you may make all decisions relating to prize(s) distribution.
+    47→   146→   146→   146→
+    48→   147→   147→   147→Intellectual Property: Your Submission must: (a) be your (or your team, or organization’s) original work product; (b) be solely owned by you, your Team, your Organization with no other person or entity having any right or interest in it; and (c) not violate the intellectual property rights or other rights including but not limited to copyright, trademark, patent, contract, and/or privacy rights, of any other person or entity. An Entrant may contract with a third party for technical assistance to create the Submission provided the Submission components are solely the Entrant’s work product and the result of the Entrant’s ideas and creativity, and the Entrant owns all rights to them. An Entrant may submit a Submission that includes the use of open source software or hardware, provided the Entrant complies with applicable open source licenses and, as part of the Submission, creates software that enhances and builds upon the features and functionality included in the underlying open source product. By entering the Hackathon, you represent, warrant, and agree that your Submission meets these requirements.
+    49→   148→   148→   148→
+    50→   149→   149→   149→Financial or Preferential Support: A Project must not have been developed, or derived from a Project developed, with financial or preferential support from the Sponsor. Such Projects include, but are not limited to, those that received funding or investment for their development, were developed under contract, or received a commercial license, from the Sponsor any time prior to the end of Hackathon Submission Period. The Sponsor, at their sole discretion, may disqualify a Project, if awarding a prize to the Project would create a real or apparent conflict of interest.
+    51→   150→   150→   150→
+    52→   151→   151→   151→Representations and Warranties: Entrants represent and warrant the following with respect to Submissions:
+    53→   152→   152→   152→
+    54→   153→   153→   153→It does not contain confidential, proprietary or other sensitive information, including but not limited to any third-party personal information or any third party’s intellectual property.
+    55→   154→   154→   154→
+    56→   155→   155→   155→It is not copyrighted, protected by trade secret or otherwise subject to third party intellectual property rights or other proprietary rights, including privacy and publicity rights, unless entrant is the owner of such rights or has permission from their rightful owner to post the content
+    57→   156→   156→   156→
+    58→   157→   157→   157→It does not contain or describe any harmful or illegal activity or content or in any way violate any federal, state, or local laws, rules or regulations.
+    59→   158→   158→   158→
+    60→   159→   159→   159→It does not portray Sponsor or its services in a negative light. 
+    61→   160→   160→   160→
+    62→   161→   161→   161→It does not contain any content that is inappropriate or indecent, as determined by Sponsor or Administrator, in its sole discretion. 
+    63→   162→   162→   162→
+    64→   163→   163→   163→It does not include any malware, spyware, viruses or similar harmful code or content.
+    65→   164→   164→   164→
+    66→   165→   165→   165→It does not contain source code, sample code, libraries, SDKs, and APIs that are not publicly discoverable or available for public use in developing applications.
+    67→   166→   166→   166→
+    68→   167→   167→   167→It does not contain any viruses, Trojan horses, worms, spyware or other disabling devices or harmful or malicious code;
+    69→   168→   168→   168→
+    70→   169→   169→   169→At any time, and at its sole discretion, the Sponsor will have the ability to disqualify a Submission for not sufficiently fitting the Submission Requirements or these Representations and Warranties as set forth in these Official Rules. Entrants further represent and warrant their Participation and acceptance of any prize complies with Entrants’ employer policies (as applicable).
+    71→   170→   170→   170→
+    72→   171→   171→   171→ 
+    73→   172→   172→   172→
+    74→   173→   173→   173→5. Submission Modifications.
+    75→   174→   174→   174→
+    76→   175→   175→   175→Draft Submissions: Prior to the end of the Submission Period, you may save draft versions of your submission on Devpost to your portfolio before submitting the submission materials to the Hackathon for evaluation. Once the Submission Period has ended, you may not make any changes or alterations to your Submission, but you may continue to update the Project in your Devpost portfolio.
+    77→   176→   176→   176→
+    78→   177→   177→   177→Modifications: After the Submission Period. The Sponsor may permit you to modify part of your Submission after the Submission Period for the purpose of adding, removing or replacing material that potentially infringes a third party mark or right, discloses personally identifiable information, or is otherwise inappropriate. The modified submission must remain substantively the same as the original submission with the only modification being what the Sponsor permits. 
+    79→   178→   178→   178→
+    80→   179→   179→   179→ 
+    81→   180→   180→   180→
+    82→   181→   181→   181→6. Judges & Criteria.
+    83→   182→   182→   182→
+    84→   183→   183→   183→Sponsor and Administrator reserve the sole right to determine the eligibility and judging methodologies for all submissions. This process may utilize expert panels, peer review, automated AI-driven analysis, or any combination thereof to ensure efficient, fair, and objective evaluation. Please note that any AI-driven analysis uses generative AI and may not be 100% accurate. Final results are subject to human review. Eligible Submissions will be evaluated by a panel of judges selected by the Sponsor (the “Judges”). Judges may be employees of the Sponsor (at least one judge will not be a Sponsor employee) or third parties, may or may not be listed individually on the Hackathon Website, and may change before or during the Judging Period. Judging may take place in one or more rounds with one or more panels of Judges, at the discretion of the Sponsor. 
+    85→   184→   184→   184→
+    86→   185→   185→   185→Stage One) The first stage will determine via pass/fail whether the ideas meet a baseline level of viability, in that the project reasonably fits Submission Requirements featured in the Hackathon.
+    87→   186→   186→   186→
+    88→   187→   187→   187→Stage Two) All submissions that pass Stage One will be evaluated in Stage Two for each Prize Category based on the following equally weighted criteria (the “Judging Criteria”):
+    89→   188→   188→   188→
+    90→   189→   189→   189→Entries will be judged on the following equally-weighted criteria, and according to the sole and absolute discretion of the judges:
+    91→   190→   190→   190→
+    92→   191→   191→   191→Technological Implementation - Does the project demonstrate quality software development? Does the project leverage at least one of these three technologies: Slack AI capabilities, MCP server integration, or real-time search API? How is the quality of the code?
+    93→   192→   192→   192→Design - Is the user experience and design of the project well thought out? Is there a balanced blend of frontend and backend in the software?
+    94→   193→   193→   193→Potential Impact - How big of an impact could the project have on the Slack community? How big of an impact could it have beyond the target community?
+    95→   194→   194→   194→Quality of the Idea - How creative and unique is the project? Does the concept exist already? If so, how much does the project improve on it?
+    96→   195→   195→   195→The scores from the Judges will determine the potential winners for each Prize Category. The Entrant(s) that are eligible for a Prize, and whose Submissions earn the highest overall scores for each Prize Category based on the applicable Judging Criteria, will become potential winners of that Prize Category.
+    97→   196→   196→   196→
+    98→   197→   197→   197→Tie Breaking. For each Prize Category listed below, if two or more Submissions are tied, the tied Submission with the highest score in the first applicable criterion listed above will be considered the higher scoring Submission. In the event any ties remain, this process will be repeated, as needed, by comparing the tied Submissions’ scores on the next applicable criterion. If two or more Submissions are tied on all applicable criteria, the panel of Judges will vote on the tied Submissions.
+    99→   198→   198→   198→
+   100→   199→   199→   199→ 
+   101→   200→   200→   200→
+   102→   201→   201→   201→7. Intellectual Property Rights.
+   103→   202→   202→   202→
+   104→   203→   203→   203→All submissions remain the intellectual property of the individuals or organizations that developed them. By submitting an entry, Entrants agree that the Sponsor will have an irrevocable, royalty-free, worldwide right and license to: (a) use, review, assess, test, and otherwise analyze the Submission and all its content in connection with the Hackathon; and (b) feature the Submission and all its content for promotional purposes (including, but not limited to, in advertisements, press releases, presentations, and trade shows) in all media, now known or later developed. Entrants also agree to sign any necessary documentation that may be required for Sponsor, and their designees to make use of the rights you granted. You acknowledge that we, other entrants or others may have developed or commissioned materials similar or identical to your Submission, or may develop something similar in the future, and you waive any claims you may have resulting from any similarities to your Submission.
+   105→   204→   204→   204→
+   106→   205→   205→   205→Entrants understand that Sponsor cannot control the information you disclose to us or our representatives in the course of participating in the Hackathon, or what we or our representatives will remember about your Submission. Entrants also understand that Sponsor will not restrict work assignments of representatives who have had access to your Submission. By participating in the Hackathon, Entrants agree that we may use any information in our representatives’ unaided memories in the development or deployment of our products or services without liability or compensation to Entrants. Entrants understand that they will not receive any compensation or credit from us for use of the Submission in connection with this Hackathon. We are not responsible for any unauthorized use of the Submission by those accessing or viewing the Submission. 
+   107→   206→   206→   206→
+   108→   207→   207→   207→Please note that after the Hackathon, Entrants and/or the Submission may be publicized in advertisements related to the Hackathon. These advertisements may be distributed online and posted on our site, social media handles, or third-party websites. 
+   109→   208→   208→   208→
+   110→   209→   209→   209→While Sponsor reserves the rights set forth above, we are not obligated to use the Submission for any purpose, even if it has been selected as a winning submission.
+   111→   210→   210→   210→
+   112→   211→   211→   211→If Entrants do not want to grant us these rights to the Submission, please do not enter this Hackathon.
+   113→   212→   212→   212→
+   114→   213→   213→   213→Nothing in these Official Rules shall be interpreted as granting Entrants permission to use or display any of the Sponsor trademarks (including any logo or brand) or rights in any Salesforce, Inc. technologies or Intellectual Property. Entrants agree to contact us prior to promoting or publicizing your participation in and, if applicable, you winning the Hackathon.
+   115→   214→   214→   214→
+   116→   215→   215→   215→ 
+   117→   216→   216→   216→
+   118→   217→   217→   217→8. Prizes.
+   119→   218→   218→   218→
+   120→   219→   219→   219→There will be nine (9) total Submission winner(s) (up to 36 Eligible Individuals in the event of 4 Eligible Individuals per Eligible Team) as determined by Final Judging. Total ARV of all prizes is up to USD $74,400. All currency listed in these Official Rules is in USD. 
+   121→   220→   220→   220→
+   122→   221→   221→   221→New Slack Agent Track. 
+   123→   222→   222→   222→
+   124→   223→   223→   223→One (1) First Prize winner will receive: 
+   125→   224→   224→   224→
+   126→   225→   225→   225→USD $8,000 USD in cash
+   127→   226→   226→   226→
+   128→   227→   227→   227→One (1) Slack Developer Certification voucher per Eligible Individual (ARV $200/each) 
+   129→   228→   228→   228→
+   130→   229→   229→   229→One (1) Dreamforce 2026 full conference pass per Eligible Individual  (ARV $2,299/each)
+   131→   230→   230→   230→
+   132→   231→   231→   231→One (1) Slack community swag voucher per Eligible Individual (ARV $200/each)
+   133→   232→   232→   232→
+   134→   233→   233→   233→Invitation to an exclusive Slack community gathering and social media interview at Dreamforce 2026* (*subject to winners attendance at Dreamforce)
+   135→   234→   234→   234→
+   136→   235→   235→   235→Features in/on Slack Developer program website & newsletter & Slack social media handles 
+   137→   236→   236→   236→
+   138→   237→   237→   237→ 
+   139→   238→   238→   238→
+   140→   239→   239→   239→One (1) Second Prize winner will receive $4,000 and features in/on Slack developer newsletter and Slack social media handles. 
+   141→   240→   240→   240→
+   142→   241→   241→   241→ 
+   143→   242→   242→   242→
+   144→   243→   243→   243→Slack Agent for Good. 
+   145→   244→   244→   244→
+   146→   245→   245→   245→One (1) First Prize winner will receive: 
+   147→   246→   246→   246→
+   148→   247→   247→   247→USD $8,000 USD in cash
+   149→   248→   248→   248→
+   150→   249→   249→   249→One (1) Slack Developer Certification voucher per Eligible Individual (ARV $200/each) 
+   151→   250→   250→   250→
+   152→   251→   251→   251→One (1) Dreamforce 2026 full conference pass per Eligible Individual (ARV $2,299 each
+   153→   252→   252→   252→
+   154→   253→   253→   253→One (1) Slack community swag voucher per Eligible Individual (ARV $200/each)
+   155→   254→   254→   254→
+   156→   255→   255→   255→Invitation to an exclusive Slack community gathering and social media interview at Dreamforce 2026* (*subject to winners attendance at Dreamforce)
+   157→   256→   256→   256→
+   158→   257→   257→   257→Features in/on Slack Developer program website & newsletter & Slack social media handles 
+   159→   258→   258→   258→
+   160→   259→   259→   259→ 
+   161→   260→   260→   260→
+   162→   261→   261→   261→One (1) Second Prize winner will receive $4,000 and features in/on Slack developer newsletter and Slack social media handles. 
+   163→   262→   262→   262→
+   164→   263→   263→   263→ 
+   165→   264→   264→   264→
+   166→   265→   265→   265→Slack Agent for Organizations. 
+   167→   266→   266→   266→
+   168→   267→   267→   267→One (1) First Prize winner will receive: 
+   169→   268→   268→   268→
+   170→   269→   269→   269→USD $8,000 USD in cash
+   171→   270→   270→   270→
+   172→   271→   271→   271→One (1) Slack Developer Certification voucher per Eligible Individual (ARV $200/each) 
+   173→   272→   272→   272→
+   174→   273→   273→   273→One (1) Dreamforce 2026 full conference pass per Eligible Individual (ARV $2,299/each)
+   175→   274→   274→   274→
+   176→   275→   275→   275→One (1) Slack community swag voucher per Eligible Individual (ARV $200/each)
+   177→   276→   276→   276→
+   178→   277→   277→   277→Invitation to an exclusive Slack community gathering and social media interview at Dreamforce 2026* (*subject to winners attendance at Dreamforce)
+   179→   278→   278→   278→
+   180→   279→   279→   279→Features in/on Slack Developer program website & newsletter & Slack social media handles
+   181→   280→   280→   280→
+   182→   281→   281→   281→One (1) 30 minute virtual conversation with a Slack product executive 
+   183→   282→   282→   282→
+   184→   283→   283→   283→Winning app featured in/on Stack Overflow podcast
+   185→   284→   284→   284→
+   186→   285→   285→   285→ 
+   187→   286→   286→   286→
+   188→   287→   287→   287→One (1) Second Prize winner will receive $4,000 and features in/on Slack developer newsletter and Slack social media handles. 
+   189→   288→   288→   288→
+   190→   289→   289→   289→ 
+   191→   290→   290→   290→
+   192→   291→   291→   291→Achievement Prizes
+   193→   292→   292→   292→
+   194→   293→   293→   293→Three (3) Achievement Prize Winners will receive $2,000 USD in cash and features in/on Slack developer newsletter and Slack social media handles for Achievement Prizes: Best UX, Best Technological Implementation and Most Innovative Slack Agent. 
+   195→   294→   294→   294→
+   196→   295→   295→   295→
+   197→   296→   296→   296→
+   198→   297→   297→   297→
+   199→   298→   298→   298→9. Prize Details and Conditions.
+   200→   299→   299→   299→
+   201→   300→   300→   300→Any prize details not specified herein will be determined by Sponsor in its sole discretion. Prizes are not transferable, assignable or refundable and cannot be substituted for cash. Prizes must be accepted as awarded. Sponsor reserves the right to substitute prizes of equal or greater monetary value to the prizes if for any reason any prize cannot be awarded as contemplated in these Official Rules. A winning Eligible Submission may only win one (1) Prize. For the avoidance of doubt, the First Prize and Second Prize winners are not eligible to receive an Achievement prize. 
+   202→   301→   301→   301→
+   203→   302→   302→   302→All expenses not listed are the sole responsibility of the winners. The First Place Prizes do not include travel or accommodations. You are responsible for any other expenses including cost to obtain a passport or visa and any other incidental travel cost not expressly stated above, including but not limited to, ground transportation, passenger tariffs or duties, surcharges, airport fees, service charges or facility charges, personal charges at lodging, security fees, taxes or other expenses are the responsibility solely of the winner. You must register for Dreamforce 2026. 
+   204→   303→   303→   303→
+   205→   304→   304→   304→Sponsor is not responsible for lost or stolen prize elements. Prizes may be reported as income to a winner and the winner will be responsible for all taxes associated with the receipt of any prize. 
+   206→   305→   305→   305→
+   207→   306→   306→   306→ 
+   208→   307→   307→   307→
+   209→   308→   308→   308→IMPORTANT NOTES ON MULTIPLE PRIZE ELIGIBILITY:
+   210→   309→   309→   309→
+   211→   310→   310→   310→Substitutions & Changes: Prizes are non-transferable by the winner. Sponsor in its sole discretion has the right to make a prize substitution of equivalent or greater value. Sponsor will not award a prize if there are no eligible submissions entered in the Hackathon, or if there are no eligible Entrants or Submissions for a specific prize.
+   212→   311→   311→   311→
+   213→   312→   312→   312→Verification Requirement: THE AWARD OF A PRIZE TO A POTENTIAL WINNER IS SUBJECT TO VERIFICATION OF THE IDENTITY, QUALIFICATIONS AND ROLE OF THE POTENTIAL WINNER IN THE CREATION OF THE SUBMISSION. No Submission or Entrant shall be deemed a winning Submission or winner until their post-competition prize affidavits have been completed and verified, even if prospective winners have been announced verbally or on the competition website. The final decision to designate a winner shall be made by the Sponsor.
+   214→   313→   313→   313→
+   215→   314→   314→   314→Prize Delivery: Prizes will be payable by the Administrator to the Entrant, if an individual; to the Entrant’s Representative, if a Team; or to the Organization, if the Entrant is an Organization. It will be the responsibility of the winning Entrant’s Representative to allocate the Prize among their Team or Organization’s participating members, as the Representative deems appropriate. A monetary Prize will be mailed to the winning Entrant’s address (if an individual) or the Representative’s address (if a Team or Organization), or sent electronically to the Entrant, Entrant’s Representative, or Organization’s bank account, only after receipt of the completed winner affidavit and other required forms (collectively the “Required Forms”), if applicable. Failure to provide correct information on the Required Forms, or other correct information required for the delivery of a Prize, may result in delayed Prize delivery, disqualification or the Entrant, or forfeiture of a Prize. Prizes will be delivered within 60 days of the Sponsor receipt of the completed Required Forms.
+   216→   315→   315→   315→
+   217→   316→   316→   316→Fees & Taxes: Winners (and in the case of Team or Organization, all participating members) are responsible for any fees associated with receiving or using a prize, including but not limited to, wiring fees or currency exchange fees. Winners (and in the case of Team or Organization, all participating members) are responsible for reporting and paying all applicable taxes in their jurisdiction of residence (federal, state/provincial/territorial and local). Winners may be required to provide certain information to facilitate receipt of the award, including completing and submitting any tax or other forms necessary for compliance with applicable withholding and reporting requirements. United States residents may be required to provide a completed form W-9 and residents of other countries may be required to provide a completed W-8BEN form. Winners are also responsible for complying with foreign exchange and banking regulations in their respective jurisdictions and reporting the receipt of the Prize to relevant government departments/agencies, if necessary. The Sponsor and/or Prize provider reserves the right to withhold a portion of the prize amount to comply with the tax laws of the United States or other sponsor jurisdiction, or those of a winner’s jurisdiction.
+   218→   317→   317→   317→
+   219→   318→   318→   318→ 
+   220→   319→   319→   319→
+   221→   320→   320→   320→10. Entry Conditions and Release.
+   222→   321→   321→   321→
+   223→   322→   322→   322→By entering the Hackathon, you (and, if you are entering on behalf of a Team, Organization each participating members) agree(s) to the following:
+   224→   323→   323→   323→
+   225→   324→   324→   324→The relationship between you, the Entrant, and the Sponsor, is not a confidential, fiduciary, or other special relationship.
+   226→   325→   325→   325→
+   227→   326→   326→   326→You will be bound by and comply with these Official Rules and the decisions of the Sponsor and/or the Hackathon Judges which are binding and final in all matters relating to the Hackathon.
+   228→   327→   327→   327→
+   229→   328→   328→   328→You release, indemnify, defend and hold harmless the Promotion Entities, and their respective parent, subsidiary, and affiliated companies, the Prize suppliers and any other organizations responsible for sponsoring, fulfilling, administering, advertising or promoting the Hackathon, and all of their respective past and present officers, directors, employees, agents and representatives (hereafter the “Released Parties”) from and against any and all claims, expenses, and liabilities (including reasonable attorneys’ fees), including but not limited to negligence and damages of any kind to persons and property, defamation, slander, libel, violation of right of publicity, infringement of trademark, copyright or other intellectual property rights, property damage, or death or personal injury arising out of or relating to a Entrant’s entry, creation of Submission or entry of a Submission, participation in the Hackathon, acceptance or use or misuse of the Prize (including any travel or activity related thereto) and/or the broadcast, transmission, performance, exploitation or use of the Submission as authorized or licensed by these Official Rules. 
+   230→   329→   329→   329→
+   231→   330→   330→   330→Without limiting the foregoing, the Released Parties shall have no liability in connection with: 
+   232→   331→   331→   331→
+   233→   332→   332→   332→Any incorrect or inaccurate information, whether caused by the Sponsor’s electronic or printing error, or by any of the equipment or programming associated with or utilized in the Hackathon; 
+   234→   333→   333→   333→
+   235→   334→   334→   334→Technical failures of any kind, including, but not limited to malfunctions, interruptions, or disconnections in phone lines, internet connectivity or electronic transmission errors, or network hardware or software or failure of the Hackathon Website;
+   236→   335→   335→   335→
+   237→   336→   336→   336→Unauthorized human intervention in any part of the entry process or the Hackathon; 
+   238→   337→   337→   337→
+   239→   338→   338→   338→Technical or human error which may occur in the administration of the Hackathon or the processing of Submissions; or 
+   240→   339→   339→   339→
+   241→   340→   340→   340→Any injury or damage to persons or property which may be caused, directly or indirectly, in whole or in part, from the Entrant’s participation in the Hackathon or receipt or use or misuse of any Prize.
+   242→   341→   341→   341→
+   243→   342→   342→   342→The Released Parties are not responsible for incomplete, late, misdirected, damaged, lost, illegible, or incomprehensible Submissions or for address or email address changes of the Entrants. Proof of sending or submitting the aforementioned will not be deemed to be proof of receipt by the Sponsor. If for any reason any Entrant’s Submission is determined to have not been received or been erroneously deleted, lost, or otherwise destroyed or corrupted, the Entrant’s sole remedy is to request the opportunity to resubmit its Submission. Such a request must be made promptly after the Entrant knows or should have known there was a problem and will be determined at the sole discretion of the Sponsor.
+   244→   343→   343→   343→
+   245→   344→   344→   344→ 
+   246→   345→   345→   345→
+   247→   346→   346→   346→11. Publicity.
+   248→   347→   347→   347→
+   249→   348→   348→   348→By participating in the Hackathon, Entrant consents to the promotion and display of the Entrant’s Submission, and to the use of personal information about themselves for promotional purposes, by the Sponsor and third parties acting on their behalf. Such personal information includes, but is not limited to, your name, likeness, photograph, voice, opinions, comments and hometown and country of residence. It may be used in any existing or newly created media, worldwide without further payment or consideration or right of review, unless prohibited by law. Authorized use includes but is not limited to advertising and promotional purposes. 
+   250→   349→   349→   349→
+   251→   350→   350→   350→ 
+   252→   351→   351→   351→
+   253→   352→   352→   352→12. General Conditions. 
+   254→   353→   353→   353→
+   255→   354→   354→   354→Sponsor reserves the right, in its sole discretion, to cancel, suspend and/or modify the Hackathon, or any part of it, in the event of a technical failure, fraud, or any other factor or event that was not anticipated or is not within its control.
+   256→   355→   355→   355→
+   257→   356→   356→   356→Sponsor reserve the right in its sole discretion to disqualify any individual or Entrant if it finds to be actually or presenting the appearance of tampering with the entry process or the operation of the Hackathon or to be acting in violation of these Official Rules or in a manner that is inappropriate, unsportsmanlike, not in the best interests of this Hackathon, or a violation of any applicable law or regulation.
+   258→   357→   357→   357→
+   259→   358→   358→   358→Any attempt by any person to undermine the proper conduct of the Hackathon may be a violation of criminal and civil law. Should the Sponsor suspect that such an attempt has been made or is threatened, it reserves the right to take appropriate action including but not limited to requiring an Entrant to cooperate with an investigation and referral to criminal and civil law enforcement authorities.
+   260→   359→   359→   359→
+   261→   360→   360→   360→If there is any discrepancy or inconsistency between the terms and conditions of the Official Rules and disclosures or other statements contained in any Hackathon materials, including but not limited to the Hackathon Submission form, Hackathon Website, or advertising, the terms and conditions of the Official Rules shall prevail.
+   262→   361→   361→   361→
+   263→   362→   362→   362→The terms and conditions of the Official Rules are subject to change at any time, including the rights or obligations of the Entrant and the Sponsor. The Sponsor will post the terms and conditions of the amended Official Rules on the Hackathon Website. To the fullest extent permitted by law, any amendment will become effective at the time specified in the posting of the amended Official Rules or, if no time is specified, the time of posting.
+   264→   363→   363→   363→
+   265→   364→   364→   364→If at any time prior to the deadline, an Entrant or prospective Entrant believes that any term in the Official Rules is or may be ambiguous, they must submit a written request for clarification. 
+   266→   365→   365→   365→
+   267→   366→   366→   366→The Sponsor’s failure to enforce any term of these Official Rules shall not constitute a waiver of that provision. Should any provision of these Official Rules be or become illegal or unenforceable in any jurisdiction whose laws or regulations may apply to an Entrant, such illegality or unenforceability shall leave the remainder of these Official Rules, including the Rule affected, to the fullest extent permitted by law, unaffected and valid. The illegal or unenforceable provision shall be replaced by a valid and enforceable provision that comes closest and best reflects the sponsor’s intention in a legal and enforceable manner with respect to the invalid or unenforceable provision.
+   268→   367→   367→   367→
+   269→   368→   368→   368→Excluding Submissions, all intellectual property related to this Hackathon, including but not limited to copyrighted material, trademarks, trade-names, logos, designs, promotional materials, web pages, source codes, drawings, illustrations, slogans and representations are owned or used under license by the Sponsor. All rights are reserved. Unauthorized copying or use of any copyrighted material or intellectual property without the express written consent of its owners is strictly prohibited. Any use in a Submission of Sponsor’s intellectual property shall be solely to the extent provided for in these Official Rules.
+   270→   369→   369→   369→
+   271→   370→   370→   370→Any suspected security issues found in the course of the hackathon should be reported to security@salesforce.com. It is not permitted to disclose them to any other parties including in public blogs or to Salesforce customers if they are suspected to be real and unaddressed issues - Salesforce needs to evaluate them individually and determine whether they are security bugs or otherwise. https://help.salesforce.com/s/articleView?id=000384043&type=1
+   272→   371→   371→   371→
+   273→   372→   372→   372→ 
+   274→   373→   373→   373→
+   275→   374→   374→   374→13. Limitations of Liability.
+   276→   375→   375→   375→
+   277→   376→   376→   376→By entering, all Entrants (including, in the case of a Team or Organization, all participating members) agree to release, indemnify and hold harmless the Released Parties from any and all claims in connection with the Prizes or Entrant’s participation in the Hackathon. Entrants agree that in any cause of action, the Released Parties liability will be limited to the cost of entering and/or participating in the Hackathon.
+   278→   377→   377→   377→
+   279→   378→   378→   378→ 
+   280→   379→   379→   379→
+   281→   380→   380→   380→14. Disputes.
+   282→   381→   381→   381→
+   283→   382→   382→   382→Except where prohibited by law, as a condition of participating in this Hackathon, Entrant agrees that:
+   284→   383→   383→   383→
+   285→   384→   384→   384→Any and all disputes and causes of action arising out of or connected with this Hackathon, or any Prizes awarded, shall be resolved individually, without resort to any form of class action lawsuit, and exclusively by final and binding arbitration under the rules of the American Arbitration Association and held at the AAA regional office nearest the contestant;
+   286→   385→   385→   385→
+   287→   386→   386→   386→The Federal Arbitration Act shall govern the interpretation, enforcement and all proceedings at such arbitration; and
+   288→   387→   387→   387→
+   289→   388→   388→   388→Judgment upon such arbitration award may be entered in any court having jurisdiction.
+   290→   389→   389→   389→
+   291→   390→   390→   390→Under no circumstances will Entrant be permitted to obtain awards for, and Entrant hereby waives all rights to claim, punitive, incidental or consequential damages, or any other damages, including attorneys’ fees, other than contestant’s actual out-of-pocket expenses (i.e., costs associated with entering this Hackathon), and Entrant further waives all rights to have damages multiplied or increased.
+   292→   391→   391→   391→
+   293→   392→   392→   392→All issues and questions concerning the construction, validity, interpretation and enforceability of these Official Rules, or the rights and obligations of the Entrant and Sponsor in connection with this Hackathon, shall be governed by, and construed in accordance with, the substantive laws of the State of California, USA without regard to California choice of law rules.
+   294→   393→   393→   393→
+   295→   394→   394→   394→SOME JURISDICTIONS DO NOT ALLOW THE LIMITATIONS OR EXCLUSION OF LIABILITY FOR INCIDENTAL OR CONSEQUENTIAL DAMAGES, SO THE ABOVE LIMITATIONS OF LIABILITY MAY NOT APPLY TO YOU.
+   296→   395→   395→   395→
+   297→   396→   396→   396→ 
+   298→   397→   397→   397→
+   299→   398→   398→   398→15. Additional Terms.
+   300→   399→   399→   399→
+   301→   400→   400→   400→Please review the Devpost Terms of Service at https://info.devpost.com/terms for additional rules that apply to your participation in the Hackathon and more generally your use of the Hackathon Website. Such Terms of Service are incorporated by reference into these Official Rules, including that the term "Poster" in the Terms of Service shall mean the same as "Sponsor" in these Official rules." If there is a conflict between the Terms of Service and these Official Rules, these Official Rules shall control with respect to this Hackathon only. Your use of any third party materials or platforms as part of the Hackathon must be in accordance with these Official Rules and may be subject to the terms and conditions of such third parties (such as terms of service or privacy policies) (“Third Party Policies”). If there is a conflict between any Third Party Policies and these Official Rules, these Official Rules shall control with respect to this Hackathon only. 
+   302→   401→   401→   401→
+   303→   402→   402→   402→ 
+   304→   403→   403→   403→
+   305→   404→   404→   404→16. Entrant’s Personal Information.
+   306→   405→   405→   405→
+   307→   406→   406→   406→Any information Entrants submit as part of the Hackathon will be used for purposes of this Hackathon and treated in accordance with Sponsor’s Privacy Statement, which is available at https://www.salesforce.com/company/privacy/. 
+   308→   407→   407→   407→
+   309→   408→   408→   408→Information collected from Entrants is subject to Devpost’s Privacy Policy, which is available at https://info.devpost.com/privacy.
+   310→   409→   409→   409→
+   311→   410→   410→   410→For questions, please send an email to support@devpost.com

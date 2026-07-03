@@ -1,0 +1,146 @@
+[project]
+name = "vigie"
+version = "0.0.1"
+description = "Vigie — Slack agent for elder watch during heatwaves. Hackathon Slack Agent Builder Challenge 2026."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+keywords = ["slack", "mcp", "agent", "heatwave", "elder-care", "social-impact"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Nonprofit Organizations",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Communications :: Chat",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+]
+
+dependencies = [
+    # Slack Bolt SDK (official)
+    "slack_bolt>=1.20.0",
+    "slack_sdk>=3.27.0",
+
+    # MCP server (Anthropic official Python SDK)
+    "mcp>=1.0.0",
+
+    # HTTP client for external APIs (Météo-France, NWS, OpenStreetMap)
+    "httpx>=0.27.0",
+
+    # Slack AI / LLM fallback (transcription + extraction)
+    "openai>=1.40.0",  # for Whisper fallback if Slack AI audio not available
+
+    # Caching for RTS API results
+    "redis>=5.0.0; python_version >= '3.11'",
+    # SQLite fallback if no Redis (built-in)
+
+    # Async HTTP for external APIs (parallel calls)
+    "aiohttp>=3.10.0",
+
+    # Logging structured
+    "structlog>=24.1.0",
+
+    # Config
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.3.0",
+
+    # Date/time helpers
+    "python-dateutil>=2.9.0",
+    "pytz>=2024.1",
+
+    # Health endpoint
+    "fastapi>=0.110.0",
+    "uvicorn>=0.30.0",
+
+    # Scheduler for the 18h00 daily report
+    "apscheduler>=3.10.0",
+
+    # CLI for scripts (seed, simulate)
+    "typer>=0.12.0",
+    "rich>=13.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.5.0",
+    "mypy>=1.10.0",
+    "pre-commit>=3.7.0",
+]
+
+[project.scripts]
+vigie-bot = "app.main:main"
+vigie-mcp = "mcp_server.server:main"
+vigie-seed = "scripts.seed_sandbox:main"
+vigie-simulate = "scripts.simulate_canicule:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*", "mcp_server*", "scripts*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+    "TID", # flake8-tidy-imports
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "B008",  # function call in default argument (used by Typer)
+]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-v --tb=short --cov=app --cov=mcp_server --cov-report=term-missing"
+asyncio_mode = "auto"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["app", "mcp_server"]
+omit = [
+    "tests/*",
+    "scripts/*",
+    # Entry points and handlers require a live Slack workspace to test.
+    # Business logic is tested via the orchestrator + MCP server tests.
+    "app/main.py",
+    "app/handlers/*",
+    "app/health.py",
+    "app/scheduler.py",
+    "mcp_server/server.py",
+]
+
+[tool.coverage.report]
+fail_under = 60
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "log\\.debug",
+    "log\\.warning",
+]

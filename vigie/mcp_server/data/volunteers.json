@@ -1,0 +1,355 @@
+[
+  {
+    "id": "V01",
+    "slack_user_id": null,
+    "name": "Julien Roux",
+    "first_name": "Julien",
+    "last_name": "Roux",
+    "sector": 1,
+    "role": "volunteer",
+    "phone": "+33 6 21 85 64 14",
+    "email": "julien.roux@soligarde-Paris.example.org",
+    "availability": {
+      "weekday_morning": true,
+      "weekday_afternoon": false,
+      "weekend": false,
+      "max_checkins_per_day": 10
+    },
+    "languages": [
+      "zh",
+      "en"
+    ],
+    "training_completed": [
+      "plan_canicule_basics",
+      "deontology"
+    ],
+    "joined_date": "2026-06-21",
+    "disclaimer": "SIMULATED — sandbox user"
+  },
+  {
+    "id": "V02",
+    "slack_user_id": null,
+    "name": "Camille Rousseau",
+    "first_name": "Camille",
+    "last_name": "Rousseau",
+    "sector": 2,
+    "role": "volunteer",
+    "phone": "+33 6 99 79 63 38",
+    "email": "camille.rousseau@soligarde-Paris.example.org",
+    "availability": {
+      "weekday_morning": true,
+      "weekday_afternoon": true,
+      "weekend": false,
+      "max_checkins_per_day": 3
+    },
+    "languages": [
+      "en",
+      "ar"
+    ],
+    "training_completed": [
+      "plan_canicule_basics",
+      "deontology"
+    ],
+    "joined_date": "2026-03-09",
+    "disclaimer": "SIMULATED — sandbox user"
+  },
+  {
+    "id": "V03",
+    "slack_user_id": null,
+    "name": "Marie Nguyen",
+    "first_name": "Marie",
+    "last_name": "Nguyen",
+    "sector": 3,
+    "role": "volunteer",
+    "phone": "+33 6 29 37 53 23",
+    "email": "marie.nguyen@soligarde-Paris.example.org",
+    "availability": {
+      "weekday_morning": true,
+      "weekday_afternoon": false,
+      "weekend": false,
+      "max_checkins_per_day": 5
+    },
+    "languages": [
+      "fr",
+      "ar"
+    ],
+    "training_completed": [
+      "plan_canicule_basics",
+      "deontology"
+    ],
+    "joined_date": "2026-05-04",
+    "disclaimer": "SIMULATED — sandbox user"
+  },
+  {
+    "id": "V04",
+    "slack_user_id": null,
+    "name": "Rachid Henry",
+    "first_name": "Rachid",
+    "last_name": "Henry",
+    "sector": 4,
+    "role": "volunteer",
+    "phone": "+33 6 58 20 80 47",
+    "email": "rachid.henry@soligarde-Paris.example.org",
+    "availability": {
+      "weekday_morning": true,
+      "weekday_afternoon": true,
+      "weekend": true,
+      "max_checkins_per_day": 5
+    },
+    "languages": [
+      "pt"
+    ],
+    "training_completed": [
+      "plan_canicule_basics",
+      "deontology"
+    ],
+    "joined_date": "2026-01-02",
+    "disclaimer": "SIMULATED — sandbox user"
+  },
+  {
+    "id": "V05",
+    "slack_user_id": null,
+    "name": "Emma Dupont",
+    "first_name": "Emma",
+    "last_name": "Dupont",
+    "sector": 5,
+    "role": "volunteer",
+    "phone": "+33 6 94 39 47 20",
+    "email": "emma.dupont@soligarde-Paris.example.org",
+    "availability": {
+      "weekday_morning": true,
+      "weekday_afternoon": true,
+      "weekend": true,
+      "max_checkins_per_day": 8
+    },
+    "languages": [
+      "pt"
+    ],
+    "training_completed": [
+      "plan_canicule_basics",
+      "deontology"
+    ],
+    "joined_date": "2026-03-06",
+    "disclaimer": "SIMULATED — sandbox user"
+  },
+  {
+    "id": "V06",
+    "slack_user_id": null,
+    "name": "Hugo Moreau",
+    "first_name": "Hugo",
+    "last_name": "Moreau",
+    "sector": 6,
+    "role": "volunteer",
+    "phone": "+33 6 57 55 36 95",
+    "email": "hugo.moreau@soligarde-Paris.example.org",
+    "availability": {
+      "weekday_morning": true,
+      "weekday_afternoon": false,
+      "weekend": true,
+      "max_checkins_per_day": 3
+    },
+    "languages": [
+      "en",
+      "zh"
+    ],
+    "training_completed": [
+      "plan_canicule_basics",
+      "deontology"
+    ],
+    "joined_date": "2026-06-08",
+    "disclaimer": "SIMULATED — sandbox user"
+  },
+  {
+    "id": "V07",
+    "slack_user_id": null,
+    "name": "Lucas Traoré",
+    "first_name": "Lucas",
+    "last_name": "Traoré",
+    "sector": 7,
+    "role": "volunteer",
+    "phone": "+33 6 30 69 58 44",
+    "email": "lucas.traoré@soligarde-Paris.example.org",
+    "availability": {
+      "weekday_morning": true,
+      "weekday_afternoon": true,
+      "weekend": true,
+      "max_checkins_per_day": 10
+    },
+    "languages": [
+      "es"
+    ],
+    "training_completed": [
+      "plan_canicule_basics",
+      "deontology"
+    ],
+    "joined_date": "2026-01-08",
+    "disclaimer": "SIMULATED — sandbox user"
+  },
+  {
+    "id": "V08",
+    "slack_user_id": null,
+    "name": "Léa Garcia",
+    "first_name": "Léa",
+    "last_name": "Garcia",
+    "sector": 8,
+    "role": "volunteer",
+    "phone": "+33 6 14 50 61 44",
+    "email": "léa.garcia@soligarde-Paris.example.org",
+    "availability": {
+      "weekday_morning": true,
+      "weekday_afternoon": false,
+      "weekend": true,
+      "max_checkins_per_day": 10
+    },
+    "languages": [
+      "es",
+      "en"
+    ],
+    "training_completed": [
+      "plan_canicule_basics",
+      "deontology"
+    ],
+    "joined_date": "2026-06-16",
+    "disclaimer": "SIMULATED — sandbox user"
+  },
+  {
+    "id": "V09",
+    "slack_user_id": null,
+    "name": "Rachid Rousseau",
+    "first_name": "Rachid",
+    "last_name": "Rousseau",
+    "sector": 9,
+    "role": "volunteer",
+    "phone": "+33 6 60 92 68 28",
+    "email": "rachid.rousseau@soligarde-Paris.example.org",
+    "availability": {
+      "weekday_morning": true,
+      "weekday_afternoon": false,
+      "weekend": false,
+      "max_checkins_per_day": 10
+    },
+    "languages": [
+      "pt"
+    ],
+    "training_completed": [
+      "plan_canicule_basics",
+      "deontology"
+    ],
+    "joined_date": "2026-05-14",
+    "disclaimer": "SIMULATED — sandbox user"
+  },
+  {
+    "id": "V10",
+    "slack_user_id": null,
+    "name": "Camille Nguyen",
+    "first_name": "Camille",
+    "last_name": "Nguyen",
+    "sector": 10,
+    "role": "volunteer",
+    "phone": "+33 6 84 61 56 38",
+    "email": "camille.nguyen@soligarde-Paris.example.org",
+    "availability": {
+      "weekday_morning": true,
+      "weekday_afternoon": true,
+      "weekend": false,
+      "max_checkins_per_day": 8
+    },
+    "languages": [
+      "fr"
+    ],
+    "training_completed": [
+      "plan_canicule_basics",
+      "deontology"
+    ],
+    "joined_date": "2026-01-05",
+    "disclaimer": "SIMULATED — sandbox user"
+  },
+  {
+    "id": "V11",
+    "slack_user_id": null,
+    "name": "Nadia Lefevre",
+    "first_name": "Nadia",
+    "last_name": "Lefevre",
+    "sector": 11,
+    "role": "volunteer",
+    "phone": "+33 6 90 30 97 64",
+    "email": "nadia.lefevre@soligarde-Paris.example.org",
+    "availability": {
+      "weekday_morning": true,
+      "weekday_afternoon": true,
+      "weekend": false,
+      "max_checkins_per_day": 10
+    },
+    "languages": [
+      "zh",
+      "es",
+      "fr"
+    ],
+    "training_completed": [
+      "plan_canicule_basics",
+      "deontology"
+    ],
+    "joined_date": "2026-06-24",
+    "disclaimer": "SIMULATED — sandbox user"
+  },
+  {
+    "id": "V12",
+    "slack_user_id": null,
+    "name": "Aïcha Henry",
+    "first_name": "Aïcha",
+    "last_name": "Henry",
+    "sector": 12,
+    "role": "volunteer",
+    "phone": "+33 6 24 97 78 44",
+    "email": "aïcha.henry@soligarde-Paris.example.org",
+    "availability": {
+      "weekday_morning": true,
+      "weekday_afternoon": true,
+      "weekend": false,
+      "max_checkins_per_day": 5
+    },
+    "languages": [
+      "ar"
+    ],
+    "training_completed": [
+      "plan_canicule_basics",
+      "deontology"
+    ],
+    "joined_date": "2026-01-24",
+    "disclaimer": "SIMULATED — sandbox user"
+  },
+  {
+    "id": "MC01",
+    "slack_user_id": null,
+    "name": "Dr Sarah Faure",
+    "first_name": "Sarah",
+    "last_name": "Faure",
+    "sector": null,
+    "role": "medical_coordinator",
+    "phone": "+33 6 32 74 23 90",
+    "email": "sarah.faure@soligarde-Paris.example.org",
+    "specialty": "Gériatrie",
+    "availability": {
+      "on_call": true,
+      "max_escalations_per_day": 15
+    },
+    "disclaimer": "SIMULATED — sandbox user"
+  },
+  {
+    "id": "MC02",
+    "slack_user_id": null,
+    "name": "Dr Julien Henry",
+    "first_name": "Julien",
+    "last_name": "Henry",
+    "sector": null,
+    "role": "medical_coordinator",
+    "phone": "+33 6 35 29 57 30",
+    "email": "julien.henry@soligarde-Paris.example.org",
+    "specialty": "Urgences",
+    "availability": {
+      "on_call": true,
+      "max_escalations_per_day": 15
+    },
+    "disclaimer": "SIMULATED — sandbox user"
+  }
+]

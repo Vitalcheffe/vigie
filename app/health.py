@@ -131,6 +131,30 @@ async def audit_stats() -> JSONResponse:
     return JSONResponse(get_audit_stats())
 
 
+@app.get("/vlm/health")
+async def vlm_health() -> JSONResponse:
+    """Return VLM (Vision Language Model) service health metrics.
+
+    Exposes counters for: total calls, OK, failed, cache hits, parse errors,
+    current cache size, and configured timeout. Used to monitor the VLM
+    subsystem alongside the rest of Vigie.
+    """
+    from app.services.vlm import get_vlm_service
+
+    service = get_vlm_service()
+    return JSONResponse(service.health())
+
+
+@app.get("/vlm/cache/clear")
+async def vlm_cache_clear() -> JSONResponse:
+    """Clear the VLM result cache. Returns the number of entries cleared."""
+    from app.services.vlm import get_vlm_service
+
+    service = get_vlm_service()
+    cleared = service.clear_cache()
+    return JSONResponse({"cleared": cleared, "remaining": len(service._cache)})
+
+
 def start_health_server(port: int | None = None) -> threading.Thread:
     """Start the health server in a daemon thread. Non-blocking."""
     import os

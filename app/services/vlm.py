@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import re
 from dataclasses import dataclass, field
 from typing import Any
@@ -36,22 +37,27 @@ VIGIE_VLM_SYSTEM_PROMPT = """Tu es Vigie-VLM, un assistant visuel dédié à l'a
 Ta mission : analyser une capture d'écran du dashboard Vigie et produire un rapport structuré.
 
 Tu dois extraire ces champs :
-1. COVERAGE_PERCENT: pourcentage de couverture affiché (entier, ou null si absent)
-2. AVG_LATENCY_MIN: latence moyenne de check-in affichée en minutes (entier, ou null)
-3. L2_COUNT: nombre d'escalades L2 (bénéficiaires sans réponse)
-4. L3_COUNT: nombre d'escalades L3 (bénéficiaires inconscients)
-5. CRISIS_MSG_COUNT: nombre de messages dans #cellule-crise
-6. TOP_SECTORS: liste des noms de secteurs visibles (array de strings)
-7. ACTIVE_ALERTS: liste des bénéficiaires en alerte (array d'objets {name, level} où level ∈ {L1, L2, L3})
-8. DASHBOARD_HEALTH: "OK" si COVERAGE_PERCENT >= 90 ET L3_COUNT == 0, sinon "ALERT"
-9. SUMMARY: 1 phrase en français résumant l'état global du dispositif
+1. COVERAGE_PERCENT: pourcentage de couverture affiché (ENTIER sans signe %, ex: 94 ; null si absent)
+2. AVG_LATENCY_MIN: latence moyenne de check-in affichée en minutes (ENTIER, ex: 7 ; null si absent)
+3. L2_COUNT: nombre d'escalades L2 - bénéficiaires sans réponse (ENTIER, ex: 2)
+4. L3_COUNT: nombre d'escalades L3 - bénéficiaires inconscients (ENTIER, ex: 1)
+5. CRISIS_MSG_COUNT: nombre de messages dans #cellule-crise (ENTIER, ex: 43)
+6. TOP_SECTORS: liste des noms de secteurs visibles (ARRAY de STRINGS, ex: ["secteur-1", "secteur-2"])
+7. ACTIVE_ALERTS: liste des bénéficiaires en alerte L1/L2/L3 (ARRAY d'objets {"name": "B018 - Monique B.", "level": "L3"} où level ∈ {"L1", "L2", "L3"})
+8. DASHBOARD_HEALTH: "OK" si COVERAGE_PERCENT >= 90 ET L3_COUNT == 0, sinon "ALERT" (STRING)
+9. SUMMARY: 1 phrase en français résumant l'état global du dispositif (STRING)
 
-RÈGLES:
-- Réponds UNIQUEMENT avec un objet JSON valide, sans texte autour, sans markdown.
-- Si une valeur n'est pas visible, utilise null (pour les scalaires) ou [] (pour les arrays).
-- Ne suppose JAMAIS une valeur non visible. Si tu hésites, mets null.
-- Pour les pourcentages, retourne l'entier sans le signe %.
-- Pour les bénéficiaires en alerte, inclus uniquement ceux marqués L1/L2/L3 dans la capture."""
+RÈGLES STRICTES:
+- Réponds UNIQUEMENT avec un objet JSON valide. Pas de texte avant. Pas de texte après. Pas de markdown. Pas de ```json.
+- Tous les nombres (COVERAGE_PERCENT, AVG_LATENCY_MIN, L2_COUNT, L3_COUNT, CRISIS_MSG_COUNT) DOIVENT être des entiers JSON (ex: 94), JAMAIS des strings (ex: "94%").
+- Si une valeur numérique n'est pas visible, utilise null (pas 0, pas "N/A").
+- Si un array est vide ou non visible, utilise [].
+- Ne suppose JAMAIS une valeur non visible. Si tu hésites, mets null ou [].
+- Pour ACTIVE_ALERTS, inclus uniquement les bénéficiaires explicitement marqués L1/L2/L3 dans la capture.
+- Pour les noms dans ACTIVE_ALERTS, utilise le format "B<id> - <Prénom> <Initiale>." si visible (ex: "B018 - Monique B."), sinon juste le nom.
+
+EXEMPLE DE RÉPONSE ATTENDUE:
+{"COVERAGE_PERCENT": 94, "AVG_LATENCY_MIN": 7, "L2_COUNT": 2, "L3_COUNT": 1, "CRISIS_MSG_COUNT": 43, "TOP_SECTORS": ["secteur-1", "secteur-2", "secteur-3"], "ACTIVE_ALERTS": [{"name": "B018 - Monique B.", "level": "L3"}, {"name": "B007 - Lucien P.", "level": "L2"}], "DASHBOARD_HEALTH": "ALERT", "SUMMARY": "Cellule active, 1 cas critique SAMU en cours sur 47 bénéficiaires suivis."}"""
 
 VIGIE_VLM_USER_PROMPT = "Analyse cette capture du dashboard Vigie et réponds en JSON."
 
@@ -102,20 +108,55 @@ class DashboardAnalysis:
 class VigieVLMService:
     """Vision Language Model service for Vigie dashboard analysis."""
 
+    # Cache: keyed by (image_path, image_mtime) -> DashboardAnalysis
+    # Avoids re-analyzing the same screenshot (15s per call saved).
+    _cache: dict[tuple[str, float], DashboardAnalysis] = {}
+    _cache_max_size: int = 32
+
+    # Counters for health endpoint
+    _stats: dict[str, int] = {
+        "calls_total": 0,
+        "calls_ok": 0,
+        "calls_failed": 0,
+        "cache_hits": 0,
+        "parse_errors": 0,
+    }
+
     def __init__(self, timeout: float = 180.0) -> None:
         self.timeout = timeout
         log.info("vigie.vlm.service_initialized", timeout=timeout)
 
-    async def analyze_screenshot(self, image_path: str) -> DashboardAnalysis:
+    async def analyze_screenshot(self, image_path: str, *, use_cache: bool = True) -> DashboardAnalysis:
         """
         Analyze a Vigie dashboard screenshot and return a structured analysis.
 
         Args:
             image_path: Absolute path to the PNG/JPG screenshot.
+            use_cache: If True, return cached result when the image hasn't changed.
 
         Returns:
             DashboardAnalysis with extracted fields, or with parse_error set.
         """
+        # Check cache (keyed by path + mtime to invalidate on file change)
+        cache_key = None
+        if use_cache:
+            try:
+                mtime = os.path.getmtime(image_path)
+                cache_key = (image_path, mtime)
+                cached = self._cache.get(cache_key)
+                if cached is not None:
+                    self._stats["cache_hits"] += 1
+                    log.info(
+                        "vigie.vlm.cache_hit",
+                        image_path=image_path,
+                        coverage=cached.coverage_percent,
+                    )
+                    return cached
+            except OSError:
+                # File may not exist yet — let the subprocess fail naturally
+                pass
+
+        self._stats["calls_total"] += 1
         start = asyncio.get_event_loop().time()
         try:
             # z-ai vision CLI has no --system flag, so the system prompt is
@@ -134,6 +175,7 @@ class VigieVLMService:
 
             if proc.returncode != 0:
                 err = stderr.decode("utf-8", errors="replace")[:300]
+                self._stats["calls_failed"] += 1
                 log.warning(
                     "vigie.vlm.call_failed",
                     returncode=proc.returncode,
@@ -151,6 +193,19 @@ class VigieVLMService:
             analysis.latency_ms = latency_ms
             analysis.raw_content = content
 
+            # Update stats
+            self._stats["calls_ok"] += 1
+            if analysis.parse_error:
+                self._stats["parse_errors"] += 1
+
+            # Cache the result (LRU-ish: evict oldest entry if cache is full)
+            if cache_key is not None and not analysis.parse_error:
+                if len(self._cache) >= self._cache_max_size:
+                    # Evict oldest entry (FIFO — simple, good enough for this use case)
+                    oldest_key = next(iter(self._cache))
+                    del self._cache[oldest_key]
+                self._cache[cache_key] = analysis
+
             log.info(
                 "vigie.vlm.analyzed",
                 coverage=analysis.coverage_percent,
@@ -158,11 +213,13 @@ class VigieVLMService:
                 l3=analysis.l3_count,
                 health=analysis.dashboard_health,
                 latency_ms=latency_ms,
+                cached=False,
             )
             return analysis
 
         except asyncio.TimeoutError:
             latency_ms = (asyncio.get_event_loop().time() - start) * 1000.0
+            self._stats["calls_failed"] += 1
             log.warning("vigie.vlm.timeout", timeout=self.timeout, latency_ms=latency_ms)
             return DashboardAnalysis(
                 parse_error=f"timeout_{self.timeout}s",
@@ -170,11 +227,29 @@ class VigieVLMService:
             )
         except Exception as e:
             latency_ms = (asyncio.get_event_loop().time() - start) * 1000.0
+            self._stats["calls_failed"] += 1
             log.warning("vigie.vlm.error", error=str(e), latency_ms=latency_ms)
             return DashboardAnalysis(
                 parse_error=f"exc={type(e).__name__}:{str(e)[:200]}",
                 latency_ms=latency_ms,
             )
+
+    def health(self) -> dict[str, Any]:
+        """Return VLM service health metrics for the /vlm/health endpoint."""
+        return {
+            "ok": self._stats["calls_failed"] < max(1, self._stats["calls_total"]),
+            "stats": dict(self._stats),
+            "cache_size": len(self._cache),
+            "cache_max": self._cache_max_size,
+            "timeout_s": self.timeout,
+        }
+
+    def clear_cache(self) -> int:
+        """Clear the VLM result cache. Returns the number of entries cleared."""
+        n = len(self._cache)
+        self._cache.clear()
+        log.info("vigie.vlm.cache_cleared", entries_cleared=n)
+        return n
 
     def _extract_content(self, raw_stdout: str) -> str:
         """Extract the assistant message content from z-ai CLI JSON output.

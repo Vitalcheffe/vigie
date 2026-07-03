@@ -1,0 +1,113 @@
+# ============================================================
+# VIGIE - .gitignore
+# ============================================================
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ---- Virtual environments ----
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ---- Environment variables ----
+.env
+.env.local
+.env.*.local
+*.env
+
+# ---- IDE ----
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ---- Testing ----
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# ---- Type checking ----
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# ---- Logs ----
+logs/
+*.log
+*.pid
+
+# ---- Database / Cache ----
+*.db
+*.sqlite
+*.sqlite3
+vigie_cache.db
+
+# ---- Build artifacts ----
+*.spec
+
+# ---- Operating system ----
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ---- Project specific ----
+# Never commit real beneficiary data
+mcp_server/data/real_*
+!mcp_server/data/beneficiaries.json
+!mcp_server/data/volunteers.json
+!mcp_server/data/sectors.json
+!mcp_server/data/scenario_canicule_juillet.json
+
+# Sandbox credentials (filled per environment)
+sandbox_credentials.json
+
+# Video editing projects (large files)
+*.prproj
+*.fcpbundle
+*.drp
+
+# Final video exports go to /download
+download/
+
+# ---- Keep these tracked ----
+!.env.example
+!.gitignore

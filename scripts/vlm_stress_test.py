@@ -32,9 +32,9 @@ RUNS = int(os.environ.get("VLM_STRESS_RUNS", "2"))
 OUTPUT_DIR = Path("/home/z/my-project/scripts")
 REPORT_PATH = OUTPUT_DIR / "vlm_stress_report.md"
 CONCURRENCY = 1  # sequential — VLM API rate-limits aggressively
-INTER_CALL_DELAY = 0.5  # seconds between successful calls
-MAX_RETRIES = 3  # retry on 429 with exponential backoff
-RETRY_BASE_DELAY = 10.0  # seconds (10s, 20s, 40s)
+INTER_CALL_DELAY = float(os.environ.get("VLM_STRESS_INTER_CALL_DELAY", "1.5"))  # seconds between successful calls
+MAX_RETRIES = 5  # retry on 429 with exponential backoff
+RETRY_BASE_DELAY = 15.0  # seconds (15s, 30s, 60s, 120s, 240s)
 
 SYSTEM_PROMPT = """Tu es Vigie-VLM, un assistant visuel dédié à l'analyse de captures d'écran du bot Slack Vigie (prévention des décès par isolation pendant les canicules).
 
@@ -181,24 +181,31 @@ async def run_pass(run_num: int) -> dict[str, Any]:
 
     print(f"\n=== Run {run_num} — {NUM_CALLS} VLM calls (concurrency={CONCURRENCY}) ===", flush=True)
 
-    sem = asyncio.Semaphore(CONCURRENCY)
-    tasks = [call_vlm_once(sem, i) for i in range(NUM_CALLS)]
+    # Stream each result to a JSONL file so partial progress is preserved
+    # even if the process is killed mid-run.
+    jsonl_path = OUTPUT_DIR / f"vlm_stress_run{run_num}.jsonl"
+    jsonl_file = open(jsonl_path, "w", encoding="utf-8")
 
+    sem = asyncio.Semaphore(CONCURRENCY)
+    # Sequential submission (concurrency=1) — use simple loop for clarity
     results: list[dict[str, Any]] = []
-    # Stream completion with progress every 10
-    done = 0
-    for coro in asyncio.as_completed(tasks):
-        r = await coro
+    for i in range(NUM_CALLS):
+        r = await call_vlm_once(sem, i)
         results.append(r)
-        done += 1
-        if done % 10 == 0 or done == NUM_CALLS:
+        # Stream to JSONL
+        jsonl_file.write(json.dumps(r, ensure_ascii=False) + "\n")
+        jsonl_file.flush()
+        # Progress every 5 calls (more frequent for visibility)
+        if (i + 1) % 5 == 0 or (i + 1) == NUM_CALLS:
             ok = sum(1 for r in results if r.get("ok"))
             last = results[-1]
             print(
-                f"  [{done}/{NUM_CALLS}] ok={ok} last={last.get('latencyMs', 0):.0f}ms"
+                f"  [{i+1}/{NUM_CALLS}] ok={ok} last={last.get('latencyMs', 0):.0f}ms"
                 + ("" if last.get("ok") else f" ERR={(last.get('error') or '')[:80]}"),
                 flush=True,
             )
+
+    jsonl_file.close()
 
     # Order by index for reproducibility
     results.sort(key=lambda r: r.get("index", 0))
