@@ -275,13 +275,18 @@ class VigieOrchestrator:
         recommended = result.get("recommended_action", ai_recommended)
         suggested_pois = result.get("suggested_pois", [])
 
-        # Get the beneficiary info from MCP result
+        # Get the beneficiary info from the registry (full data including backstory)
+        from mcp_server.resources.beneficiary_registry import get_beneficiary_by_id
+        full_beneficiary = get_beneficiary_by_id(beneficiary_id) or {}
         beneficiary = {
             "id": beneficiary_id,
-            "first_name": result.get("beneficiary", {}).get("name", "?").split()[0] if result.get("beneficiary") else "?",
-            "last_initial": "?",
-            "age": result.get("beneficiary", {}).get("age"),
-            "sector": result.get("beneficiary", {}).get("sector"),
+            "first_name": full_beneficiary.get("first_name", "?"),
+            "last_initial": full_beneficiary.get("last_initial", "?"),
+            "age": full_beneficiary.get("age"),
+            "sector": full_beneficiary.get("sector"),
+            "phone": full_beneficiary.get("phone"),
+            "address": full_beneficiary.get("address"),
+            "backstory": full_beneficiary.get("backstory", ""),
         }
 
         # Build and post the sector channel message
@@ -360,6 +365,28 @@ class VigieOrchestrator:
             },
         )
 
+        # Check if the volunteer has completed all their check-ins
+        try:
+            from app.progress import get_volunteer_progress
+            progress = get_volunteer_progress(volunteer_id)
+            if progress["pending"] == 0 and progress["completed"] > 0:
+                # All check-ins done — send celebration
+                import random
+                from app.tone import VOLUNTEER_THANKS
+                celebration = (
+                    f":tada: *You've completed all your check-ins!* 🎉\n\n"
+                    f"You called *{progress['completed']} people* today. "
+                    f"Here's what happened:\n"
+                    f"  :white_check_mark: {progress['completed'] - progress['weak_signals'] - progress['escalations']} all good\n"
+                    f"  :warning: {progress['weak_signals']} weak signals caught early\n"
+                    f"  :rotating_light: {progress['escalations']} escalations (you acted when it mattered)\n\n"
+                    f"{random.choice(VOLUNTEER_THANKS)}\n\n"
+                    f"_Every call you made today mattered. Someone felt less alone because of you._ 💜"
+                )
+                await post_dm(self.slack, volunteer_id, text=celebration)
+        except Exception as e:
+            log.warning("vigie.completion_check_failed", error=str(e))
+
         return {
             "status": "ok",
             "beneficiary_id": beneficiary_id,
@@ -403,15 +430,18 @@ class VigieOrchestrator:
         if "error" in result:
             return result
 
-        # Build the crisis cell message
+        # Build the crisis cell message with full beneficiary data
+        from mcp_server.resources.beneficiary_registry import get_beneficiary_by_id
+        full_beneficiary = get_beneficiary_by_id(beneficiary_id) or {}
         beneficiary = {
             "id": beneficiary_id,
-            "first_name": result.get("beneficiary", {}).get("name", "?").split()[0] if result.get("beneficiary") else "?",
-            "last_initial": "?",
-            "age": result.get("beneficiary", {}).get("age"),
-            "sector": result.get("beneficiary", {}).get("sector"),
-            "phone": result.get("beneficiary", {}).get("phone"),
-            "address": result.get("beneficiary", {}).get("address"),
+            "first_name": full_beneficiary.get("first_name", "?"),
+            "last_initial": full_beneficiary.get("last_initial", "?"),
+            "age": full_beneficiary.get("age"),
+            "sector": full_beneficiary.get("sector"),
+            "phone": full_beneficiary.get("phone"),
+            "address": full_beneficiary.get("address"),
+            "backstory": full_beneficiary.get("backstory", ""),
         }
 
         escalation_msg = build_escalation_message(
