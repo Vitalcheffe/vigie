@@ -240,12 +240,19 @@ class VigieOrchestrator:
             )
             return {"status": "no_beneficiary_id"}
 
-        # Classify anomaly with Slack AI (in parallel with MCP call below)
+        # Classify anomaly with Slack AI (falls back to Z-AI, then keywords)
         try:
             ai_level, ai_signals, ai_recommended = await self.slack_ai.classify_anomaly(text)
         except Exception as e:
-            log.warning("vigie.process_message.ai_classify_failed", error=str(e))
-            ai_level, ai_signals, ai_recommended = 0, [], "ok"
+            log.warning("vigie.process_message.ai_classify_failed_openai", error=str(e))
+            # Fallback to Z-AI LLM
+            try:
+                from app.services.zai_llm import classify_anomaly_zai
+                ai_level, ai_signals, ai_recommended = await classify_anomaly_zai(text)
+                log.info("vigie.process_message.zai_classified", level=ai_level, signals=ai_signals)
+            except Exception as e2:
+                log.warning("vigie.process_message.zai_failed", error=str(e2))
+                ai_level, ai_signals, ai_recommended = 0, [], "ok"
 
         # Call MCP record_checkin
         try:
@@ -570,11 +577,34 @@ class VigieOrchestrator:
         try:
             ai_report_text = await ai_task
         except Exception as e:
-            log.warning("vigie.report.ai_failed", error=str(e))
-            ai_report_text = (
-                f"Summary unavailable ({e}). "
-                f"See the KPIs above for the full figures."
-            )
+            log.warning("vigie.report.ai_failed_openai", error=str(e))
+            # Fallback to Z-AI LLM for narrative generation
+            try:
+                from app.services.zai_llm import generate_report_narrative
+                ai_report_text = await generate_report_narrative(
+                    date=date,
+                    total=total,
+                    contacted=contacted,
+                    ok_count=ok_count,
+                    weak_count=weak_count,
+                    coord_count=coord_count,
+                    samu_count=samu_count,
+                    avg_escalade_latency=avg_escalade_latency,
+                    unreachable_72h=unreachable_72h,
+                    weak_signals_list=weak_signals_list,
+                )
+                log.info("vigie.report.zai_narrative_generated", length=len(ai_report_text))
+            except Exception as e2:
+                log.warning("vigie.report.zai_failed", error=str(e2))
+                ai_report_text = (
+                    f"Today, {contacted} out of {total} isolated elders were contacted. "
+                    f"Coverage reached {int((contacted/total)*100) if total > 0 else 0}%.\n\n"
+                    f"• {ok_count} check-ins OK\n"
+                    f"• {weak_count} weak signals detected\n"
+                    f"• {coord_count} coordinator escalations\n"
+                    f"• {samu_count} SAMU escalations\n\n"
+                    f"Tomorrow, prioritize the {unreachable_72h} elders not yet contacted."
+                )
 
         msg = build_daily_report(
             date=date,
