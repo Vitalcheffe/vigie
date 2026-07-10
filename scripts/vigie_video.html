@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>Vigie — Product Launch Film</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    background: #09090B;
+    font-family: 'Inter', sans-serif;
+    color: #FAFAFA;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ═══ FILM GRAIN OVERLAY ═══ */
+  #grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grainShift 0.5s steps(4) infinite;
+  }
+  @keyframes grainShift {
+    0% { transform: translate(0,0); }
+    25% { transform: translate(-2px,1px); }
+    50% { transform: translate(1px,-2px); }
+    75% { transform: translate(2px,1px); }
+    100% { transform: translate(0,0); }
+  }
+
+  /* ═══ PARTICLE CANVAS ═══ */
+  #particles {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* ═══ DOT GRID BACKGROUND ═══ */
+  #dotgrid {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-image: radial-gradient(circle, rgba(255,107,53,0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0;
+  }
+
+  /* ═══ SCENE CONTAINER ═══ */
+  .scene {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    z-index: 10;
+  }
+
+  .scene.active { opacity: 1; }
+
+  /* ═══ TYPOGRAPHY ═══ */
+  .hero-text {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 160px;
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    text-align: center;
+  }
+
+  .headline {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 72px;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    text-align: center;
+  }
+
+  .subhead {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 1.5;
+    color: #A1A1AA;
+    text-align: center;
+    max-width: 1200px;
+  }
+
+  .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #FF6B35;
+  }
+
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 200px;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, #FFB627 0%, #FF6B35 50%, #e01e5a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 80px rgba(255,107,53,0.3);
+  }
+
+  /* ═══ GLOW EFFECTS ═══ */
+  .glow-orange {
+    filter: drop-shadow(0 0 30px rgba(255,107,53,0.6)) drop-shadow(0 0 60px rgba(255,107,53,0.3));
+  }
+
+  .bloom {
+    position: relative;
+  }
+  .bloom::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(circle, rgba(255,107,53,0.3) 0%, transparent 70%);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* ═══ GLASS MORPHISM CARDS ═══ */
+  .glass {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+  }
+
+  /* ═══ SCENE 1: THE VOID ═══ */
+  #scene1 .void-light {
+    width: 4px;
+    height: 4px;
+    background: #FF6B35;
+    border-radius: 50%;
+    box-shadow: 0 0 20px #FF6B35, 0 0 40px #FF6B35, 0 0 80px rgba(255,107,53,0.5);
+  }
+
+  #scene1 .void-number {
+    position: absolute;
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 240px;
+    color: #FAFAFA;
+    letter-spacing: -0.05em;
+    text-shadow: 0 0 100px rgba(255,107,53,0.2);
+    opacity: 0;
+  }
+
+  /* ═══ SCENE 2: THE COST ═══ */
+  #scene2 .cost-number {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 280px;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    background: linear-gradient(180deg, #FAFAFA 0%, #A1A1AA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  #scene2 .cost-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #71717A;
+    margin-top: 20px;
+  }
+
+  /* ═══ SCENE 3: THE PROBLEM ═══ */
+  #scene3 .chaos-card {
+    position: absolute;
+    padding: 24px 32px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  /* ═══ SCENE 4: THE REVEAL ═══ */
+  #scene4 .logo-container {
+    text-align: center;
+  }
+
+  #scene4 .logo-svg {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 40px;
+  }
+
+  #scene4 .logo-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 180px;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    color: #FAFAFA;
+    text-shadow: 0 0 60px rgba(255,107,53,0.3);
+  }
+
+  #scene4 .logo-tagline {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 32px;
+    color: #A1A1AA;
+    margin-top: 24px;
+    font-style: italic;
+  }
+
+  /* ═══ SCENE 5: CLASSIFICATION ═══ */
+  #scene5 .class-container {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #scene5 .level-card {
+    width: 200px;
+    padding: 32px 24px;
+    border-radius: 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #scene5 .level-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+
+  #scene5 .l0 { background: rgba(46,182,125,0.1); border: 1px solid rgba(46,182,125,0.3); }
+  #scene5 .l0::before { background: #2eb67d; }
+  #scene5 .l0 .level-badge { background: #2eb67d; }
+
+  #scene5 .l1 { background: rgba(255,182,39,0.1); border: 1px solid rgba(255,182,39,0.3); }
+  #scene5 .l1::before { background: #FFB627; }
+  #scene5 .l1 .level-badge { background: #FFB627; color: #1a1d21; }
+
+  #scene5 .l2 { background: rgba(232,118,42,0.1); border: 1px solid rgba(232,118,42,0.3); }
+  #scene5 .l2::before { background: #e8762a; }
+  #scene5 .l2 .level-badge { background: #e8762a; }
+
+  #scene5 .l3 { background: rgba(224,30,90,0.1); border: 1px solid rgba(224,30,90,0.3); }
+  #scene5 .l3::before { background: #e01e5a; }
+  #scene5 .l3 .level-badge { background: #e01e5a; }
+
+  #scene5 .level-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 12px;
+    color: white;
+    margin-bottom: 16px;
+  }
+
+  #scene5 .level-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+  #scene5 .l0 .level-title { color: #2eb67d; }
+  #scene5 .l1 .level-title { color: #FFB627; }
+  #scene5 .l2 .level-title { color: #e8762a; }
+  #scene5 .l3 .level-title { color: #e01e5a; }
+
+  #scene5 .level-desc {
+    font-size: 14px;
+    color: #A1A1AA;
+    line-height: 1.4;
+  }
+
+  #scene5 .volunteer-note {
+    max-width: 800px;
+    padding: 32px 40px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.6;
+    color: #d1d2d3;
+    text-align: center;
+    margin: 0 auto 40px;
+  }
+
+  /* ═══ SCENE 6: SLACK WORKFLOW ═══ */
+  #scene6 .slack-mockup {
+    width: 1400px;
+    height: 800px;
+    background: #1a1d21;
+    border-radius: 16px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+  }
+
+  #scene6 .slack-sidebar {
+    background: #19171d;
+    border-right: 1px solid #2e3235;
+    padding: 20px 16px;
+  }
+
+  #scene6 .slack-channel {
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #d1d2d3;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #scene6 .slack-channel.active {
+    background: #1164A3;
+    color: white;
+  }
+
+  #scene6 .slack-main {
+    padding: 24px;
+    overflow: hidden;
+  }
+
+  #scene6 .slack-msg {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  #scene6 .slack-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    font-size: 14px;
+  }
+
+  #scene6 .slack-content { flex: 1; }
+  #scene6 .slack-author { font-size: 14px; font-weight: 700; color: white; margin-bottom: 4px; }
+  #scene6 .slack-text { font-size: 14px; color: #d1d2d3; line-height: 1.5; }
+
+  #scene6 .escalation-card {
+    background: #2e1a1a;
+    border-left: 4px solid #e01e5a;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 8px;
+  }
+
+  #scene6 .samu-button {
+    display: inline-block;
+    background: #e01e5a;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 12px;
+  }
+
+  /* ═══ SCENE 7: VLM + MCP ═══ */
+  #scene7 .vlm-container {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+  }
+
+  #scene7 .vlm-screenshot {
+    width: 500px;
+    background: #19171d;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #2e3235;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  #scene7 .vlm-kpi-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  #scene7 .vlm-kpi {
+    flex: 1;
+    background: #2e3235;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  #scene7 .vlm-kpi-label { font-size: 9px; color: #ababad; text-transform: uppercase; letter-spacing: 0.1em; }
+  #scene7 .vlm-kpi-value { font-size: 24px; font-weight: 900; color: white; margin-top: 4px; }
+  #scene7 .vlm-kpi-value.red { color: #e01e5a; }
+  #scene7 .vlm-kpi-value.green { color: #2eb67d; }
+
+  #scene7 .vlm-json {
+    width: 500px;
+    background: #0d0d0d;
+    border: 1px solid #2e3235;
+    border-radius: 12px;
+    padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #d1d2d3;
+  }
+
+  #scene7 .json-key { color: #FF6B35; }
+  #scene7 .json-string { color: #2eb67d; }
+  #scene7 .json-number { color: #FFB627; }
+
+  /* ═══ SCENE 8: FINALE ═══ */
+  #scene8 .finale-container {
+    text-align: center;
+  }
+
+  #scene8 .finale-stat {
+    display: inline-block;
+    margin: 0 40px;
+    text-align: center;
+  }
+
+  #scene8 .finale-stat-value {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 80px;
+    color: #FF6B35;
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(255,107,53,0.4);
+  }
+
+  #scene8 .finale-stat-label {
+    font-size: 14px;
+    color: #A1A1AA;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-top: 8px;
+  }
+
+  #scene8 .finale-quote {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 36px;
+    color: #FAFAFA;
+    max-width: 1200px;
+    margin: 60px auto 0;
+    line-height: 1.4;
+  }
+
+  #scene8 .finale-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 120px;
+    color: #FF6B35;
+    letter-spacing: -0.05em;
+    text-shadow: 0 0 80px rgba(255,107,53,0.5);
+    margin-top: 40px;
+  }
+
+  #scene8 .finale-tagline {
+    font-size: 24px;
+    color: #A1A1AA;
+    margin-top: 20px;
+    font-style: italic;
+  }
+
+  /* ═══ SCAN LINE EFFECT ═══ */
+  .scan-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, #FF6B35 50%, transparent 100%);
+    box-shadow: 0 0 20px #FF6B35;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  /* ═══ RIPPLE RING ═══ */
+  .ripple {
+    position: absolute;
+    border: 2px solid #FF6B35;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* ═══ CONNECTION LINE ═══ */
+  .connection {
+    position: absolute;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #FF6B35, transparent);
+    transform-origin: left center;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div id="grain"></div>
+<canvas id="particles"></canvas>
+<div id="dotgrid"></div>
+
+<!-- ═══ SCENE 1: THE VOID (0:00 - 0:12) ═══ -->
+<div id="scene1" class="scene">
+  <div class="void-light" id="voidLight"></div>
+  <div class="void-number" id="voidNumber">14,802</div>
+</div>
+
+<!-- ═══ SCENE 2: THE COST (0:12 - 0:30) ═══ -->
+<div id="scene2" class="scene" style="flex-direction: column;">
+  <div class="label" id="costLabel" style="margin-bottom: 30px;">AUGUST 2003 · FRANCE</div>
+  <div class="cost-number" id="costNumber">0</div>
+  <div class="cost-label" id="costSubLabel">PEOPLE DIED ALONE DURING THE HEATWAVE</div>
+</div>
+
+<!-- ═══ SCENE 3: THE PROBLEM (0:30 - 0:48) ═══ -->
+<div id="scene3" class="scene">
+  <div id="chaosContainer" style="position: relative; width: 1600px; height: 800px;">
+    <div class="headline" id="chaosHeadline" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; opacity: 0;">
+      The system failed them.
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCENE 4: THE REVEAL (0:48 - 1:08) ═══ -->
+<div id="scene4" class="scene" style="flex-direction: column;">
+  <div class="logo-container">
+    <svg class="logo-svg" id="logoSvg" viewBox="0 0 200 200">
+      <!-- Eye/watchman shape -->
+      <circle cx="100" cy="100" r="80" fill="none" stroke="#FF6B35" stroke-width="3" stroke-linecap="round" stroke-dasharray="502" stroke-dashoffset="502" id="logoCircle"/>
+      <circle cx="100" cy="100" r="40" fill="none" stroke="#FFB627" stroke-width="3" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251" id="logoInnerCircle"/>
+      <circle cx="100" cy="100" r="12" fill="#FF6B35" id="logoDot" opacity="0"/>
+      <path d="M 100 20 L 100 40" stroke="#FF6B35" stroke-width="3" stroke-linecap="round" stroke-dasharray="20" stroke-dashoffset="20" id="logoTick1"/>
+      <path d="M 100 160 L 100 180" stroke="#FF6B35" stroke-width="3" stroke-linecap="round" stroke-dasharray="20" stroke-dashoffset="20" id="logoTick2"/>
+      <path d="M 20 100 L 40 100" stroke="#FF6B35" stroke-width="3" stroke-linecap="round" stroke-dasharray="20" stroke-dashoffset="20" id="logoTick3"/>
+      <path d="M 160 100 L 180 100" stroke="#FF6B35" stroke-width="3" stroke-linecap="round" stroke-dasharray="20" stroke-dashoffset="20" id="logoTick4"/>
+    </svg>
+    <div class="logo-name" id="logoName" style="opacity: 0;">Vigie</div>
+    <div class="logo-tagline" id="logoTagline" style="opacity: 0;">So the heatwave no longer kills in silence.</div>
+  </div>
+</div>
+
+<!-- ═══ SCENE 5: CLASSIFICATION (1:08 - 1:38) ═══ -->
+<div id="scene5" class="scene" style="flex-direction: column;">
+  <div class="label" id="classLabel" style="margin-bottom: 30px; opacity: 0;">Z-AI LLM · 4-LEVEL SEVERITY TRIAGE</div>
+  <div class="volunteer-note" id="volunteerNote" style="opacity: 0;">
+    "She sounded tired but told me everything was fine."
+  </div>
+  <div class="class-container" id="classContainer" style="opacity: 0;">
+    <div class="level-card l0">
+      <span class="level-badge">L0</span>
+      <div class="level-title">OK</div>
+      <div class="level-desc">All clear. Log and move on.</div>
+    </div>
+    <div class="level-card l1">
+      <span class="level-badge">L1</span>
+      <div class="level-title">Weak Signal</div>
+      <div class="level-desc">Something's off. Monitor tomorrow.</div>
+    </div>
+    <div class="level-card l2">
+      <span class="level-badge">L2</span>
+      <div class="level-title">No Answer</div>
+      <div class="level-desc">Coordinator dispatched.</div>
+    </div>
+    <div class="level-card l3">
+      <span class="level-badge">L3</span>
+      <div class="level-title">Critical</div>
+      <div class="level-desc">SAMU-15 auto-triggered.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCENE 6: SLACK WORKFLOW (1:38 - 2:05) ═══ -->
+<div id="scene6" class="scene">
+  <div class="slack-mockup" id="slackMockup">
+    <div class="slack-sidebar">
+      <div style="font-size: 12px; color: #ababad; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;">Vigie — Paris</div>
+      <div class="slack-channel active"># cellule-crise</div>
+      <div class="slack-channel"># secteur-1</div>
+      <div class="slack-channel"># secteur-2</div>
+      <div class="slack-channel"># secteur-3</div>
+      <div style="margin-top: 20px; font-size: 12px; color: #ababad; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Direct Messages</div>
+      <div class="slack-channel" style="background: rgba(255,107,53,0.15); border-left: 3px solid #FF6B35;">Vigie Bot</div>
+    </div>
+    <div class="slack-main" id="slackMain">
+      <!-- Messages will be animated in -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCENE 7: VLM + MCP (2:05 - 2:30) ═══ -->
+<div id="scene7" class="scene" style="flex-direction: column;">
+  <div class="label" id="vlmLabel" style="margin-bottom: 40px; opacity: 0;">Z-AI VISION MODEL · DASHBOARD ANALYSIS</div>
+  <div class="vlm-container" id="vlmContainer" style="opacity: 0;">
+    <div class="vlm-screenshot">
+      <div class="vlm-kpi-row">
+        <div class="vlm-kpi">
+          <div class="vlm-kpi-label">Coverage</div>
+          <div class="vlm-kpi-value green">94%</div>
+        </div>
+        <div class="vlm-kpi">
+          <div class="vlm-kpi-label">Latency</div>
+          <div class="vlm-kpi-value">7m</div>
+        </div>
+        <div class="vlm-kpi">
+          <div class="vlm-kpi-label">L3</div>
+          <div class="vlm-kpi-value red">1</div>
+        </div>
+      </div>
+      <div style="background: #2e3235; border-radius: 8px; padding: 12px;">
+        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #3a3f44; font-size: 12px; color: #d1d2d3;">
+          <span>B018 Monique B.</span><span style="background: #e01e5a; color: white; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 700;">L3</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #3a3f44; font-size: 12px; color: #d1d2d3;">
+          <span>B007 Lucien P.</span><span style="background: #e8762a; color: white; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 700;">L2</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 6px 0; font-size: 12px; color: #d1d2d3;">
+          <span>B023 Hélène M.</span><span style="background: #FFB627; color: #1a1d21; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 700;">L1</span>
+        </div>
+      </div>
+    </div>
+    <svg width="60" height="40" id="vlmArrow" style="opacity: 0;">
+      <path d="M 5 20 L 50 20 M 40 10 L 50 20 L 40 30" stroke="#FF6B35" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="vlm-json" id="vlmJson" style="opacity: 0;">
+      <div><span class="json-key">"DASHBOARD_HEALTH"</span>: <span class="json-string">"ALERT"</span></div>
+      <div><span class="json-key">"COVERAGE_PERCENT"</span>: <span class="json-number">94</span></div>
+      <div><span class="json-key">"L3_COUNT"</span>: <span class="json-number">1</span></div>
+      <div><span class="json-key">"ACTIVE_ALERTS"</span>: [</div>
+      <div>&nbsp;&nbsp;{ <span class="json-key">"name"</span>: <span class="json-string">"Monique B."</span>,</div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"level"</span>: <span class="json-string">"L3"</span> }</div>
+      <div>]</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCENE 8: FINALE (2:30 - 3:00) ═══ -->
+<div id="scene8" class="scene" style="flex-direction: column;">
+  <div id="finaleStats" style="opacity: 0; margin-bottom: 20px;">
+    <div class="finale-stat">
+      <div class="finale-stat-value" id="stat1">94%</div>
+      <div class="finale-stat-label">Coverage</div>
+    </div>
+    <div class="finale-stat">
+      <div class="finale-stat-value" id="stat2">7min</div>
+      <div class="finale-stat-label">SAMU Escalation</div>
+    </div>
+    <div class="finale-stat">
+      <div class="finale-stat-value" id="stat3">152</div>
+      <div class="finale-stat-label">Tests Passing</div>
+    </div>
+  </div>
+  <div class="finale-quote" id="finaleQuote" style="opacity: 0;">
+    My grandmother is 87 now. She still lives alone.<br>This summer, I'm adding her to Vigie.
+  </div>
+  <div class="finale-name" id="finaleName" style="opacity: 0;">Vigie</div>
+  <div class="finale-tagline" id="finaleTagline" style="opacity: 0;">So the heatwave no longer kills in silence.</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// VIGIE — PRODUCT LAUNCH FILM
+// 3:00 (180 seconds) — 8 scenes
+// ═══════════════════════════════════════════════════════════════
+
+const PRIMARY = '#FF6B35';
+const PRIMARY_LIGHT = '#FFB627';
+const BG = '#09090B';
+const DURATION = 180; // seconds
+
+// ═══ PARTICLE SYSTEM ═══
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = 1920;
+canvas.height = 1080;
+
+const particles = [];
+const PARTICLE_COUNT = 80;
+
+class Particle {
+  constructor() {
+    this.reset();
+    this.y = Math.random() * 1080;
+  }
+  reset() {
+    this.x = Math.random() * 1920;
+    this.y = 1080 + Math.random() * 100;
+    this.size = Math.random() * 2 + 0.5;
+    this.speed = Math.random() * 0.5 + 0.2;
+    this.opacity = Math.random() * 0.15 + 0.05;
+    this.drift = (Math.random() - 0.5) * 0.3;
+    this.color = Math.random() > 0.7 ? PRIMARY_LIGHT : PRIMARY;
+  }
+  update() {
+    this.y -= this.speed;
+    this.x += this.drift;
+    if (this.y < -10) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.globalAlpha = this.opacity;
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = this.color;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  particles.push(new Particle());
+}
+
+function animateParticles() {
+  ctx.clearRect(0, 0, 1920, 1080);
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+  particles.forEach(p => {
+    p.update();
+    p.draw();
+  });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// ═══ WEB AUDIO API — SOUND DESIGN ═══
+let audioCtx = null;
+let masterGain = null;
+let musicGain = null;
+let sfxGain = null;
+
+function initAudio() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  masterGain = audioCtx.createGain();
+  masterGain.gain.value = 0.6;
+  masterGain.connect(audioCtx.destination);
+
+  musicGain = audioCtx.createGain();
+  musicGain.gain.value = 0.3;
+  musicGain.connect(masterGain);
+
+  sfxGain = audioCtx.createGain();
+  sfxGain.gain.value = 0.5;
+  sfxGain.connect(masterGain);
+}
+
+// SFX: Bass hit
+function sfxBassHit(time = 0) {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime + time;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(80, t);
+  osc.frequency.exponentialRampToValueAtTime(40, t + 0.5);
+  gain.gain.setValueAtTime(0, t);
+  gain.gain.linearRampToValueAtTime(0.8, t + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
+  osc.connect(gain);
+  gain.connect(sfxGain);
+  osc.start(t);
+  osc.stop(t + 1.5);
+}
+
+// SFX: Crystalline tink
+function sfxTink(time = 0) {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime + time;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(2000 + Math.random() * 1000, t);
+  gain.gain.setValueAtTime(0, t);
+  gain.gain.linearRampToValueAtTime(0.15, t + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+  osc.connect(gain);
+  gain.connect(sfxGain);
+  osc.start(t);
+  osc.stop(t + 0.3);
+}
+
+// SFX: Whoosh
+function sfxWhoosh(time = 0) {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime + time;
+  const noise = audioCtx.createBufferSource();
+  const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.5, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < data.length; i++) {
+    data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+  }
+  noise.buffer = buffer;
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(800, t);
+  filter.frequency.exponentialRampToValueAtTime(200, t + 0.5);
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.3, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+  noise.connect(filter);
+  filter.connect(gain);
+  gain.connect(sfxGain);
+  noise.start(t);
+  noise.stop(t + 0.5);
+}
+
+// SFX: Glass break
+function sfxGlassBreak(time = 0) {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime + time;
+  for (let i = 0; i < 8; i++) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(3000 + Math.random() * 4000, t + i * 0.02);
+    gain.gain.setValueAtTime(0, t + i * 0.02);
+    gain.gain.linearRampToValueAtTime(0.1, t + i * 0.02 + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.02 + 0.15);
+    osc.connect(gain);
+    gain.connect(sfxGain);
+    osc.start(t + i * 0.02);
+    osc.stop(t + i * 0.02 + 0.15);
+  }
+}
+
+// SFX: Digital tick
+function sfxTick(time = 0) {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime + time;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'square';
+  osc.frequency.setValueAtTime(1500, t);
+  gain.gain.setValueAtTime(0.05, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+  osc.connect(gain);
+  gain.connect(sfxGain);
+  osc.start(t);
+  osc.stop(t + 0.03);
+}
+
+// SFX: Soft pop
+function sfxPop(time = 0) {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime + time;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(600, t);
+  osc.frequency.exponentialRampToValueAtTime(300, t + 0.1);
+  gain.gain.setValueAtTime(0.2, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+  osc.connect(gain);
+  gain.connect(sfxGain);
+  osc.start(t);
+  osc.stop(t + 0.15);
+}
+
+// SFX: Ding
+function sfxDing(time = 0) {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime + time;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(1200, t);
+  gain.gain.setValueAtTime(0, t);
+  gain.gain.linearRampToValueAtTime(0.2, t + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+  osc.connect(gain);
+  gain.connect(sfxGain);
+  osc.start(t);
+  osc.stop(t + 0.5);
+}
+
+// SFX: Uplifting chord
+function sfxChord(time = 0) {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime + time;
+  const notes = [261.63, 329.63, 392.00, 523.25]; // C major
+  notes.forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, t);
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.12, t + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 2);
+    osc.connect(gain);
+    gain.connect(sfxGain);
+    osc.start(t);
+    osc.stop(t + 2);
+  });
+}
+
+// ═══ BACKGROUND MUSIC — AMBIENT DRONE ═══
+let musicOscs = [];
+
+function startMusic() {
+  if (!audioCtx) return;
+
+  // Low drone (root note)
+  const drone1 = audioCtx.createOscillator();
+  const drone1Gain = audioCtx.createGain();
+  drone1.type = 'sine';
+  drone1.frequency.value = 55; // A1
+  drone1Gain.gain.value = 0.15;
+  drone1.connect(drone1Gain);
+  drone1Gain.connect(musicGain);
+  drone1.start();
+  musicOscs.push({ osc: drone1, gain: drone1Gain });
+
+  // Fifth drone
+  const drone2 = audioCtx.createOscillator();
+  const drone2Gain = audioCtx.createGain();
+  drone2.type = 'sine';
+  drone2.frequency.value = 82.4; // E2
+  drone2Gain.gain.value = 0.1;
+  drone2.connect(drone2Gain);
+  drone2Gain.connect(musicGain);
+  drone2.start();
+  musicOscs.push({ osc: drone2, gain: drone2Gain });
+
+  // Slow LFO on drone gain for breathing effect
+  const lfo = audioCtx.createOscillator();
+  const lfoGain = audioCtx.createGain();
+  lfo.frequency.value = 0.15; // very slow
+  lfoGain.gain.value = 0.05;
+  lfo.connect(lfoGain);
+  lfoGain.connect(drone1Gain.gain);
+  lfo.start();
+  musicOscs.push({ osc: lfo, gain: lfoGain });
+}
+
+function setMusicIntensity(level) {
+  if (!audioCtx) return;
+  const target = 0.15 + level * 0.25;
+  musicOscs.forEach(m => {
+    if (m.gain.gain) {
+      m.gain.gain.linearRampToValueAtTime(target, audioCtx.currentTime + 1);
+    }
+  });
+}
+
+function stopMusic() {
+  musicOscs.forEach(m => {
+    try {
+      m.gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2);
+      m.osc.stop(audioCtx.currentTime + 2.1);
+    } catch(e) {}
+  });
+}
+
+// ═══ SCENE MANAGEMENT ═══
+const scenes = ['scene1', 'scene2', 'scene3', 'scene4', 'scene5', 'scene6', 'scene7', 'scene8'];
+
+function showScene(idx) {
+  scenes.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (i === idx) {
+      el.classList.add('active');
+    } else {
+      el.classList.remove('active');
+    }
+  });
+}
+
+function hideScene(idx) {
+  document.getElementById(scenes[idx]).classList.remove('active');
+}
+
+// ═══ MASTER TIMELINE ═══
+function runTimeline() {
+  initAudio();
+  startMusic();
+
+  // Play button fallback — resume audio context on user gesture
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+
+  // ═══ SCENE 1: THE VOID (0:00 - 0:12) ═══
+  showScene(0);
+  sfxBassHit(0);
+
+  // 2s: point of light pulses
+  gsap.fromTo('#voidLight',
+    { scale: 0, opacity: 0 },
+    { scale: 1, opacity: 1, duration: 0.5, ease: 'expo.out', delay: 2 }
+  );
+
+  // 4s: ripple effect
+  setTimeout(() => {
+    const ripple = document.createElement('div');
+    ripple.className = 'ripple';
+    ripple.style.cssText = 'left: 50%; top: 50%; width: 0; height: 0; transform: translate(-50%,-50%);';
+    document.getElementById('scene1').appendChild(ripple);
+    gsap.to(ripple, {
+      width: 300, height: 300, opacity: 0, duration: 1.5, ease: 'expo.out',
+      onComplete: () => ripple.remove()
+    });
+    sfxTink();
+  }, 4000);
+
+  // 6s: "14,802" materializes
+  setTimeout(() => {
+    const num = document.getElementById('voidNumber');
+    gsap.to(num, {
+      opacity: 1, duration: 2, ease: 'expo.out',
+      onStart: () => sfxWhoosh()
+    });
+  }, 6000);
+
+  // 10s: hold, then fade
+  setTimeout(() => {
+    gsap.to('#voidLight', { opacity: 0, duration: 1, ease: 'expo.out' });
+    gsap.to('#voidNumber', { opacity: 0, scale: 0.8, duration: 1.5, ease: 'expo.inOut' });
+  }, 10000);
+
+  // ═══ SCENE 2: THE COST (0:12 - 0:30) ═══
+  setTimeout(() => {
+    showScene(1);
+    sfxBassHit();
+
+    // Counter 0 → 14802
+    const costNum = document.getElementById('costNumber');
+    const obj = { val: 0 };
+    gsap.to(obj, {
+      val: 14802, duration: 3, ease: 'expo.out',
+      onUpdate: () => {
+        costNum.textContent = Math.floor(obj.val).toLocaleString();
+        if (Math.random() > 0.9) sfxTick();
+      },
+      onComplete: () => sfxBassHit(0.3)
+    });
+
+    // Label fades in
+    gsap.fromTo('#costLabel', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1, ease: 'expo.out', delay: 0.5 });
+    gsap.fromTo('#costSubLabel', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1, ease: 'expo.out', delay: 3 });
+
+    // Hold, then fade
+    setTimeout(() => {
+      gsap.to('#scene2 > *', { opacity: 0, y: -30, duration: 1.5, ease: 'expo.inOut', stagger: 0.1 });
+    }, 15000);
+  }, 12000);
+
+  // ═══ SCENE 3: THE PROBLEM (0:30 - 0:48) ═══
+  setTimeout(() => {
+    showScene(2);
+    sfxWhoosh();
+    setMusicIntensity(0.3);
+
+    // Chaos cards
+    const chaosTexts = [
+      'Paper notes', 'Phone trees', 'Excel sheets', 'Missed calls',
+      'Sticky notes', 'Google Docs', 'Voicemails', 'Group chats'
+    ];
+    const chaosColors = ['#e01e5a', '#e8762a', '#FFB627', '#FF6B35'];
+    const container = document.getElementById('chaosContainer');
+
+    chaosTexts.forEach((text, i) => {
+      const card = document.createElement('div');
+      card.className = 'glass chaos-card';
+      card.textContent = text;
+      card.style.cssText = `
+        position: absolute;
+        left: ${150 + Math.random() * 1300}px;
+        top: ${100 + Math.random() * 600}px;
+        color: ${chaosColors[i % 4]};
+        border: 1px solid ${chaosColors[i % 4]}33;
+        opacity: 0;
+      `;
+      container.appendChild(card);
+
+      gsap.to(card, {
+        opacity: 1, duration: 0.5, ease: 'expo.out', delay: 0.5 + i * 0.15,
+        onStart: () => sfxPop()
+      });
+
+      // Float animation
+      gsap.to(card, {
+        x: (Math.random() - 0.5) * 50,
+        y: (Math.random() - 0.5) * 50,
+        duration: 2 + Math.random(),
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut'
+      });
+    });
+
+    // Headline appears
+    setTimeout(() => {
+      gsap.to('#chaosHeadline', {
+        opacity: 1, scale: 1, duration: 1, ease: 'expo.out',
+        onStart: () => sfxBassHit()
+      });
+    }, 6000);
+
+    // Everything dissolves
+    setTimeout(() => {
+      sfxGlassBreak();
+      gsap.to('.chaos-card', {
+        opacity: 0, scale: 0.5, y: -100, duration: 1.2, ease: 'expo.in', stagger: 0.05
+      });
+      gsap.to('#chaosHeadline', { opacity: 0, scale: 0.8, duration: 1.2, ease: 'expo.in' });
+    }, 16000);
+  }, 30000);
+
+  // ═══ SCENE 4: THE REVEAL (0:48 - 1:08) ═══
+  setTimeout(() => {
+    showScene(3);
+    setMusicIntensity(0.5);
+
+    // Light sweep
+    const sweep = document.createElement('div');
+    sweep.style.cssText = `
+      position: fixed; top: 0; left: -200px; width: 200px; height: 100%;
+      background: linear-gradient(90deg, transparent, ${PRIMARY}88, transparent);
+      z-index: 100; pointer-events: none;
+    `;
+    document.body.appendChild(sweep);
+    gsap.to(sweep, {
+      left: '1920px', duration: 0.8, ease: 'expo.inOut',
+      onComplete: () => sweep.remove(),
+      onStart: () => sfxWhoosh()
+    });
+
+    // Dot grid appears
+    gsap.to('#dotgrid', { opacity: 1, duration: 1, ease: 'expo.out', delay: 0.5 });
+
+    // Logo draws
+    setTimeout(() => {
+      sfxTink();
+      gsap.to('#logoCircle', { strokeDashoffset: 0, duration: 1, ease: 'expo.out' });
+      gsap.to('#logoInnerCircle', { strokeDashoffset: 0, duration: 0.8, ease: 'expo.out', delay: 0.3 });
+      gsap.to('#logoDot', { opacity: 1, duration: 0.3, ease: 'expo.out', delay: 1, onStart: () => sfxPop() });
+
+      // Tick marks
+      [1, 2, 3, 4].forEach((n, i) => {
+        gsap.to(`#logoTick${n}`, { strokeDashoffset: 0, duration: 0.3, ease: 'expo.out', delay: 1.2 + i * 0.1, onStart: () => sfxTink() });
+      });
+    }, 1000);
+
+    // Logo name
+    setTimeout(() => {
+      gsap.to('#logoName', { opacity: 1, duration: 1, ease: 'expo.out', onStart: () => sfxBassHit() });
+    }, 3000);
+
+    // Tagline
+    setTimeout(() => {
+      gsap.to('#logoTagline', { opacity: 1, duration: 1, ease: 'expo.out' });
+    }, 4500);
+
+    // Hold, fade
+    setTimeout(() => {
+      gsap.to('#scene4 > *', { opacity: 0, scale: 0.9, duration: 1.5, ease: 'expo.inOut' });
+      gsap.to('#dotgrid', { opacity: 0, duration: 1 });
+    }, 18500);
+  }, 48000);
+
+  // ═══ SCENE 5: CLASSIFICATION (1:08 - 1:38) ═══
+  setTimeout(() => {
+    showScene(4);
+    setMusicIntensity(0.6);
+
+    // Label
+    gsap.to('#classLabel', { opacity: 1, y: 0, duration: 0.8, ease: 'expo.out' });
+
+    // Volunteer note
+    setTimeout(() => {
+      gsap.to('#volunteerNote', { opacity: 1, y: 0, duration: 0.8, ease: 'expo.out', onStart: () => sfxPop() });
+    }, 1000);
+
+    // Level cards
+    setTimeout(() => {
+      gsap.to('#classContainer', { opacity: 1, duration: 0.5, ease: 'expo.out' });
+      const cards = document.querySelectorAll('#scene5 .level-card');
+      cards.forEach((card, i) => {
+        gsap.fromTo(card,
+          { opacity: 0, y: 40, scale: 0.9 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: 'expo.out', delay: i * 0.12, onStart: () => sfxPop() }
+        );
+      });
+    }, 3000);
+
+    // Highlight L1 (the correct classification for the note)
+    setTimeout(() => {
+      const l1 = document.querySelector('#scene5 .l1');
+      gsap.to(l1, {
+        scale: 1.1, duration: 0.5, ease: 'expo.out', yoyo: true, repeat: 1,
+        onStart: () => sfxDing()
+      });
+    }, 6000);
+
+    // Fade
+    setTimeout(() => {
+      gsap.to('#scene5 > *', { opacity: 0, y: -30, duration: 1, ease: 'expo.inOut', stagger: 0.05 });
+    }, 28500);
+  }, 68000);
+
+  // ═══ SCENE 6: SLACK WORKFLOW (1:38 - 2:05) ═══
+  setTimeout(() => {
+    showScene(5);
+    setMusicIntensity(0.7);
+
+    // Mockup slides in
+    gsap.fromTo('#slackMockup',
+      { opacity: 0, y: 60, scale: 0.95 },
+      { opacity: 1, y: 0, scale: 1, duration: 1, ease: 'expo.out', onStart: () => sfxWhoosh() }
+    );
+
+    // Messages appear one by one
+    const main = document.getElementById('slackMain');
+    const messages = [
+      { author: 'Volunteer', color: '#2eb67d', initials: 'VL', text: 'B023: She sounded tired but told me everything was fine.' },
+      { author: 'Vigie', color: '#FF6B35', initials: 'V', text: 'L1 classified — Weak signal. Flagged for tomorrow. Pharmacy lookup sent.', isBot: true },
+      { author: 'Volunteer', color: '#e8762a', initials: 'VL', text: 'B018: No answer. Been ringing for 10 minutes.' },
+      { author: 'Vigie', color: '#FF6B35', initials: 'V', text: 'L2 classified — No answer. Coordinator dispatched to secteur-3.', isBot: true },
+      { author: 'Volunteer', color: '#e01e5a', initials: 'VL', text: 'B018: I found her on the floor. She\'s not responding.' },
+    ];
+
+    messages.forEach((msg, i) => {
+      setTimeout(() => {
+        const msgEl = document.createElement('div');
+        msgEl.className = 'slack-msg';
+        msgEl.style.opacity = '0';
+        msgEl.innerHTML = `
+          <div class="slack-avatar" style="background: ${msg.color}">${msg.initials}</div>
+          <div class="slack-content">
+            <div class="slack-author">${msg.author}${msg.isBot ? ' <span style="background:#FF6B35;color:white;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:6px;">APP</span>' : ''}</div>
+            <div class="slack-text">${msg.text}</div>
+          </div>
+        `;
+        main.appendChild(msgEl);
+
+        gsap.to(msgEl, { opacity: 1, duration: 0.4, ease: 'expo.out', onStart: () => sfxPop() });
+
+        // If it's the L3 message, add escalation card
+        if (i === 4) {
+          setTimeout(() => {
+            const escCard = document.createElement('div');
+            escCard.className = 'escalation-card';
+            escCard.style.opacity = '0';
+            escCard.innerHTML = `
+              <div style="font-size:12px;color:#e01e5a;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">L3 · CRITICAL — SAMU TRIGGERED</div>
+              <div style="font-size:14px;color:#d1d2d3;">B018 Monique B. · 91 ans · Secteur 3<br>SAMU-15 notified at 14:21 · ETA 4 min</div>
+              <div class="samu-button">CALL SAMU — 15</div>
+            `;
+            msgEl.querySelector('.slack-content').appendChild(escCard);
+            gsap.to(escCard, { opacity: 1, duration: 0.5, ease: 'expo.out', onStart: () => { sfxBassHit(); sfxDing(); } });
+          }, 500);
+        }
+      }, 2000 + i * 2500);
+    });
+
+    // Fade
+    setTimeout(() => {
+      gsap.to('#slackMockup', { opacity: 0, scale: 0.95, y: -30, duration: 1.5, ease: 'expo.inOut' });
+    }, 26000);
+  }, 98000);
+
+  // ═══ SCENE 7: VLM + MCP (2:05 - 2:30) ═══
+  setTimeout(() => {
+    showScene(6);
+    setMusicIntensity(0.6);
+
+    gsap.to('#vlmLabel', { opacity: 1, y: 0, duration: 0.8, ease: 'expo.out' });
+
+    setTimeout(() => {
+      gsap.to('#vlmContainer', { opacity: 1, duration: 0.5, ease: 'expo.out' });
+
+      // Screenshot slides in
+      gsap.fromTo('#scene7 .vlm-screenshot',
+        { x: -60, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.8, ease: 'expo.out', onStart: () => sfxPop() }
+      );
+
+      // Arrow
+      setTimeout(() => {
+        gsap.to('#vlmArrow', { opacity: 1, duration: 0.5, ease: 'expo.out', onStart: () => sfxTink() });
+      }, 800);
+
+      // JSON
+      setTimeout(() => {
+        gsap.fromTo('#vlmJson',
+          { x: 60, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.8, ease: 'expo.out', onStart: () => sfxWhoosh() }
+        );
+      }, 1200);
+    }, 1000);
+
+    // Scan line effect on screenshot
+    setTimeout(() => {
+      const scan = document.createElement('div');
+      scan.className = 'scan-line';
+      scan.style.top = '0';
+      document.querySelector('#scene7 .vlm-screenshot').appendChild(scan);
+      gsap.to(scan, { top: '100%', duration: 2, ease: 'sine.inOut', onComplete: () => scan.remove() });
+    }, 3000);
+
+    // Fade
+    setTimeout(() => {
+      gsap.to('#scene7 > *', { opacity: 0, y: -30, duration: 1, ease: 'expo.inOut', stagger: 0.1 });
+    }, 24000);
+  }, 125000);
+
+  // ═══ SCENE 8: FINALE (2:30 - 3:00) ═══
+  setTimeout(() => {
+    showScene(7);
+    setMusicIntensity(0.8);
+
+    // Stats appear
+    gsap.to('#finaleStats', { opacity: 1, duration: 1, ease: 'expo.out', onStart: () => sfxChord() });
+
+    // Stats count up
+    setTimeout(() => {
+      const stats = [
+        { el: 'stat1', end: 94, suffix: '%' },
+        { el: 'stat2', end: 7, suffix: 'min' },
+        { el: 'stat3', end: 152, suffix: '' }
+      ];
+      stats.forEach((s, i) => {
+        const obj = { val: 0 };
+        gsap.to(obj, {
+          val: s.end, duration: 2, ease: 'expo.out', delay: i * 0.2,
+          onUpdate: () => {
+            document.getElementById(s.el).textContent = Math.floor(obj.val) + s.suffix;
+          },
+          onStart: () => sfxTick()
+        });
+      });
+    }, 1000);
+
+    // Quote
+    setTimeout(() => {
+      gsap.to('#finaleQuote', { opacity: 1, y: 0, duration: 2, ease: 'expo.out', onStart: () => sfxBassHit() });
+    }, 5000);
+
+    // Name
+    setTimeout(() => {
+      gsap.to('#finaleName', { opacity: 1, scale: 1, duration: 1.5, ease: 'expo.out', onStart: () => { sfxBassHit(); sfxChord(); } });
+    }, 12000);
+
+    // Tagline
+    setTimeout(() => {
+      gsap.to('#finaleTagline', { opacity: 1, duration: 1.5, ease: 'expo.out' });
+    }, 15000);
+
+    // Final fade
+    setTimeout(() => {
+      stopMusic();
+      gsap.to('#scene8 > *', { opacity: 0, duration: 2, ease: 'expo.in', stagger: 0.1 });
+      gsap.to('#particles', { opacity: 0, duration: 2 });
+    }, 27000);
+
+    // Last dot
+    setTimeout(() => {
+      const dot = document.createElement('div');
+      dot.style.cssText = `
+        position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%);
+        width: 6px; height: 6px; background: ${PRIMARY}; border-radius: 50%;
+        box-shadow: 0 0 20px ${PRIMARY}, 0 0 40px ${PRIMARY};
+        opacity: 0; z-index: 9999;
+      `;
+      document.body.appendChild(dot);
+      gsap.to(dot, { opacity: 1, duration: 0.5, ease: 'expo.out', onStart: () => sfxTink() });
+      gsap.to(dot, { opacity: 0, duration: 1, ease: 'expo.in', delay: 1.5, onComplete: () => dot.remove() });
+    }, 29500);
+  }, 150000);
+}
+
+// ═══ START ═══
+// Start on user gesture (required for audio)
+document.addEventListener('click', function startVideo() {
+  document.removeEventListener('click', startVideo);
+  runTimeline();
+}, { once: true });
+
+// Also start immediately for headless capture
+if (typeof window !== 'undefined' && window.location.search.includes('autoplay')) {
+  setTimeout(runTimeline, 500);
+}
+
+// Auto-start for Playwright capture
+setTimeout(() => {
+  if (!audioCtx) {
+    runTimeline();
+  }
+}, 1000);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1350 @@
+     1→     1→#
+     2→     2→#  ╔══════════════════════════════════════════════════════════════╗
+     3→     3→#  ║   THE DEFINITIVE GUIDE TO CREATING A PRODUCT LAUNCH FILM   ║
+     4→     4→#  ║   THAT MAKES PEOPLE SAY "THIS IS THE FUTURE"               ║
+     5→     5→#  ╚══════════════════════════════════════════════════════════════╝
+     6→     6→#
+     7→     7→#  Version 3.0 — v2 had no audio enforcement and weak MP4 output.
+     8→     8→#               v3 fixes both. No more silent HTML5 "videos".
+     9→     9→#
+    10→    10→#  This is universal. Works for ANY product. ANY industry. ANY agent.
+    11→    11→#
+    12→    12→#  WHAT THIS ISN'T: A slide deck. A screen recording. A demo.
+    13→    13→#                    An HTML animation. A silent video.
+    14→    14→#  WHAT THIS IS: A film. Apple WWDC quality. Tesla launch energy.
+    15→    15→#                 The kind of video that makes jaws drop.
+    16→    16→#                 WITH SOUND. IN MP4 FORMAT.
+    17→    17→#
+    18→    18→#  ═══════════════════════════════════════════════════════════════
+    19→    19→#  HOW TO USE THIS DOCUMENT
+    20→    20→#  ═══════════════════════════════════════════════════════════════
+    21→    21→#
+    22→    22→#  Priority system:
+    23→    23→#    [P0] = NON-NEGOTIABLE. Violating this = instant amateur hour.
+    24→    24→#    [P1] = CRITICAL. Missing this = noticeable quality gap.
+    25→    25→#    [P2] = ELEVATION. Having this = separates great from legendary.
+    26→    26→#
+    27→    27→#  Read sections in order. Each builds on the last.
+    28→    28→#  The scene blueprint (Section 6) references everything before it.
+    29→    29→#
+    30→    30→#  Study references (watch these before you start):
+    31→    31→#    - Apple WWDC 2023 intro film
+    32→    32→#    - Apple MacBook Air M2 reveal
+    33→    33→#    - Tesla Cybertruck unveiling
+    34→    34→#    - Stripe Sessions 2024 opening
+    35→    35→#    - Notion 2023 redo video
+    36→    36→#    - Linear's homepage animation
+    37→    37→#
+    38→    38→#══════════════════════════════════════════════════════════════════
+    39→    39→#  SECTION 0: OUTPUT FORMAT — READ THIS FIRST OR YOU WILL FAIL
+    40→    40→#══════════════════════════════════════════════════════════════════
+    41→    41→#
+    42→    42→#  ┌─────────────────────────────────────────────────────────────────┐
+    43→    43→#  │              THE FINAL DELIVERABLE IS AN MP4 FILE              │
+    44→    44→#  │                    THIS IS [P0] — NON-NEGOTIABLE               │
+    45→    45→#  └─────────────────────────────────────────────────────────────────┘
+    46→    46→#
+    47→    47→#  FORMAT REQUIREMENTS [P0 — ALL of these are mandatory]:
+    48→    48→#    - Container:  MP4 (.mp4)
+    49→    49→#    - Video codec: H.264
+    50→    50→#    - Resolution:  1920×1080 (Full HD)
+    51→    51→#    - Frame rate:  60fps (30fps is acceptable but not preferred)
+    52→    52→#    - Duration:    minimum 3 minutes, target 4:18
+    53→    53→#    - Audio codec: AAC
+    54→    54→#    - Audio:       MUST HAVE A SOUNDTRACK (see Section 7)
+    55→    55→#    - File size:   expect 50-150MB for a 4-min video
+    56→    56→#
+    57→    57→#  ╔═══════════════════════════════════════════════════════════════╗
+    58→    58→#  ║  WHAT IS NOT ACCEPTABLE AS FINAL OUTPUT:                     ║
+    59→    59→#  ║                                                               ║
+    60→    60→#  ║  ❌ An HTML5 file (no matter how beautiful the animation)     ║
+    61→    61→#  ║  ❌ A URL to a web page with animations                       ║
+    62→    62→#  ║  ❌ Instructions to "open in browser and screen-record"       ║
+    63→    63→#  ║  ❌ A silent video (no audio track)                           ║
+    64→    64→#  ║  ❌ A GIF or WebM                                            ║
+    65→    65→#  ║  ❌ A directory of PNG frames                                 ║
+    66→    66→#  ║                                                               ║
+    67→    67→#  ║  THE ONLY ACCEPTABLE OUTPUT IS: product-launch.mp4           ║
+    68→    68→#  ║  WITH VIDEO + AUDIO COMBINED IN A SINGLE FILE.               ║
+    69→    69→#  ╚═══════════════════════════════════════════════════════════════╝
+    70→    70→#
+    71→    71→#  TECHNICAL APPROACH — How to actually produce the MP4:
+    72→    72→#
+    73→    73→#  Step 1: Create the HTML5 animation (Canvas/CSS/GSAP/SVG).
+    74→    74→#          This is your RENDER SOURCE, not your deliverable.
+    75→    75→#
+    76→    76→#  Step 2: Capture the animation as video frames.
+    77→    77→#          RECOMMENDED: Use Playwright or Puppeteer to:
+    78→    78→#            a) Open the HTML file in a headless browser at 1920×1080
+    79→    79→#            b) Use page.video.startRecording() or equivalent
+    80→    80→#            c) Record the full animation duration at 60fps
+    81→    81→#          Example (Playwright):
+    82→    82→#            const browser = await chromium.launch();
+    83→    83→#            const context = await browser.newContext({
+    84→    84→#              recordVideo: { dir: 'output/', size: { width: 1920, height: 1080 } }
+    85→    85→#            });
+    86→    86→#            const page = await context.newPage();
+    87→    87→#            await page.goto('file:///path/to/animation.html');
+    88→    88→#            await page.waitForTimeout(totalDurationMs + 2000); // wait for animation to finish
+    89→    89→#            await context.close(); // saves the video
+    90→    90→#            await browser.close();
+    91→    91→#
+    92→    92→#  Step 3: Generate or obtain the audio track.
+    93→    93→#          See Section 7 (Sound Design) for full details.
+    94→    94→#          Options:
+    95→    95→#            a) Use Web Audio API in the HTML itself (Playwright captures it)
+    96→    96→#            b) Generate audio separately and merge with FFmpeg
+    97→    97→#            c) Use TTS/music generation APIs for narration + music
+    98→    98→#
+    99→    99→#  Step 4: Combine video + audio using FFmpeg.
+   100→   100→#          ffmpeg -i video.webm -i audio.mp3 -c:v libx264 -preset slow \
+   101→   101→#                 -crf 18 -c:a aac -b:a 192k -pix_fmt yuv420p \
+   102→   102→#                 -movflags +faststart product-launch.mp4
+   103→   103→#
+   104→   104→#  FFmpeg quality flags explained:
+   105→   105→#    -preset slow   → better compression (worth the wait)
+   106→   106→#    -crf 18        → visually lossless quality (lower = better, 0-51)
+   107→   107→#    -b:a 192k      → high quality audio
+   108→   108→#    -pix_fmt yuv420p → maximum compatibility
+   109→   109→#    -movflags +faststart → streaming-friendly MP4
+   110→   110→#
+   111→   111→#  IF YOU CANNOT PRODUCE AN MP4: Produce the best video you can
+   112→   112→#  AND clearly state what additional step is needed to get to MP4.
+   113→   113→#  But your PRIMARY goal is to produce the MP4 file directly.
+   114→   114→#  An HTML file alone is a FAILED deliverable.
+   115→   115→#
+   116→   116→#══════════════════════════════════════════════════════════════════
+   117→   117→#  SECTION 1: THE PSYCHOLOGY — WHY SOME VIDEOS HIT AND OTHERS DON'T
+   118→   118→#══════════════════════════════════════════════════════════════════
+   119→   119→
+   120→   120→Most product videos fail for the same reason: they're INFORMATIONAL.
+   121→   121→Great product videos are TRANSFORMATIONAL.
+   122→   122→
+   123→   123→The viewer should not LEARN about the product.
+   124→   124→The viewer should EXPERIENCE a world where the product exists.
+   125→   125→
+   126→   126→Here are the 5 laws that govern this transformation:
+   127→   127→
+   128→   128→┌─────────────────────────────────────────────────────────────────┐
+   129→   129→│ LAW 1: THE 3-SECOND HOOK                    [P0 — EVERYTHING]  │
+   130→   130→│                                                                 │
+   131→   131→│ The first 3 seconds decide if someone keeps watching.          │
+   132→   132→│ You must create a moment so visually arresting that it's       │
+   133→   133→│ physically uncomfortable to look away.                          │
+   134→   134→│                                                                 │
+   135→   135→│ NOT loud. NOT chaotic. ARRESTING.                               │
+   136→   136→│                                                                 │
+   137→   137→│ A single point of light in absolute darkness.                   │
+   138→   138→│ A shape forming from nothing.                                   │
+   139→   139→│ A breath before the storm.                                      │
+   140→   140→│                                                                 │
+   141→   141→│ If you lose them in 3 seconds, nothing else matters.            │
+   142→   142→│ THIS IS THE MOST IMPORTANT 3 SECONDS OF THE ENTIRE VIDEO.      │
+   143→   143→└─────────────────────────────────────────────────────────────────┘
+   144→   144→
+   145→   145→┌─────────────────────────────────────────────────────────────────┐
+   146→   146→│ LAW 2: THE RHYTHM OF REVELATION                       [P0]      │
+   147→   147→│                                                                 │
+   148→   148→│ A great product film is MUSIC. It has:                          │
+   149→   149→│                                                                 │
+   150→   150→│   VERSES   (problem, context)     → slower, atmospheric, tense  │
+   151→   151→│   CHORUS   (product, features)    → faster, brighter, release   │
+   152→   152→│   BRIDGE   (comparison, proof)    → shift in tone, surprise     │
+   153→   153→│   CODA     (closing CTA)          → emotional peak, resolution  │
+   154→   154→│                                                                 │
+   155→   155→│ The pace should NEVER be flat.                                  │
+   156→   156→│ It breathes. It accelerates. It pulls back. It DROPS.           │
+   157→   157→│                                                                 │
+   158→   158→│ Visual energy waveform across 4.5 minutes:                      │
+   159→   159→│                                                                 │
+   160→   160→│  ▲                                                              │
+   161→   161→│  │    ╱╲        ╱╲╱╲╱╲       ╱╲      ╱╲                       │
+   162→   162→│  │   ╱  ╲  ╱╲ ╱     ╲     ╱  ╲    ╱  ╲                      │
+   163→   163→│  │  ╱    ╲╱  ╲╱       ╲   ╱    ╲  ╱    ╲                    │
+   164→   164→│  │ ╱                  ╲ ╱      ╲╱      ╲                     │
+   165→   165→│  │╱                    ╳               ╲╱╲                   │
+   166→   166→│  └──────────────────────────────────────────▶ time             │
+   167→   167→│   S1  S2 S3   S4    S5 S6 S7 S8 S9 S10 S11 S12 S13 S14 S15   │
+   168→   168→│   void chaos cost REVEAL  features     comp  team sec  $  END  │
+   169→   169→│                                                                 │
+   170→   170→│ KEY: S4 (the reveal) is the FIRST peak.                         │
+   171→   171→│      S5-S9 (features) is the SUSTAINED energy.                  │
+   172→   172→│      S15 (the finale) is the HIGHEST peak.                      │
+   173→   173→│      S2-S3 (problem) is the VALLEY that makes peaks matter.     │
+   174→   174→│      NEVER let energy flatline between peaks.                    │
+   175→   175→└─────────────────────────────────────────────────────────────────┘
+   176→   176→
+   177→   177→┌─────────────────────────────────────────────────────────────────┐
+   178→   178→│ LAW 3: SHOW, DON'T TELL                               [P0]      │
+   179→   179→│                                                                 │
+   180→   180→│ Every claim must be VISIBLE.                                    │
+   181→   181→│                                                                 │
+   182→   182→│ Don't write "AI-powered"  → show the AI thinking               │
+   183→   183→│ Don't write "fast"        → show things moving fast             │
+   184→   184→│ Don't write "connected"   → show connections forming live       │
+   185→   185→│ Don't write "beautiful"   → make the video itself beautiful    │
+   186→   186→│                                                                 │
+   187→   187→│ THE MEDIUM IS THE MESSAGE.                                      │
+   188→   188→│ If you have to WRITE a feature benefit, you've already lost.    │
+   189→   189→└─────────────────────────────────────────────────────────────────┘
+   190→   190→
+   191→   191→┌─────────────────────────────────────────────────────────────────┐
+   192→   192→│ LAW 4: THE IMPOSSIBILITY MOMENT                       [P1]      │
+   193→   193→│                                                                 │
+   194→   194→│ Every great product film has at least one moment where the      │
+   195→   195→│ viewer thinks "How did they do that?" or "That's not possible." │
+   196→   196→│                                                                 │
+   197→   197→│ This is the moment they SHARE. The moment they REMEMBER.        │
+   198→   198→│                                                                 │
+   199→   199→│ Build toward it. Earn it. Deliver it.                           │
+   200→   200→│                                                                 │
+   201→   201→│ Examples:                                                       │
+   202→   202→│   - Knowledge graph that connects across team members auto      │
+   203→   203→│   - AI response that shows its sources with connecting lines    │
+   204→   204→│   - A visualization that grows from 1 to 100 elements in 5s    │
+   205→   205→│   - Stats that shatter like glass revealing light inside        │
+   206→   206→│   - A zoom transition that dives INTO an element into a new scene│
+   207→   207→└─────────────────────────────────────────────────────────────────┘
+   208→   208→
+   209→   209→┌─────────────────────────────────────────────────────────────────┐
+   210→   210→│ LAW 5: MAGICAL BUT CREDIBLE                           [P1]      │
+   211→   211→│                                                                 │
+   212→   212→│ The magic must serve the product, not distract from it.         │
+   213→   213→│ Every stunning visual must communicate a REAL feature.          │
+   214→   214→│                                                                 │
+   215→   215→│ Pretty without purpose = decoration.                            │
+   216→   216→│ Pretty WITH purpose = design.                                   │
+   217→   217→│                                                                 │
+   218→   218→│ The viewer should think "I want THAT" not "that's cool."       │
+   219→   219→│ "THAT" = the product. "cool" = just the video.                 │
+   220→   220→│                                                                 │
+   221→   221→│ Test: If you remove the effect, does the product suffer?        │
+   222→   222→│       If no → the effect is decoration. Remove it.              │
+   223→   223→│       If yes → the effect is design. Keep it.                   │
+   224→   224→└─────────────────────────────────────────────────────────────────┘
+   225→   225→
+   226→   226→
+   227→   227→#══════════════════════════════════════════════════════════════════
+   228→   228→#  SECTION 2: THE LOOK — VISUAL IDENTITY SYSTEM
+   229→   229→#══════════════════════════════════════════════════════════════════
+   230→   230→
+   231→   231→# ─── BACKGROUND [P0] ───────────────────────────────────────────
+   232→   232→#
+   233→   233→# Deep space black: #09090B
+   234→   234→# NOT dark gray. BLACK. But infinite, not empty.
+   235→   235→#
+   236→   236→# MANDATORY: Add at least ONE texture layer on top of black:
+   237→   237→#   a) Dot-grid pattern (1px dots, 40px spacing, primary color, 6-8% opacity)
+   238→   238→#   b) Particle field (1-3px dots drifting upward, primary color, 10-15% opacity)
+   239→   239→#   c) Subtle radial gradient (primary color at 3-5% from center)
+   240→   240→#   d) Film grain noise (2-3% opacity, animated)
+   241→   241→#
+   242→   242→# NEVER flat solid backgrounds. The background is a STAGE, not a void.
+   243→   243→
+   244→   244→# ─── COLOR [P0] ────────────────────────────────────────────────
+   245→   245→#
+   246→   246→# PRIMARY ACCENT: Pick ONE color. This is your brand.
+   247→   247→#   Used for: emphasis, highlights, CTAs, key moments, ALL "pop".
+   248→   248→#   NEVER appears flat — always gradient (lighter → base) + glow/bloom.
+   249→   249→#
+   250→   250→# SECONDARY PALETTE: 3-4 colors for data types/categories ONLY.
+   251→   251→#   NEVER used randomly. Each color = a specific meaning.
+   252→   252→#
+   253→   253→# TEXT HIERARCHY:
+   254→   254→#   Primary:   #FAFAFA (white)
+   255→   255→#   Secondary: #A1A1AA (muted gray)
+   256→   256→#   Tertiary:  #71717A (dim gray)
+   257→   257→#
+   258→   258→# SURFACES:
+   259→   259→#   Glass morphism — backdrop-filter: blur(20-24px)
+   260→   260→#   Borders: rgba(255,255,255,0.06)
+   261→   261→#   NOT flat cards. NOT solid rectangles. GLASS. DEPTH. DIMENSION.
+   262→   262→
+   263→   263→# ─── TYPOGRAPHY [P0] ──────────────────────────────────────────
+   264→   264→#
+   265→   265→# Font: Inter or equivalent geometric sans-serif (300-900 weights)
+   266→   266→#
+   267→   267→#   TYPE        WEIGHT  SIZE       TRACKING   USAGE
+   268→   268→#   ──────────  ──────  ─────────  ────────   ─────────────────
+   269→   269→#   Hero        900     80px+      -0.05em    Product name
+   270→   270→#   Headline    700-900 48-96px    -0.03em    Scene titles
+   271→   271→#   Subhead     400-500 20-28px    0          Scene descriptions
+   272→   272→#   Label       600-700 11-13px    +0.08em    Categories, badges
+   273→   273→#   Body        400     14-16px    0          Descriptions
+   274→   274→#   Stat        900     80-110px   -0.04em    Big numbers
+   275→   275→#
+   276→   276→# MINIMUM SIZES (at 1080p): Body 24px, Headline 48px.
+   277→   277→# If text can't be read on a phone, it's too small.
+   278→   278→
+   279→   279→# ─── LIGHT & SHADOW [P1] ──────────────────────────────────────
+   280→   280→#
+   281→   281→# This is the single biggest difference between amateur and pro.
+   282→   282→#
+   283→   283→# 1. CONSISTENT LIGHT SOURCE: top-left, slightly warm.
+   284→   284→#    Every shadow, every highlight follows this.
+   285→   285→#
+   286→   286→# 2. PRIMARY COLOR EMITS LIGHT.
+   287→   287→#    When a primary-colored element appears, the darkness AROUND IT
+   288→   288→#    subtly brightens. A 50-80px radius of soft primary glow.
+   289→   289→#    This makes primary elements feel LUMINOUS, not just colored.
+   290→   290→#
+   291→   291→# 3. DEPTH OF FIELD.
+   292→   292→#    Foreground = sharp. Background = subtle blur.
+   293→   293→#    This sells 3D in a 2D medium.
+   294→   294→#
+   295→   295→# 4. REFLECTIONS.
+   296→   296→#    Key UI elements: faint reflection below (8px offset, 30% opacity, blur).
+   297→   297→#    Creates "floating in space" feel.
+   298→   298→#
+   299→   299→# 5. AMBIENT OCCLUSION.
+   300→   300→#    Where elements meet surfaces: subtle dark gradient.
+   301→   301→#    Grounds objects in space.
+   302→   302→
+   303→   303→
+   304→   304→#══════════════════════════════════════════════════════════════════
+   305→   305→#  SECTION 3: THE FEEL — MOTION PHYSICS
+   306→   306→#══════════════════════════════════════════════════════════════════
+   307→   307→
+   308→   308→# ─── EASING [P0 — THE MOST IMPORTANT TECHNICAL RULE] ──────────
+   309→   309→#
+   310→   310→# Default:    cubic-bezier(0.16, 1, 0.3, 1)  — ease-out-expo
+   311→   311→#             Starts fast, decelerates smooth. APPLE'S SIGNATURE.
+   312→   312→#
+   313→   313→# Softer:     cubic-bezier(0.25, 0.46, 0.45, 0.94)  — ease-out-quart
+   314→   314→#             For gentle, warm movements.
+   315→   315→#
+   316→   316→# DRAGON RULES (instant amateur if violated):
+   317→   317→#   NEVER use linear easing on UI elements. EVER.
+   318→   318→#   NEVER use bouncy/elastic easing. This isn't a cartoon.
+   319→   319→#   NEVER use the same easing for everything. Vary intentionally.
+   320→   320→
+   321→   321→# ─── ENTER ANIMATIONS [P0] ────────────────────────────────────
+   322→   322→#
+   323→   323→# Default: scale(0.92→1.0) + opacity(0→1) + translateY(20px→0)
+   324→   324→# Duration: 0.5-0.7s with ease-out-expo
+   325→   325→#
+   326→   326→# Each element enters ONE AT A TIME or in small groups.
+   327→   327→# NEVER everything simultaneously.
+   328→   328→# NEVER an element appearing without animation.
+   329→   329→
+   330→   330→# ─── EXIT ANIMATIONS [P1] ─────────────────────────────────────
+   331→   331→#
+   332→   332→# Reverse of enter, 30% faster (0.3-0.4s).
+   333→   333→# OR: dissolve into particles for dramatic exits.
+   334→   334→# NEVER just opacity 1→0. That's a PowerPoint fade.
+   335→   335→
+   336→   336→# ─── STAGGER [P0] ─────────────────────────────────────────────
+   337→   337→#
+   338→   338→# Siblings: 0.07s delay between each.
+   339→   339→#   NOT 0.1s (too slow, feels robotic).
+   340→   340→#   NOT 0.04s (too uniform, feels mechanical).
+   341→   341→#   0.07s creates ORGANIC rhythm. Like humans speaking in turns.
+   342→   342→#
+   343→   343→# Groups: 0.15-0.25s between major groups.
+   344→   344→# Lists: 0.04s between items (fast but visible).
+   345→   345→
+   346→   346→# ─── SPRING PHYSICS [P1] ──────────────────────────────────────
+   347→   347→#
+   348→   348→# For "settling" animations (card drops, button presses, pops):
+   349→   349→#   stiffness: 300, damping: 25
+   350→   350→#   The element slightly OVERSHOOTS then settles.
+   351→   351→#   This is what makes things feel ALIVE, not programmed.
+   352→   352→
+   353→   353→# ─── AMBIENT MOTION [P0 — ZERO EXCEPTIONS] ───────────────────
+   354→   354→#
+   355→   355→# EVERY "static" frame must have AT LEAST 2 of these:
+   356→   356→#   a) Subtle particle drift (1-3px dots, upward, 10-15% opacity)
+   357→   357→#   b) Gentle glow pulse (opacity 0.3→0.6→0.3, 3-4s cycle)
+   358→   358→#   c) Slow parallax shift (background moves at 0.3x)
+   359→   359→#   d) Breathing scale (1.0→1.02→1.0, 5s cycle)
+   360→   360→#
+   361→   361→# IF A FRAME HAS ZERO MOTION FOR MORE THAN 0.5s, IT HAS FAILED.
+   362→   362→# This is non-negotiable. Dead frames = dead video.
+   363→   363→
+   364→   364→# ─── CAMERA [P1] ──────────────────────────────────────────────
+   365→   365→#
+   366→   366→# Rule of thirds: key elements on third lines, not dead center
+   367→   367→#   (unless deliberate "hero" moment like logo reveal).
+   368→   368→#
+   369→   369→# Parallax layers: background 0.3x, midground 0.6x, foreground 1.0x
+   370→   370→#   Creates REAL depth in 2D.
+   371→   371→#
+   372→   372→# Zoom transitions: zoom INTO an element, emerge into next scene.
+   373→   373→#   This is how you create INFINITE DEPTH.
+   374→   374→#   Use at least 2 zoom transitions in the video.
+   375→   375→#
+   376→   376→# Rack focus: shift focus from foreground to background.
+   377→   377→#   Cinematic. Use once or twice.
+   378→   378→#
+   379→   379→# Aspect ratio tricks: briefly pillarbox for drama, expand for release.
+   380→   380→#
+   381→   381→# NO dutch angles. This isn't a music video.
+   382→   382→# NO whip-pans. This isn't an action movie.
+   383→   383→
+   384→   384→
+   385→   385→#══════════════════════════════════════════════════════════════════
+   386→   386→#  SECTION 4: THE MAGIC — POST-PRODUCTION EFFECTS
+   387→   387→#══════════════════════════════════════════════════════════════════
+   388→   388→#
+   389→   389→# These are what separate "good" from "how is this possible."
+   390→   390→# They're ordered by impact. Implement ALL of them.
+   391→   391→
+   392→   392→# ─── BLOOM / GLOW [P0] ────────────────────────────────────────
+   393→   393→#
+   394→   394→# Every primary-colored element gets bloom:
+   395→   395→#   Soft, bright glow extending 15-30px beyond the edge.
+   396→   396→#   Glow pulses subtly (opacity 0.3→0.6→0.3, 3-4s cycles).
+   397→   397→#   NEW primary elements: bloom flashes bright (1.0) then settles (0.4, 0.8s).
+   398→   398→#
+   399→   399→# WITHOUT bloom, primary elements look like colored rectangles.
+   400→   400→# WITH bloom, they look like they're MADE OF LIGHT.
+   401→   401→# This is the single most important visual effect.
+   402→   402→
+   403→   403→# ─── PARTICLE SYSTEMS [P0] ────────────────────────────────────
+   404→   404→#
+   405→   405→# Present in EVERY SCENE. No exceptions.
+   406→   406→#
+   407→   407→# AMBIENT PARTICLES:
+   408→   408→#   Tiny (1-3px) primary-colored dots drifting upward slowly.
+   409→   409→#   Like embers. 10-15% opacity. Creates atmosphere of "alive."
+   410→   410→#
+   411→   411→# CONNECTION PARTICLES:
+   412→   412→#   When two nodes connect: 3-5 particles travel along the edge
+   413→   413→#   from source to target over 0.8s. Makes connections feel ACTIVE.
+   414→   414→#
+   415→   415→# DISSOLVE PARTICLES:
+   416→   416→#   When elements disappear: break into 20-30 particles that drift
+   417→   417→#   and fade over 1.2s. NOT "fade out." DISSOLVE.
+   418→   418→#
+   419→   419→# CELEBRATION PARTICLES:
+   420→   420→#   Milestone moments: burst of 40-50 particles from center.
+   421→   421→
+   422→   422→# ─── FILM GRAIN [P0] ──────────────────────────────────────────
+   423→   423→#
+   424→   424→# Ultra-subtle animated noise overlay at 2-3% opacity.
+   425→   425→# Across the ENTIRE video. No exceptions.
+   426→   426→#
+   427→   427→# Why:
+   428→   428→#   - Prevents color banding on dark gradients
+   429→   429→#   - Adds organic texture (digital = sterile, grain = cinematic)
+   430→   430→#   - Makes it feel like FILM, not screen recording
+   431→   431→#
+   432→   432→# If the grain is VISIBLE, it's too much. If it's ABSENT, it fails.
+   433→   433→
+   434→   434→# ─── LIGHT RAYS / GOD RAYS [P2] ───────────────────────────────
+   435→   435→#
+   436→   436→# For the BIGGEST reveal (product name/logo):
+   437→   437→#   4-6 subtle rays emanating from behind, 30% opacity, slow rotation.
+   438→   438→#
+   439→   439→# Use ONCE or TWICE in the entire video. Earned, not gratuitous.
+   440→   440→# More than 2 = cheap. Zero = missed opportunity.
+   441→   441→
+   442→   442→# ─── LENS FLARE [P2] ──────────────────────────────────────────
+   443→   443→#
+   444→   444→# EXACTLY ONE in the entire video.
+   445→   445→# At the product logo/name reveal (Scene 4).
+   446→   446→# Anamorphic horizontal streak, tinted primary, 0.6s.
+   447→   447→#
+   448→   448→# ONE makes it special. TWO makes it cheap. ZERO is fine too.
+   449→   449→# But ONE is the sweet spot.
+   450→   450→
+   451→   451→# ─── CHROMATIC ABERRATION [P2] ────────────────────────────────
+   452→   452→#
+   453→   453→# On fast-moving transitions only: 1-2px RGB channel offset.
+   454→   454→# Sells SPEED and IMPACT.
+   455→   455→#
+   456→   456→# MUST be subtle. Felt, not seen.
+   457→   457→# If you notice it consciously, it's 3x too strong.
+   458→   458→
+   459→   459→# ─── VOLUMETRIC LIGHT [P2] ────────────────────────────────────
+   460→   460→#
+   461→   461→# For "warm" scenes (morning, welcome, optimism):
+   462→   462→#   A light cone from above-left, as if sunlight through a window.
+   463→   463→#   Dust particles float in the beam.
+   464→   464→#
+   465→   465→# Use once or twice for EMOTIONAL CONTRAST against the darkness.
+   466→   466→# The contrast is what makes it powerful.
+   467→   467→
+   468→   468→# ─── SCREEN CAPTURE REALISM [P1] ──────────────────────────────
+   469→   469→#
+   470→   470→# When showing app UI, it must look REAL:
+   471→   471→#   - Realistic browser chrome (dark theme, minimal)
+   472→   472→#   - Cursor moves on SMOOTH BEZIER paths, NOT linear
+   473→   473→#   - Scroll behavior with MOMENTUM (deceleration)
+   474→   474→#   - Hover states activate as cursor passes over elements
+   475→   475→#   - Loading states and transitions between views
+   476→   476→#   - Keyboard shortcuts briefly highlighted
+   477→   477→#
+   478→   478→# If the cursor moves in a straight line, it's obviously fake.
+   479→   479→# Real humans move mice in CURVES with variable speed.
+   480→   480→
+   481→   481→
+   482→   482→#══════════════════════════════════════════════════════════════════
+   483→   483→#  SECTION 5: COMMON AI-GENERATED VIDEO MISTAKES
+   484→   484→#══════════════════════════════════════════════════════════════════
+   485→   485→#
+   486→   486→# These are mistakes that AI video generators make OVER AND OVER.
+   487→   487→# If you catch yourself doing any of these, STOP and fix it.
+   488→   488→#
+   489→   489→# 1. FLAT PACING
+   490→   490→#    Every scene has the same energy level and duration.
+   491→   491→#    FIX: Vary scene lengths. Some 10s, some 20s. Vary energy.
+   492→   492→#
+   493→   493→# 2. SIMULTANEOUS ENTRIES
+   494→   494→#    All elements in a scene appear at the same time.
+   495→   495→#    FIX: Stagger EVERYTHING. 0.07s between siblings.
+   496→   496→#
+   497→   497→# 3. LINEAR CURSOR MOVEMENT
+   498→   498→#    The cursor moves in straight lines at constant speed.
+   499→   499→#    FIX: Bezier curves. Variable speed. Hesitations. Overshoots.
+   500→   500→#
+   501→   501→# 4. NO BREATHING ROOM
+   502→   502→#    Scene after scene with no pauses. No silence. No stillness.
+   503→   503→#    FIX: After every major beat, 0.8-1.5s of calm. Let it land.
+   504→   504→#
+   505→   505→# 5. TOO MUCH TEXT
+   506→   506→#    Paragraphs of text on screen. Bullet point lists.
+   507→   507→#    FIX: Max headline + one subline per scene. That's it.
+   508→   508→#
+   509→   509→# 6. GENERIC TRANSITIONS
+   510→   510→#    Every scene transition is the same cross-dissolve.
+   511→   511→#    FIX: Mix transitions: cross-dissolve, zoom-in, slide, dissolve-to-particles.
+   512→   512→#
+   513→   513→# 7. STATIC BACKGROUNDS
+   514→   514→#    Pure black with nothing happening behind the content.
+   515→   515→#    FIX: Always particles, grid, gradient, or grain. ALWAYS.
+   516→   516→#
+   517→   517→# 8. COLOR WITHOUT GLOW
+   518→   518→#    Primary color appears as flat color, not luminous.
+   519→   519→#    FIX: Bloom on EVERY primary-colored element. No exceptions.
+   520→   520→#
+   521→   521→# 9. NO EMOTIONAL ARC
+   522→   522→#    The video is informative but doesn't make you FEEL anything.
+   523→   523→#    FIX: The problem must FRUSTRATE. The reveal must THRILL.
+   524→   524→#         The features must AMAZE. The close must INSPIRE.
+   525→   525→#
+   526→   526→# 10. WEAK ENDING
+   527→   527→#     The video just... stops. Or fades out with no punch.
+   528→   528→#     FIX: The last 10 seconds must be the MOST emotionally
+   529→   529→#          charged moment. End on a HIGH, not a fade.
+   530→   530→#
+   531→   531→# 11. NO AUDIO / SILENT VIDEO
+   532→   532→#     The MP4 has no audio track at all. Just visuals.
+   533→   533→#     FIX: Sound is 50% of the experience. Every visual event needs sound.
+   534→   534→#          Background music is MANDATORY. SFX for key moments.
+   535→   535→#          A silent video is a SCREENSAVER, not a film.
+   536→   536→#          See Section 7 for the full sound design spec.
+   537→   537→#
+   538→   538→# 12. DELIVERING HTML INSTEAD OF MP4
+   539→   539→#     The "video" is actually an HTML file with animations.
+   540→   540→#     The user is told to "open in browser and screen-record."
+   541→   541→#     FIX: HTML is the RENDER SOURCE, not the deliverable.
+   542→   542→#          Use Playwright/Puppeteer to capture video, then FFmpeg
+   543→   543→#          to encode as MP4 with audio. See Section 0 for the pipeline.
+   544→   544→#          An HTML file alone is a FAILED deliverable.
+   545→   545→
+   546→   546→
+   547→   547→#══════════════════════════════════════════════════════════════════
+   548→   548→#  SECTION 6: THE 15-SCENE BLUEPRINT
+   549→   549→#══════════════════════════════════════════════════════════════════
+   550→   550→#
+   551→   551→# This structure works for ANY product. The emotional arc is fixed.
+   552→   552→# The CONTENT adapts to your product. Follow the arc.
+   553→   553→#
+   554→   554→# Replace [brackets] with your product's specific content.
+   555→   555→# The [EMOTION] and [PURPOSE] are fixed — don't change them.
+   556→   556→#
+   557→   557→# ────────────────────────────────────────────────────────────────
+   558→   558→#  SCENE MAP (with energy levels)
+   559→   559→# ────────────────────────────────────────────────────────────────
+   560→   560→#
+   561→   561→#  #   TIME       NAME             ENERGY    PURPOSE
+   562→   562→#  ──  ─────────  ───────────────  ────────  ─────────────────────
+   563→   563→#  1   0:00-0:16  THE VOID         ▁▁▂▃▅     Hook + establish aesthetic
+   564→   564→#  2   0:16-0:36  THE CHAOS        ▃▃▄▃▂     Make them FEEL the problem
+   565→   565→#  3   0:36-0:58  THE COST         ▃▃▅▅▃     Quantify the pain with data
+   566→   566→#  4   0:58-1:18  THE REVEAL       ▅▅▇▇▇     Hero moment. Product appears.
+   567→   567→#  5   1:18-1:44  FEATURE: ALIVE   ▆▆▆▅▅     Most visual/dynamic feature
+   568→   568→#  6   1:44-2:04  FEATURE: SMART   ▅▅▆▆▅     AI/automation feature
+   569→   569→#  7   2:04-2:28  FEATURE: CHAT    ▅▅▆▆▅     Conversational/query feature
+   570→   570→#  8   2:28-2:44  FEATURE: ORG     ▅▅▅▅▅     Organization/management feature
+   571→   571→#  9   2:44-2:58  METRICS          ▅▅▆▅▅     Analytics/scores/charts
+   572→   572→#  10  2:58-3:18  COMPARISON       ▅▅▇▅▅     Why this product wins
+   573→   573→#  11  3:18-3:32  TEAM             ▅▅▆▆▅     Collaboration/multi-user
+   574→   574→#  12  3:32-3:46  TRUST            ▃▃▄▄▃     Security/architecture
+   575→   575→#  13  3:46-4:02  SOCIAL PROOF     ▃▃▄▃▃     Testimonials
+   576→   576→#  14  4:02-4:18  PRICING          ▃▃▅▅▃     Plans + CTA
+   577→   577→#  15  4:18-4:36  THE FINALE       ▅▅▇▇▉     Emotional peak. Close.
+   578→   578→#
+   579→   579→# ────────────────────────────────────────────────────────────────
+   580→   580→
+   581→   581→# ────────────────────────────────────────────────────────────────
+   582→   582→#  SCENE 1: THE VOID (0:00 – 0:16)
+   583→   583→# ────────────────────────────────────────────────────────────────
+   584→   584→#  ENERGY: ▁▁▂▃▅  (zero → rising)
+   585→   585→#  PURPOSE: Hook in 3 seconds. Create tension. Establish aesthetic.
+   586→   586→#  TRANSITION TO NEXT: Cross-dissolve
+   587→   587→# ────────────────────────────────────────────────────────────────
+   588→   588→#
+   589→   589→#  0.0s  Pure black. Film grain only. Hold 2 FULL SECONDS.
+   590→   590→#        The emptiness creates anticipation. DO NOT RUSH THIS.
+   591→   591→#
+   592→   592→#  2.0s  A single point of light in [primary color]. Center screen.
+   593→   593→#        2px. Pulses once (opacity 0.3→1.0→0.6, 1s).
+   594→   594→#        A RIPPLE RING expands outward from it and fades.
+   595→   595→#
+   596→   596→#  3.5s  The point splits into two. A connection DRAW between them —
+   597→   597→#        traveling like a spark along a wire (0.4s).
+   598→   598→#        When it reaches the second point, that point pulses.
+   599→   599→#
+   600→   600→#  4.5s  Both split again. More connections. Network grows ORGANICALLY.
+   601→   601→#        Each node: micro-ripple on appear. Each connection: spark.
+   602→   602→#        This should feel like neurons forming. Bioelectric. ALIVE.
+   603→   603→#
+   604→   604→#  7.0s  Network has ~25 nodes. Beautiful. Different category colors
+   605→   605→#        emerging. Connections cross and weave.
+   606→   606→#
+   607→   607→#  8.0s  Camera SLOWLY pushes in (zoom 1.0→1.3x over 3s).
+   608→   608→#        Parallax: background particles 0.3x, network 1.0x.
+   609→   609→#
+   610→   610→#  9.5s  Network begins to STRAIN — connections stretch, glitch:
+   611→   611→#        brief 1px position offsets, momentary opacity dips.
+   612→   612→#        Something is wrong.
+   613→   613→#
+   614→   614→# 11.0s  Network SHATTERS. Not all at once — one snap, then another,
+   615→   615→#        then cascade. Each snap = micro-flash. Nodes drift apart.
+   616→   616→#        Beautiful destruction.
+   617→   617→#
+   618→   618→# 12.5s  Near-darkness. A few orphaned nodes drift.
+   619→   619→#
+   620→   620→# 13.0s  [YOUR MANIFESTO/LINE] appears — words materializing from
+   621→   621→#        colored particles that swirl and condense, one word at a time.
+   622→   622→#        The LAST word lands with a subtle camera shake (2px, 0.1s).
+   623→   623→#
+   624→   624→# 15.0s  Below, in [primary color] with soft glow:
+   625→   625→#        [YOUR TAGLINE]
+   626→   626→#
+   627→   627→# 16.0s  Cross-dissolve to Scene 2.
+   628→   628→
+   629→   629→# ────────────────────────────────────────────────────────────────
+   630→   630→#  SCENE 2: THE CHAOS (0:16 – 0:36)
+   631→   631→# ────────────────────────────────────────────────────────────────
+   632→   632→#  ENERGY: ▃▃▄▃▂  (tense → chaotic → deflating)
+   633→   633→#  PURPOSE: Make them FEEL the problem. Not describe it. SHOW it.
+   634→   634→#  TRANSITION TO NEXT: Dissolve into particles
+   635→   635→# ────────────────────────────────────────────────────────────────
+   636→   636→#
+   637→   637→#  0.0s  Scattered fragments across viewport — glass-morphism cards
+   638→   638→#        each representing [a tool/concept in the user's scattered workflow].
+   639→   639→#        Each has icon + label. Float gently (sinusoidal, different phases).
+   640→   640→#        Beautiful individually. CHAOTIC together.
+   641→   641→#        NO connections. NO order.
+   642→   642→#
+   643→   643→#  3.0s  Fragments move FASTER. More erratic. More overlapping.
+   644→   644→#
+   645→   645→#  5.0s  Headline materializes center, pushing fragments aside:
+   646→   646→#        "Your [workflow/data/process] is scattered across [N]+ tools"
+   647→   647→#        Number in [primary color] with glow.
+   648→   648→#
+   649→   649→#  7.0s  Fragments start GLITCHING:
+   650→   650→#        - Random 2px position jumps (every 0.3s)
+   651→   651→#        - Brief opacity dips to 0.3
+   652→   652→#        - Text labels briefly corrupt
+   653→   653→#        - Connection lines flash between fragments but FAIL (20% then snap)
+   654→   654→#
+   655→   655→#  9.0s  Headline changes (old dissolves down, new rises up):
+   656→   656→#        "None of them talk to each other."
+   657→   657→#        Hits harder because we SAW the connection attempts fail.
+   658→   658→#
+   659→   659→# 11.0s  Everything FREEZES. Then fragments slowly shrink and dim,
+   660→   660→#        converging toward center.
+   661→   661→#
+   662→   662→# 13.0s  Just before meeting, they DISSOLVE into particles
+   663→   663→#        (each card → 15-20 embers drifting upward and fading).
+   664→   664→#
+   665→   665→# 14.0s  Beat of silence. Cross-dissolve to Scene 3.
+   666→   666→
+   667→   667→# ────────────────────────────────────────────────────────────────
+   668→   668→#  SCENE 3: THE COST (0:36 – 0:58)
+   669→   669→# ────────────────────────────────────────────────────────────────
+   670→   670→#  ENERGY: ▃▃▅▅▃  (heavy → impactful → settling)
+   671→   671→#  PURPOSE: Quantify the pain. Make it undeniable with DATA.
+   672→   672→#  TRANSITION TO NEXT: Glass shatter into particles
+   673→   673→# ────────────────────────────────────────────────────────────────
+   674→   674→#
+   675→   675→#  0.0s  Dark screen. Subtle particles drifting upward (lost things).
+   676→   676→#
+   677→   677→#  1.5s  STAT 1: Giant number counter 0→[N] over 2s.
+   678→   678→#        ENORMOUS — fills ~40% of screen height.
+   679→   679→#        [Primary] gradient + bloom. Each digit change = screen pulse.
+   680→   680→#        Below: [stat label] in muted text.
+   681→   681→#
+   682→   682→#  3.5s  Hold 0.8s. Stat drifts to left third, shrinks to 60%.
+   683→   683→#
+   684→   684→#  4.3s  STAT 2: Counter 0→[N]% over 2s. Same treatment.
+   685→   685→#        Below: [stat label].
+   686→   686→#
+   687→   687→#  6.3s  Hold 0.8s. Stat drifts to right third.
+   688→   688→#
+   689→   689→#  7.1s  STAT 3: Counter $0→$[N]M over 2.5s.
+   690→   690→#        Currency symbol first, then numbers roll, suffix last
+   691→   691→#        with subtle camera shake.
+   692→   692→#        Below: [stat label].
+   693→   693→#
+   694→   694→#  9.6s  All three stats visible simultaneously (left/center/right).
+   695→   695→#        They pulse ONCE together — shared heartbeat.
+   696→   696→#
+   697→   697→# 10.5s  Stats CRACK — fracture lines (like breaking glass).
+   698→   698→#        Through the cracks, [primary]-colored light glows behind.
+   699→   699→#
+   700→   700→# 11.5s  Stats SHATTER. Glass-shard particle explosion.
+   701→   701→#        40-50 shards per number, reflecting colored light.
+   702→   702→#        Shards tumble and fade.
+   703→   703→#
+   704→   704→# 12.5s  Black. Cross-dissolve to Scene 4.
+   705→   705→
+   706→   706→# ────────────────────────────────────────────────────────────────
+   707→   707→#  SCENE 4: THE REVEAL (0:58 – 1:18)
+   708→   708→# ────────────────────────────────────────────────────────────────
+   709→   709→#  ENERGY: ▅▅▇▇▇  (building → THE PEAK)
+   710→   710→#  PURPOSE: The hero moment. The product appears. UNFORGETTABLE.
+   711→   711→#  TRANSITION TO NEXT: Zoom INTO the logo
+   712→   712→# ────────────────────────────────────────────────────────────────
+   713→   713→#
+   714→   714→#  0.0s  Black. A HORIZONTAL STREAK of [primary] light SWEEPS
+   715→   715→#        across screen (0.6s). Band of light ~100px tall,
+   716→   716→#        bright core, soft falloff, like a scanner.
+   717→   717→#
+   718→   718→#  0.6s  As the sweep passes, it REVEALS a subtle dot-grid pattern
+   719→   719→#        (1px dots, 40px spacing, [primary] color, 8% opacity).
+   720→   720→#        They were always there. The light just showed them.
+   721→   721→#
+   722→   722→#  1.5s  Grid pulses once (dots brighten to 20%, 0.3s, return to 8%).
+   723→   723→#
+   724→   724→#  2.0s  [PRODUCT LOGO] forms, center screen:
+   725→   725→#
+   726→   726→#        Step 1 (0.5s): Main shape fades in from center outward.
+   727→   727→#        Ripple becoming solid. Inner gradient for 3D curvature.
+   728→   728→#
+   729→   729→#        Step 2 (1.0s): Internal details DRAW (SVG stroke-dashoffset).
+   730→   730→#        Left side first (0.5s), then right (0.5s).
+   731→   731→#        Each stroke has a bright "leading edge" at the drawing tip.
+   732→   732→#
+   733→   733→#        Step 3 (0.4s): Accent details pop in with SPRING PHYSICS.
+   734→   734→#        Overshoot to 1.15x, settle to 1.0x. Staggered 0.07s.
+   735→   735→#        Each pop emits a tiny ripple.
+   736→   736→#
+   737→   737→#        Step 4 (0.3s): Connecting elements draw themselves.
+   738→   738→#        Sparks travel along completed paths.
+   739→   739→#
+   740→   740→#  4.2s  Logo pulses: scale 1.0→1.06→1.0, glow brightens→dims.
+   741→   741→#        THE ONE LENS FLARE: anamorphic horizontal streak,
+   742→   742→#        tinted [primary], 0.6s.
+   743→   743→#
+   744→   744→#  5.0s  [PRODUCT NAME] appears via REVEAL:
+   745→   745→#        A bright line sweeps across text left→right.
+   746→   746→#        Letters REVEALED behind it.
+   747→   747→#        Huge text (80px+), weight 900, tracking -0.05em, white.
+   748→   748→#
+   749→   749→#  6.5s  Let the name BREATHE. Its presence is commanding.
+   750→   750→#
+   751→   751→#  7.0s  Subtitle types character by character (0.03s each):
+   752→   752→#        [YOUR TAGLINE]
+   753→   753→#        Tiny [primary] cursor blinks at end, blinks twice more, fades.
+   754→   754→#
+   755→   755→#  9.0s  Logo pulses again. Grid brightens. Everything alive.
+   756→   756→#
+   757→   757→# 10.0s  Beat of stillness. Then camera PUSHES IN toward logo
+   758→   758→#        (zoom 1.0→2.5x over 1.5s). We pass THROUGH it
+   759→   759→#        and emerge into Scene 5. ZOOM TRANSITION.
+   760→   760→
+   761→   761→# ────────────────────────────────────────────────────────────────
+   762→   762→#  SCENE 5: FEATURE — THE "ALIVE" FEATURE (1:18 – 1:44)
+   763→   763→# ────────────────────────────────────────────────────────────────
+   764→   764→#  ENERGY: ▆▆▆▅▅  (high sustained)
+   765→   765→#  PURPOSE: Most visual/dynamic feature. The "wow" feature.
+   766→   766→#  TRANSITION TO NEXT: Zoom INTO an element
+   767→   767→# ────────────────────────────────────────────────────────────────
+   768→   768→#
+   769→   769→#  WHAT THIS IS FOR YOUR PRODUCT:
+   770→   770→#    Knowledge app  → knowledge graph forming
+   771→   771→#    Design tool    → canvas elements connecting
+   772→   772→#    Data tool      → visualizations drawing themselves
+   773→   773→#    Dev tool       → code flowing and compiling
+   774→   774→#    AI tool        → neural network activating
+   775→   775→#    Finance tool   → transaction flows visualizing
+   776→   776→#    Any app        → the most VISUALLY DYNAMIC thing it does
+   777→   777→#
+   778→   778→#  0.0s  Emerge from zoom into vast dark space.
+   779→   779→#        Single [primary]-colored node/element, center. Pulses.
+   780→   780→#
+   781→   781→#  1.0s  Second element appears (spring). Connection draws (0.3s),
+   782→   782→#        spark traveling. When complete, particles travel along edge.
+   783→   783→#
+   784→   784→#  2.0s  More elements — each ripple + spring, different category
+   785→   785→#        colors. Connections with traveling particles. GROWING.
+   786→   786→#
+   787→   787→#  3.5s  Growth accelerates — 2-3 at a time. Camera pulls back.
+   788→   788→#        Parallax depth.
+   789→   789→#
+   790→   790→#  6.0s  ~30+ elements, ~40+ connections. Fills ~60% of screen.
+   791→   791→#
+   792→   792→#  7.0s  CURSOR appears — white dot with [primary] trail.
+   793→   793→#        Smooth bezier path. Elements grow (1.0→1.1x) as it nears.
+   794→   794→#        Cursor moves with PURPOSE.
+   795→   795→#
+   796→   796→#  8.5s  Cursor hovers an element. PREVIEW CARD pops out:
+   797→   797→#        Glass morphism. Title, type badge, preview, metadata.
+   798→   798→#        Spring physics, overshoot, settle.
+   799→   799→#
+   800→   800→# 10.0s  Cursor moves on. Card closes. Visualization pulses.
+   801→   801→#
+   802→   802→# 11.5s  Headline top-center: "[Feature line] — [key word] in [primary]"
+   803→   803→#        Doesn't cover the visualization (top 15% only).
+   804→   804→#        Subtext below headline.
+   805→   805→#
+   806→   806→# 14.0s  Zoom INTO an element (1.0→8x, 1.5s).
+   807→   807→#        Pass through → emerge into Scene 6.
+   808→   808→
+   809→   809→# ────────────────────────────────────────────────────────────────
+   810→   810→#  SCENE 6: FEATURE — THE "SMART" FEATURE (1:44 – 2:04)
+   811→   811→# ────────────────────────────────────────────────────────────────
+   812→   812→#  ENERGY: ▅▅▆▆▅  (warm → bright → settling)
+   813→   813→#  PURPOSE: AI/automation/intelligence. Something that thinks for you.
+   814→   814→#  TRANSITION TO NEXT: Card slides to side, making room for Scene 7
+   815→   815→# ────────────────────────────────────────────────────────────────
+   816→   816→#
+   817→   817→#  WHAT THIS IS FOR YOUR PRODUCT:
+   818→   818→#    Knowledge app  → morning digest / daily summary
+   819→   819→#    Design tool    → AI layout suggestions
+   820→   820→#    Data tool      → automated insights / anomaly detection
+   821→   821→#    Dev tool       → AI code review / auto-fix
+   822→   822→#    Productivity   → smart summaries / priority inbox
+   823→   823→#    Finance tool   → spending insights / forecast
+   824→   824→#    Any app        → something the AI does AUTOMATICALLY
+   825→   825→#
+   826→   826→#  0.0s  Warm glow rises from bottom (volumetric light, amber/golden).
+   827→   827→#        Light cone as if sunlight through window.
+   828→   828→#        Dust particles float in the beam.
+   829→   829→#
+   830→   830→#  2.0s  Headline: "[Feature line] — [key word] in [primary]"
+   831→   831→#        Text appears in the lit area, light REVEALS it.
+   832→   832→#
+   833→   833→#  3.5s  Card/interface materializes — rising from below, spring physics.
+   834→   834→#        Glass-dark card containing:
+   835→   835→#        - Header label (uppercase, small, [primary] color)
+   836→   836→#        - AI-generated content appearing LINE BY LINE
+   837→   837→#          (gradient bars filling, OR typing animation)
+   838→   838→#        - 2-3 insight/action cards sliding in from right,
+   839→   839→#          staggered, each with colored left-border accent
+   840→   840→#        - Optional: progress bars, status badges, mood indicators
+   841→   841→#
+   842→   842→#  7.5s  Subtext: "[Feature description]"
+   843→   843→#
+   844→   844→#  9.0s  Card gently scales down and moves to one side,
+   845→   845→#        making room for Scene 7. SMOOTH TRANSITION —
+   846→   846→#        both features briefly COEXIST. Continuity.
+   847→   847→
+   848→   848→# ────────────────────────────────────────────────────────────────
+   849→   849→#  SCENE 7: FEATURE — THE "CONVERSATIONAL" FEATURE (2:04 – 2:28)
+   850→   850→# ────────────────────────────────────────────────────────────────
+   851→   851→#  ENERGY: ▅▅▆▆▅  (building → magical → satisfied)
+   852→   852→#  PURPOSE: Product responds to user input in real-time.
+   853→   853→#  TRANSITION TO NEXT: Both features scale down, cross-dissolve
+   854→   854→# ────────────────────────────────────────────────────────────────
+   855→   855→#
+   856→   856→#  WHAT THIS IS FOR YOUR PRODUCT:
+   857→   857→#    Knowledge app  → AI chat with sources
+   858→   858→#    Design tool    → natural language to design
+   859→   859→#    Data tool      → query interface / SQL from text
+   860→   860→#    Dev tool       → AI pair programming
+   861→   861→#    Any app        → command palette / search
+   862→   862→#
+   863→   863→#  0.0s  Scene 6's card on one side. Conversational UI slides in.
+   864→   864→#
+   865→   865→#  1.0s  Headline: "Ask anything. [Product] knows." — [Product] in [primary]
+   866→   866→#
+   867→   867→#  2.0s  User message bubble slides from right:
+   868→   868→#        [primary] gradient background, white text, spring physics.
+   869→   869→#
+   870→   870→#  3.5s  AI response appears — dark surface. Text streams WORD BY WORD
+   871→   871→#        (0.035s per word) with blinking [primary] cursor.
+   872→   872→#        Key terms appear in [primary] then settle to white with underline.
+   873→   873→#        This shows the AI pulls from SPECIFIC knowledge, not generic.
+   874→   874→#
+   875→   875→#  7.0s  Text completes. Cursor blinks twice, disappears.
+   876→   876→#        SOURCE/REFERENCE badges pop in below (staggered 0.1s):
+   877→   877→#        small pills with category colors, each with tiny pulse.
+   878→   878→#        Optional: connection lines from badges to text portions.
+   879→   879→#
+   880→   880→#  9.0s  Feedback icon appears (thumbs up, checkmark). Subtle pulse.
+   881→   881→#        Subtext: "[Feature description]"
+   882→   882→#
+   883→   883→# 11.0s  Both features scale down. Cross-dissolve to Scene 8.
+   884→   884→
+   885→   885→# ────────────────────────────────────────────────────────────────
+   886→   886→#  SCENE 8: FEATURE — THE "ORGANIZATION" FEATURE (2:28 – 2:44)
+   887→   887→# ────────────────────────────────────────────────────────────────
+   888→   888→#  ENERGY: ▅▅▅▅▅  (steady, satisfying)
+   889→   889→#  PURPOSE: How the product organizes/manages content.
+   890→   890→#  TRANSITION TO NEXT: Cross-dissolve
+   891→   891→# ────────────────────────────────────────────────────────────────
+   892→   892→#
+   893→   893→#  WHAT THIS IS FOR YOUR PRODUCT:
+   894→   894→#    Knowledge app  → typed notes grid
+   895→   895→#    Design tool    → asset library / component library
+   896→   896→#    Data tool      → dataset manager
+   897→   897→#    Dev tool       → project files / repo view
+   898→   898→#    Any app        → categorized content / collections
+   899→   899→#
+   900→   900→#  0.0s  Headline: "Capture everything. [Key promise]" — promise in [primary]
+   901→   901→#        Subtext: "[N] types, smart categorization, instant search."
+   902→   902→#
+   903→   903→#  2.0s  Grid of cards appears. Each does a 3D FLIP reveal.
+   904→   904→#        Face-down → rotates on Y-axis → reveals content.
+   905→   905→#        Staggered 0.1s. Perspective 800px.
+   906→   906→#
+   907→   907→#        Each card: colored left border (3px), type badge (uppercase, 11px),
+   908→   908→#        title (14px bold), preview (12px muted), tag pill.
+   909→   909→#        Different types = different colors.
+   910→   910→#
+   911→   911→#  5.0s  Tags gently float upward 5px, settle (spring).
+   912→   912→#
+   913→   913→#  6.0s  Search bar appears. Cursor types query (0.08s/char).
+   914→   914→#        Grid FILTERS IN REAL-TIME: non-matching dim (30% opacity, 0.95x),
+   915→   915→#        matching brighten (1.02x). Spring transitions.
+   916→   916→#
+   917→   917→#  8.0s  Search clears. All cards spring back to full visibility.
+   918→   918→#
+   919→   919→#  9.5s  Cross-dissolve to Scene 9.
+   920→   920→
+   921→   921→# ────────────────────────────────────────────────────────────────
+   922→   922→#  SCENE 9: ANALYTICS / METRICS (2:44 – 2:58)
+   923→   923→# ────────────────────────────────────────────────────────────────
+   924→   924→#  ENERGY: ▅▅▆▅▅  (building → satisfying peak → settling)
+   925→   925→#  PURPOSE: Measurable results. Scores, charts, numbers.
+   926→   926→#  TRANSITION TO NEXT: Cross-dissolve
+   927→   927→# ────────────────────────────────────────────────────────────────
+   928→   928→#
+   929→   929→#  0.0s  Headline: "Measure [what matters]" — in [primary]
+   930→   930→#
+   931→   931→#  1.5s  CIRCULAR GAUGE, center-left:
+   932→   932→#        Arc draws clockwise to ~87% over 2s.
+   933→   933→#        Leading edge has bright glow.
+   934→   934→#        Inside: number 0→[N] counts up (2s), weight 900, 56px,
+   935→   935→#        [primary] gradient text.
+   936→   936→#
+   937→   937→#  3.5s  3-4 PROGRESS BARS, center-right (staggered 0.12s):
+   938→   938→#        Each: label (uppercase, 11px), bar (6px, rounded), value counting up.
+   939→   939→#        Different colors per bar.
+   940→   940→#
+   941→   941→#  6.0s  Mini AREA CHART draws itself below:
+   942→   942→#        7-day sparkline. Line draws left→right (1s),
+   943→   943→#        gradient fill fades in (0.5s). [Primary] gradient.
+   944→   944→#
+   945→   945→#  7.5s  Subtext: "[Metric description]"
+   946→   946→#
+   947→   947→#  8.5s  Cross-dissolve to Scene 10.
+   948→   948→
+   949→   949→# ────────────────────────────────────────────────────────────────
+   950→   950→#  SCENE 10: COMPARISON (2:58 – 3:18)
+   951→   951→# ────────────────────────────────────────────────────────────────
+   952→   952→#  ENERGY: ▅▅▇▅▅  (confident → THE MIC DROP → settling)
+   953→   953→#  PURPOSE: Why THIS product wins. Objectively. Undeniably.
+   954→   954→#  TRANSITION TO NEXT: Cross-dissolve
+   955→   955→# ────────────────────────────────────────────────────────────────
+   956→   956→#
+   957→   957→#  0.0s  Headline: "Not just another [competitor category]"
+   958→   958→#        — category in [primary] with subtle glow.
+   959→   959→#
+   960→   960→#  1.5s  Comparison table RISES from bottom.
+   961→   961→#        Glass-dark, subtle grid lines.
+   962→   962→#        Columns: [Feature] | [Your Product] | [Competitor 1] | [Competitor 2]
+   963→   963→#
+   964→   964→#  3.0s  Header row first — your product's header in [primary] + glow,
+   965→   965→#        others muted white.
+   966→   966→#
+   967→   967→#  3.5s  Feature rows stagger in (0.25s each), sliding from right:
+   968→   968→#        Your product: ✓ in [primary] (spring pop + glow per checkmark)
+   969→   969→#        Competitors: ✗ (dim) or △ (orange, partial)
+   970→   970→#        Pick 5-6 features where you WIN.
+   971→   971→#
+   972→   972→#  6.0s  Your product's column gets [primary] background gradient
+   973→   973→#        sweeping down (0.5s). Other columns dim to 0.7 opacity.
+   974→   974→#
+   975→   975→#  7.5s  Your column header scales up (1.0→1.15→1.0) + bright glow.
+   976→   976→#        THE MIC DROP MOMENT.
+   977→   977→#
+   978→   978→#  8.5s  Hold. Cross-dissolve to Scene 11.
+   979→   979→
+   980→   980→# ────────────────────────────────────────────────────────────────
+   981→   981→#  SCENE 11: TEAM / COLLABORATION (3:18 – 3:32)
+   982→   982→# ────────────────────────────────────────────────────────────────
+   983→   983→#  ENERGY: ▅▅▆▆▅  (multiplying → magical → awe)
+   984→   984→#  PURPOSE: Product for groups. Multiple users. Shared value.
+   985→   985→#  TRANSITION TO NEXT: Cross-dissolve
+   986→   986→# ────────────────────────────────────────────────────────────────
+   987→   987→#
+   988→   988→#  0.0s  Scene 5's visualization reappears — LARGER, more complex.
+   989→   989→#        Pulsing with life.
+   990→   990→#
+   991→   991→#  1.0s  THREE cursors appear simultaneously — different colors,
+   992→   992→#        different team members. Independent smooth bezier paths.
+   993→   993→#
+   994→   994→#  3.0s  Each cursor creates new elements where it "clicks".
+   995→   995→#        MAGIC: connections auto-form between DIFFERENT team members'
+   996→   996→#        elements. The product connects work ACROSS people.
+   997→   997→#
+   998→   998→#  5.0s  Cross-team connections get SPECIAL treatment:
+   999→   999→#        BRIGHT spark travels along, both elements pulse.
+  1000→  1000→#        This is the IMPOSSIBILITY MOMENT.
+  1001→  1001→#
+  1002→  1002→#  7.0s  Headline: "Built for [teams]" — key word in [primary]
+  1003→  1003→#        Subtext: "[Collaboration promise]"
+  1004→  1004→#
+  1005→  1005→#  8.5s  Visualization zooms OUT to show scale. Awe.
+  1006→  1006→#        Cross-dissolve to Scene 12.
+  1007→  1007→
+  1008→  1008→# ────────────────────────────────────────────────────────────────
+  1009→  1009→#  SCENE 12: TRUST / SECURITY / ARCHITECTURE (3:32 – 3:46)
+  1010→  1010→# ────────────────────────────────────────────────────────────────
+  1011→  1011→#  ENERGY: ▃▃▄▄▃  (solid → confident → grounded)
+  1012→  1012→#  PURPOSE: Serious. Reliable. Trustworthy. Enterprise-grade.
+  1013→  1013→#  TRANSITION TO NEXT: Cross-dissolve
+  1014→  1014→# ────────────────────────────────────────────────────────────────
+  1015→  1015→#
+  1016→  1016→#  0.0s  Stylized GLOBE assembles from wireframe circles.
+  1017→  1017→#        3 orbital rings at different angles, low-opacity [primary].
+  1018→  1018→#        Region dots. Slow rotation.
+  1019→  1019→#
+  1020→  1020→#  2.0s  SHIELD/LOCK draws itself (SVG stroke, [primary], 0.8s).
+  1021→  1021→#        Checkmark/key draws after outer shape.
+  1022→  1022→#        Fills with subtle [primary] gradient.
+  1023→  1023→#
+  1024→  1024→#  3.5s  Data channels animate around globe — thin lines tracing
+  1025→  1025→#        between region dots. Dots pulse when reached.
+  1026→  1026→#
+  1027→  1027→#  5.0s  Headline: "[Trust headline]. [Key promise] in [primary]"
+  1028→  1028→#        Subtext: "[Architecture description]"
+  1029→  1029→#        Optional: technology name in [primary] with glow.
+  1030→  1030→#
+  1031→  1031→#  7.0s  Hold. Cross-dissolve to Scene 13.
+  1032→  1032→
+  1033→  1033→# ────────────────────────────────────────────────────────────────
+  1034→  1034→#  SCENE 13: SOCIAL PROOF (3:46 – 4:02)
+  1035→  1035→# ────────────────────────────────────────────────────────────────
+  1036→  1036→#  ENERGY: ▃▃▄▃▃  (warm → trusting → validated)
+  1037→  1037→#  PURPOSE: Real people, real results. Peer validation.
+  1038→  1038→#  TRANSITION TO NEXT: Cross-dissolve
+  1039→  1039→# ────────────────────────────────────────────────────────────────
+  1040→  1040→#
+  1041→  1041→#  0.0s  3 testimonial cards slide in from alternating sides
+  1042→  1042→#        (left, right, left), staggered 0.3s:
+  1043→  1043→#        - Glass-dark, avatar circle with initials, name + role
+  1044→  1044→#        - Stars pop one by one (0.08s each): ★★★★★
+  1045→  1045→#        - Italic quote. Key metrics in [primary] color.
+  1046→  1046→#        - Different accent colors per card border.
+  1047→  1047→#
+  1048→  1048→#  6.0s  Row of company/team names fades in below:
+  1049→  1049→#        Muted text, spaced evenly.
+  1050→  1050→#
+  1051→  1051→#  8.0s  Hold. Cross-dissolve to Scene 14.
+  1052→  1052→
+  1053→  1053→# ────────────────────────────────────────────────────────────────
+  1054→  1054→#  SCENE 14: PRICING (4:02 – 4:18)
+  1055→  1055→# ────────────────────────────────────────────────────────────────
+  1056→  1056→#  ENERGY: ▃▃▅▅▃  (simple → clear → confident)
+  1057→  1057→#  PURPOSE: Accessible. No friction. Easy decision.
+  1058→  1058→#  TRANSITION TO NEXT: Cross-dissolve
+  1059→  1059→# ────────────────────────────────────────────────────────────────
+  1060→  1060→#
+  1061→  1061→#  0.0s  Headline: "Simple, transparent [pricing]" — in [primary]
+  1062→  1062→#
+  1063→  1063→#  1.5s  3 pricing cards RISE from below (translateY 60→0, spring,
+  1064→  1064→#        staggered 0.12s):
+  1065→  1065→#
+  1066→  1066→#        FREE/STARTER:
+  1067→  1067→#          Basic features, secondary CTA button
+  1068→  1068→#
+  1069→  1069→#        PRO/STANDARD (FEATURED):
+  1070→  1070→#          [Primary] border + GLOW, "Most Popular" badge,
+  1071→  1071→#          [primary] CTA button, best value features
+  1072→  1072→#
+  1073→  1073→#        ENTERPRISE/CUSTOM:
+  1074→  1074→#          All features, secondary CTA button
+  1075→  1075→#
+  1076→  1076→#  4.0s  Feature items stagger in per card (0.04s each).
+  1077→  1077→#
+  1078→  1078→#  6.0s  Featured card CTA pulses with glow (0.3→0.7→0.3, 2s).
+  1079→  1079→#
+  1080→  1080→#  8.0s  Hold. Cross-dissolve to Scene 15.
+  1081→  1081→
+  1082→  1082→# ────────────────────────────────────────────────────────────────
+  1083→  1083→#  SCENE 15: THE FINALE (4:18 – 4:36)
+  1084→  1084→# ────────────────────────────────────────────────────────────────
+  1085→  1085→#  ENERGY: ▅▅▇▇▉  (building → THE HIGHEST PEAK)
+  1086→  1086→#  PURPOSE: Seal the deal. Make them ACT. Emotional climax.
+  1087→  1087→#  TRANSITION: Slow fade to black (2s)
+  1088→  1088→# ────────────────────────────────────────────────────────────────
+  1089→  1089→#
+  1090→  1090→#  0.0s  Core visualization fills ENTIRE screen — massive, pulsing.
+  1091→  1091→#        Particles drift. Sparks travel. ALIVE. EVERYWHERE.
+  1092→  1092→#        This is the CULMINATION of everything shown.
+  1093→  1093→#
+  1094→  1094→#  2.0s  Visualization dims to 25% — luminous background.
+  1095→  1095→#        Product logo fades in center (80px, completed from Scene 4).
+  1096→  1096→#
+  1097→  1097→#  3.5s  First line fades up (0.8s), large, white:
+  1098→  1098→#        "Stop [core pain point]"
+  1099→  1099→#        Hold 1.5s.
+  1100→  1100→#
+  1101→  1101→#  5.0s  Second line fades up below, SAME SIZE, in [PRIMARY] WITH GLOW:
+  1102→  1102→#        "Start [core action / product name]"
+  1103→  1103→#        The glow expands, briefly brightening the background.
+  1104→  1104→#        THIS IS THE EMOTIONAL PEAK OF THE ENTIRE VIDEO.
+  1105→  1105→#
+  1106→  1106→#  6.5s  Large CTA button materializes (spring physics):
+  1107→  1107→#        "Get started free →"
+  1108→  1108→#        [Primary] gradient, white text, 18px.
+  1109→  1109→#        Shadow creates pool of [primary] light beneath it.
+  1110→  1110→#
+  1111→  1111→#  7.5s  Below: [product URL] in muted text, 20px.
+  1112→  1112→#
+  1113→  1113→#  8.0s  CTA pulses: glow 100% → settles (1s).
+  1114→  1114→#        Logo pulses in sync: scale 1.0→1.1→1.0 with glow.
+  1115→  1115→#
+  1116→  1116→#  9.0s  HOLD. Breathe. Background pulses gently.
+  1117→  1117→#        [Primary] glow creates warm, inviting atmosphere.
+  1118→  1118→#        This is the moment of DECISION.
+  1119→  1119→#
+  1120→  1120→# 11.0s  SLOW fade to black — 2 FULL SECONDS.
+  1121→  1121→#        [Primary] glow is the LAST thing visible.
+  1122→  1122→#        It lingers like an afterimage.
+  1123→  1123→#
+  1124→  1124→# 13.0s  Black. Film grain only. Hold 1s.
+  1125→  1125→#
+  1126→  1126→# 14.0s  A single [primary]-colored dot appears center, 0.5s.
+  1127→  1127→#        The SAME dot from Scene 1. Then fades.
+  1128→  1128→#        Full circle. The end.
+  1129→  1129→
+  1130→  1130→
+  1131→  1131→#══════════════════════════════════════════════════════════════════
+  1132→  1132→#  SECTION 7: SOUND DESIGN — [P0] MANDATORY, NOT OPTIONAL
+  1133→  1133→#══════════════════════════════════════════════════════════════════
+  1134→  1134→#
+  1135→  1135→#  ┌─────────────────────────────────────────────────────────────────┐
+  1136→  1136→#  │  A VIDEO WITHOUT SOUND IS NOT A FILM. IT IS A SCREENSAVER.    │
+  1137→  1137→#  │  SOUND IS [P0]. NO EXCEPTIONS. NO "IF AUDIO IS SUPPORTED."    │
+  1138→  1138→#  │  EVERY MP4 MUST CONTAIN AN AUDIO TRACK.                        │
+  1139→  1139→#  └─────────────────────────────────────────────────────────────────┘
+  1140→  1140→#
+  1141→  1141→#  WHY THIS MATTERS:
+  1142→  1142→#    - Apple never ships a silent keynote. NEVER.
+  1143→  1143→#    - Sound creates 50% of the emotional impact.
+  1144→  1144→#    - A "beautiful silent video" is an oxymoron at this quality level.
+  1145→  1145→#    - The reveal without a bass swell is just a logo appearing.
+  1146→  1146→#    - The shatter without glass sound is just shapes moving.
+  1147→  1147→#    - WITHOUT SOUND, EVERYTHING IN SECTIONS 1-5 LOSES 50% OF ITS POWER.
+  1148→  1148→#
+  1149→  1149→#  SOUND IS NOT A POST-PRODUCTION AFTERTHOUGHT.
+  1150→  1150→#  SOUND IS A FIRST-CLASS CITIZEN OF THE FILM.
+  1151→  1151→#  PLAN FOR IT FROM THE START.
+  1152→  1152→#
+  1153→  1153→#  ─── HOW TO ADD AUDIO — TECHNICAL APPROACHES ─────────────────
+  1154→  1154→#
+  1155→  1155→#  APPROACH A: Web Audio API in the HTML (RECOMMENDED for Playwright)
+  1156→  1156→#    - Build the audio directly into the HTML animation using
+  1157→  1157→#      AudioContext, OscillatorNode, GainNode, etc.
+  1158→  1158→#    - Synchronize sound events with GSAP timeline callbacks.
+  1159→  1159→#    - Playwright's recordVideo captures the audio alongside video.
+  1160→  1160→#    - This is the cleanest approach — one file, sync is automatic.
+  1161→  1161→#
+  1162→  1162→#  APPROACH B: Generate audio file separately, merge with FFmpeg
+  1163→  1163→#    - Create a music/soundtrack file (MP3/WAV) using:
+  1164→  1164→#      * TTS API for narration
+  1165→  1165→#      * Music generation API for background score
+  1166→  1166→#      * Pre-recorded sound effects library
+  1167→  1167→#    - Merge with video using FFmpeg:
+  1168→  1168→#      ffmpeg -i video.webm -i soundtrack.mp3 \
+  1169→  1169→#             -c:v libx264 -c:a aac -shortest \
+  1170→  1170→#             product-launch.mp4
+  1171→  1171→#
+  1172→  1172→#  APPROACH C: Combine both
+  1173→  1173→#    - Web Audio API for sound effects (synced to animation)
+  1174→  1174→#    - Background music as separate file, mixed in with FFmpeg
+  1175→  1175→#    - ffmpeg -i video_with_sfx.webm -i music.mp3 \
+  1176→  1176→#             -filter_complex "[1:a]volume=0.3[music];[0:a][music]amix=inputs=2:duration=longest[a]" \
+  1177→  1177→#             -map 0:v -map "[a]" -c:v libx264 -c:a aac \
+  1178→  1178→#             product-launch.mp4
+  1179→  1179→#
+  1180→  1180→#  ─── SOUND EFFECTS [P0] ──────────────────────────────────────
+  1181→  1181→#
+  1182→  1182→#  EVERY major visual event MUST have a corresponding sound.
+  1183→  1183→#  This is the audio-visual contract. Break it = break immersion.
+  1184→  1184→#
+  1185→  1185→#  ┌────────────────────────┬───────────────────────────────────┐
+  1186→  1186→#  │ Moment                 │ Sound                             │
+  1187→  1187→#  ├────────────────────────┼───────────────────────────────────┤
+  1188→  1188→#  │ Scene 1 dot pulse      │ Soft bass hit, reverb tail        │
+  1189→  1189→#  │ Connections forming    │ Tiny crystalline "tink" each      │
+  1190→  1190→#  │ Network shattering     │ Glass break, reversed, lowpassed  │
+  1191→  1191→#  │ Stat counters          │ Subtle digital tick per increment │
+  1192→  1192→#  │ Product logo reveal    │ Deep resonant bass swell          │
+  1193→  1193→#  │ Product name reveal    │ Subtle impact + reverb            │
+  1194→  1194→#  │ Text typing            │ Soft key clicks, very muted       │
+  1195→  1195→#  │ AI streaming           │ Gentle electronic hum             │
+  1196→  1196→#  │ Cursor hover           │ Micro "whoosh" (barely audible)   │
+  1197→  1197→#  │ Card pop-in            │ Soft "thud" with spring tail      │
+  1198→  1198→#  │ Particle bursts        │ Gentle sparkle/shimmer            │
+  1199→  1199→#  │ Transitions (zoom)     │ Subtle rushing air / whoosh       │
+  1200→  1200→#  │ Comparison checkmarks  │ Satisfying "ding"                 │
+  1201→  1201→#  │ Stats shattering       │ Glass crack + deep impact         │
+  1202→  1202→#  │ Closing CTA            │ Uplifting chord, major key        │
+  1203→  1203→#  │ Final dot fade         │ Soft reverb tail, fading to silence│
+  1204→  1204→#  └────────────────────────┴───────────────────────────────────┘
+  1205→  1205→#
+  1206→  1206→#  Sound effect principles:
+  1207→  1207→#    - SOUNDS ARE FELT, NOT HEARD. If any SFX is jarring, it's 3x too loud.
+  1208→  1208→#    - Every SFX should be at 30-50% of what you think it should be.
+  1209→  1209→#    - Layer: background music (loudest) → SFX (medium) → silence (rest).
+  1210→  1210→#    - NEVER use stock "corporate" sounds. Generate or curate carefully.
+  1211→  1211→#
+  1212→  1212→#  ─── BACKGROUND MUSIC [P0] ───────────────────────────────────
+  1213→  1213→#
+  1214→  1214→#  The music IS the emotional arc. It's not decoration.
+  1215→  1215→#  The energy waveform in Section 1 applies to MUSIC too.
+  1216→  1216→#
+  1217→  1217→#  Ambient electronic. Arc follows the energy waveform:
+  1218→  1218→#    - Scenes 1-3: Minimal, dark, tension-building. Low drones.
+  1219→  1219→#                   Sparse piano. Reverb-heavy. BREATHING.
+  1220→  1220→#    - Scene 4:    Bass swell → hopeful emergence. First melody.
+  1221→  1221→#                   THE TRANSFORMATION MOMENT in audio form.
+  1222→  1222→#    - Scenes 5-9: Warm, rhythmic, optimistic. Full arrangement.
+  1223→  1223→#                   Percussion enters. Energy sustained.
+  1224→  1224→#    - Scene 10:   Drops to minimal. Comparison = serious moment.
+  1225→  1225→#                   Music pulls back. Let the data speak.
+  1226→  1226→#    - Scenes 11-14: Building again. Energy rising. Layers added.
+  1227→  1227→#    - Scene 15:   FULL POWER. Emotional peak. All instruments.
+  1228→  1228→#                   Then 2s of silence. Then the final note.
+  1229→  1229→#                   The silence before the end is CRUCIAL.
+  1230→  1230→#
+  1231→  1231→#  Reference artists: Jon Hopkins, Olafur Arnalds, Nils Frahm,
+  1232→  1232→#  Max Richter, Hania Rani.
+  1233→  1233→#
+  1234→  1234→#  Music mixing rules:
+  1235→  1235→#    - Music should be at -20dB to -15dB during narration/text
+  1236→  1236→#    - Music can swell to -10dB during pure visual moments
+  1237→  1237→#    - Music DUCKS when SFX play (sidechain compression)
+  1238→  1238→#    - The mix should feel like ONE unified sound, not layers
+  1239→  1239→#
+  1240→  1240→#  ─── OPTIONAL: VOICEOVER / NARRATION [P2] ────────────────────
+  1241→  1241→#
+  1242→  1242→#  If you choose to add voiceover:
+  1243→  1243→#    - Use TTS with a calm, confident, slightly warm voice
+  1244→  1244→#    - Speak ONLY during Scene 4 (reveal) and Scene 15 (finale)
+  1245→  1245→#    - 3-5 words maximum. e.g. "This changes everything."
+  1246→  1246→#    - Volume: below music. The voice SUPPORTS the visuals, not vice versa.
+  1247→  1247→#    - NEVER narrate the entire video. This isn't a tutorial.
+  1248→  1248→
+  1249→  1249→
+  1250→  1250→#══════════════════════════════════════════════════════════════════
+  1251→  1251→#  SECTION 8: THE ABSOLUTE DON'TS
+  1252→  1252→#══════════════════════════════════════════════════════════════════
+  1253→  1253→#
+  1254→  1254→#  [P0] NEVER deliver HTML instead of MP4. The output is an MP4 FILE.
+  1255→  1255→#  [P0] NEVER deliver a silent video. Audio track is MANDATORY.
+  1256→  1256→#  [P0] NEVER use hard cuts between scenes. ALWAYS smooth transitions.
+  1257→  1257→#  [P0] NEVER have a static frame with zero motion for >0.5s.
+  1258→  1258→#  [P0] NEVER use linear easing on UI elements. EVER.
+  1259→  1259→#  [P0] NEVER show primary color without gradient + glow.
+  1260→  1260→#  [P0] NEVER use flat solid backgrounds. Always textured.
+  1261→  1261→#  [P0] NEVER rush the opening 3 seconds.
+  1262→  1262→#  [P0] NEVER end without a powerful closing CTA.
+  1263→  1263→#
+  1264→  1264→#  [P1] NEVER use text-heavy slides (max: headline + one subline).
+  1265→  1265→#  [P1] NEVER use fonts below 24px body / 48px headlines.
+  1266→  1266→#  [P1] NEVER use bouncy/elastic easing (not a cartoon).
+  1267→  1267→#  [P1] NEVER animate everything simultaneously (stagger always).
+  1268→  1268→#  [P1] NEVER use emoji in the video.
+  1269→  1269→#  [P1] NEVER use generic stock footage.
+  1270→  1270→#  [P1] NEVER use clip-art or cheap icons.
+  1271→  1271→#  [P1] NEVER use corporate jargon in text (speak human).
+  1272→  1272→#  [P1] NEVER use the same transition for every scene change.
+  1273→  1273→#  [P1] NEVER show a cursor moving in a straight line.
+  1274→  1274→#
+  1275→  1275→#  [P2] NEVER use more than ONE lens flare in the entire video.
+  1276→  1276→#  [P2] NEVER use dutch angles (not a music video).
+  1277→  1277→#  [P2] NEVER use chromatic aberration noticeably (felt, not seen).
+  1278→  1278→#  [P2] NEVER use more than 2 god ray moments.
+  1279→  1279→
+  1280→  1280→
+  1281→  1281→#══════════════════════════════════════════════════════════════════
+  1282→  1282→#  SECTION 9: FINAL QUALITY CHECKLIST
+  1283→  1283→#══════════════════════════════════════════════════════════════════
+  1284→  1284→#
+  1285→  1285→#  Before delivering, verify EVERY item. No exceptions.
+  1286→  1286→#
+  1287→  1287→#  [P0] MUST-HAVE (missing = failure):
+  1288→  1288→#  □ Output is an MP4 file (not HTML, not WebM, not GIF).
+  1289→  1289→#  □ MP4 contains both video AND audio tracks.
+  1290→  1290→#  □ Audio track has background music (not silent).
+  1291→  1291→#  □ Audio track has sound effects for major visual events.
+  1292→  1292→#  □ Video is minimum 3 minutes (180s). Target: 4:18+.
+  1293→  1293→#  □ Resolution is 1920×1080 (Full HD).
+  1294→  1294→#  □ Every frame has at least ONE ambient animation.
+  1295→  1295→#  □ All scene transitions are smooth (no hard cuts).
+  1296→  1296→#  □ Primary accent color is consistent (never random colors).
+  1297→  1297→#  □ All text readable at 1080p on phone.
+  1298→  1298→#  □ All number counters animate from 0 (never static).
+  1299→  1299→#  □ The pacing has VARIETY (not all fast, not all slow).
+  1300→  1300→#  □ Opening 3 seconds are visually arresting.
+  1301→  1301→#  □ Closing 10 seconds create emotional response.
+  1302→  1302→#  □ Film grain overlay present throughout (2-3%).
+  1303→  1303→#  □ Bloom/glow on ALL primary-colored elements.
+  1304→  1304→#  □ Particle systems active in every scene.
+  1305→  1305→#
+  1306→  1306→#  [P1] CRITICAL (missing = noticeable gap):
+  1307→  1307→#  □ At least 3 "impossibility moments".
+  1308→  1308→#  □ At least 2 zoom transitions (spatial depth).
+  1309→  1309→#  □ Product logo reveal has the ONE lens flare.
+  1310→  1310→#  □ Comparison scene makes product look undeniable.
+  1311→  1311→#  □ Scene 4 (reveal) is the emotional FIRST peak.
+  1312→  1312→#  □ Scene 15 (finale) is the emotional HIGHEST peak.
+  1313→  1313→#  □ Sound design matches visual energy (music arc = visual arc).
+  1314→  1314→#  □ Cursor movements are bezier curves, never linear.
+  1315→  1315→#  □ At least 2 different transition types used.
+  1316→  1316→#
+  1317→  1317→#  [P2] ELEVATION (having = legendary):
+  1318→  1318→#  □ Volumetric light used once or twice.
+  1319→  1319→#  □ Chromatic aberration on fast transitions.
+  1320→  1320→#  □ Rack focus used once.
+  1321→  1321→#  □ Aspect ratio trick (pillarbox) used once.
+  1322→  1322→#  □ Reflections on key UI elements.
+  1323→  1323→
+  1324→  1324→
+  1325→  1325→#══════════════════════════════════════════════════════════════════
+  1326→  1326→#  SECTION 10: THE NORTH STAR
+  1327→  1327→#══════════════════════════════════════════════════════════════════
+  1328→  1328→#
+  1329→  1329→#  When someone watches this video, they should feel ONE thing:
+  1330→  1330→#
+  1331→  1331→#           "This is the future."
+  1332→  1332→#
+  1333→  1333→#  Not "that's a nice app."
+  1334→  1334→#  Not "cool animations."
+  1335→  1335→#  Not "good design."
+  1336→  1336→#
+  1337→  1337→#  "This is the FUTURE."
+  1338→  1338→#
+  1339→  1339→#  If they don't feel that, the video has failed.
+  1340→  1340→#  Every single decision — every easing curve, every particle,
+  1341→  1341→#  every transition, every word — serves this one feeling.
+  1342→  1342→#
+  1343→  1343→#  The problem must FRUSTRATE them.
+  1344→  1344→#  The reveal must THRILL them.
+  1345→  1345→#  The features must AMAZE them.
+  1346→  1346→#  The comparison must CONVINCE them.
+  1347→  1347→#  The close must INSPIRE them.
+  1348→  1348→#
+  1349→  1349→#  Make them believe it.
+  1350→  1350→
