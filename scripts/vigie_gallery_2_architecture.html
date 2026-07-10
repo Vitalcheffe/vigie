@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Vigie — Gallery 2: Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1500px; height: 1000px; overflow: hidden; font-family: 'Inter', sans-serif; }
+
+  .arch-banner {
+    width: 1500px;
+    height: 1000px;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1d21 50%, #0a0a0a 100%);
+    position: relative;
+    padding: 70px 80px;
+    color: #fff;
+    overflow: hidden;
+  }
+
+  /* Grid background */
+  .arch-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 107, 53, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 107, 53, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+  }
+
+  .arch-header {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 50px;
+  }
+
+  .arch-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #FF6B35;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .arch-eyebrow::before {
+    content: '';
+    width: 40px;
+    height: 2px;
+    background: #FF6B35;
+  }
+
+  .arch-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 56px;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .arch-subtitle {
+    font-size: 20px;
+    font-weight: 400;
+    color: #ababad;
+    margin-top: 12px;
+    max-width: 800px;
+    line-height: 1.4;
+  }
+
+  .arch-diagram {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .layer {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .layer-label {
+    width: 140px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #ababad;
+    text-align: right;
+  }
+
+  .layer-content {
+    flex: 1;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .box {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    border-radius: 12px;
+    padding: 20px 28px;
+    min-width: 200px;
+    position: relative;
+  }
+
+  .box.primary {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, rgba(255, 182, 39, 0.1) 100%);
+    border-color: #FF6B35;
+  }
+
+  .box-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .box-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #ababad;
+    letter-spacing: 0.05em;
+  }
+
+  .box-icon {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 900;
+  }
+
+  .icon-slack { background: #4A154B; color: #ecb22e; }
+  .icon-python { background: #306998; color: #ffd43b; }
+  .icon-mcp { background: #FF6B35; color: white; }
+  .icon-llm { background: #2eb67d; color: white; }
+  .icon-vlm { background: #e01e5a; color: white; }
+  .icon-rts { background: #FFB627; color: #1a1d21; }
+  .icon-railway { background: #fff; color: #0a0a0a; }
+
+  .arrow-down {
+    margin-left: 140px;
+    margin-left: calc(140px + 30px);
+    width: 2px;
+    height: 30px;
+    background: linear-gradient(180deg, #FF6B35 0%, transparent 100%);
+    position: relative;
+  }
+  .arrow-down::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: -4px;
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 8px solid #FF6B35;
+  }
+
+  .stats-row {
+    position: absolute;
+    bottom: 60px;
+    left: 80px;
+    right: 80px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 2;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 36px;
+    font-weight: 900;
+    color: #FF6B35;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: #ababad;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .corner-tag {
+    position: absolute;
+    top: 60px;
+    right: 80px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #ababad;
+    letter-spacing: 0.2em;
+    z-index: 2;
+  }
+</style>
+</head>
+<body>
+<div class="arch-banner">
+
+  <div class="corner-tag">VIGIE · ARCHITECTURE</div>
+
+  <div class="arch-header">
+    <div class="arch-eyebrow">SYSTEM DESIGN</div>
+    <div class="arch-title">How Vigie works</div>
+    <div class="arch-subtitle">Slack-first crisis orchestration with Z-AI LLM classification, VLM dashboard monitoring, and MCP-served beneficiary registry.</div>
+  </div>
+
+  <div class="arch-diagram">
+
+    <div class="layer">
+      <div class="layer-label">FRONTEND</div>
+      <div class="layer-content">
+        <div class="box primary">
+          <div class="box-icon icon-slack">S</div>
+          <div class="box-title">Slack Workspace</div>
+          <div class="box-sub">#cellule-crise · 3 sectors · DMs</div>
+        </div>
+        <div class="box">
+          <div class="box-icon icon-slack">BK</div>
+          <div class="box-title">Block Kit UI</div>
+          <div class="box-sub">7 builders · modals · canvas</div>
+        </div>
+        <div class="box">
+          <div class="box-icon icon-slack">AH</div>
+          <div class="box-title">App Home</div>
+          <div class="box-sub">live dashboard · KPIs</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-down"></div>
+
+    <div class="layer">
+      <div class="layer-label">BOT CORE</div>
+      <div class="layer-content">
+        <div class="box primary">
+          <div class="box-icon icon-python">Py</div>
+          <div class="box-title">Vigie Bot</div>
+          <div class="box-sub">Slack Bolt · async · Python</div>
+        </div>
+        <div class="box">
+          <div class="box-icon icon-python">Or</div>
+          <div class="box-title">Orchestrator</div>
+          <div class="box-sub">escalations · reports · state</div>
+        </div>
+        <div class="box">
+          <div class="box-icon icon-python">Sc</div>
+          <div class="box-title">Scheduler</div>
+          <div class="box-sub">APScheduler · 5 cron jobs</div>
+        </div>
+        <div class="box">
+          <div class="box-icon icon-python">Au</div>
+          <div class="box-title">Audit Log</div>
+          <div class="box-sub">1000 entries · ring buffer</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-down"></div>
+
+    <div class="layer">
+      <div class="layer-label">AI LAYER</div>
+      <div class="layer-content">
+        <div class="box primary">
+          <div class="box-icon icon-llm">AI</div>
+          <div class="box-title">Z-AI LLM</div>
+          <div class="box-sub">glm-4.6v · L0→L3 classify</div>
+        </div>
+        <div class="box primary">
+          <div class="box-icon icon-vlm">VL</div>
+          <div class="box-title">Z-AI VLM</div>
+          <div class="box-sub">dashboard screenshot analysis</div>
+        </div>
+        <div class="box">
+          <div class="box-icon icon-rts">RT</div>
+          <div class="box-title">RTS</div>
+          <div class="box-sub">health directives · cached</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-down"></div>
+
+    <div class="layer">
+      <div class="layer-label">DATA</div>
+      <div class="layer-content">
+        <div class="box primary">
+          <div class="box-icon icon-mcp">MC</div>
+          <div class="box-title">MCP Server</div>
+          <div class="box-sub">50 elders · 14 volunteers · 12 sectors</div>
+        </div>
+        <div class="box">
+          <div class="box-icon icon-python">St</div>
+          <div class="box-title">State Store</div>
+          <div class="box-sub">check-ins · escalations · coverage</div>
+        </div>
+        <div class="box">
+          <div class="box-icon icon-railway">Rw</div>
+          <div class="box-title">Railway</div>
+          <div class="box-sub">production deploy</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-item">
+      <div class="stat-value">152</div>
+      <div class="stat-label">Tests passing</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">7</div>
+      <div class="stat-label">Block Kit builders</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">5</div>
+      <div class="stat-label">Scheduled jobs</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">4</div>
+      <div class="stat-label">AI models (LLM+VLM)</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">1000</div>
+      <div class="stat-label">Audit log entries</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">&lt;7min</div>
+      <div class="stat-label">SAMU escalation</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

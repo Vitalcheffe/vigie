@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Vigie — Gallery 4: VLM Dashboard Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1500px; height: 1000px; overflow: hidden; font-family: 'Inter', sans-serif; }
+
+  .vlm-banner {
+    width: 1500px;
+    height: 1000px;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1d21 100%);
+    color: #fff;
+    display: grid;
+    grid-template-columns: 1fr 600px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vlm-banner::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    left: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(224, 30, 90, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* LEFT — the screenshot being analyzed */
+  .screenshot-side {
+    padding: 60px 40px 60px 70px;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #e01e5a;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 40px;
+    height: 2px;
+    background: #e01e5a;
+  }
+
+  .title {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+  }
+
+  .subtitle {
+    font-size: 18px;
+    color: #ababad;
+    line-height: 1.5;
+    margin-bottom: 40px;
+    max-width: 600px;
+  }
+
+  .screenshot-mock {
+    background: #19171d;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #2e3235;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    position: relative;
+    transform: perspective(1000px) rotateY(-5deg);
+    max-width: 700px;
+  }
+
+  .screenshot-mock::before {
+    content: '';
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #e01e5a 0%, #FF6B35 50%, #FFB627 100%);
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  .mock-header {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .mock-kpi {
+    flex: 1;
+    background: #2e3235;
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .mock-kpi-label { font-size: 9px; color: #ababad; text-transform: uppercase; letter-spacing: 0.1em; }
+  .mock-kpi-value { font-size: 22px; font-weight: 900; color: #fff; margin-top: 4px; }
+  .mock-kpi-value.red { color: #e01e5a; }
+  .mock-kpi-value.green { color: #2eb67d; }
+
+  .mock-table {
+    background: #2e3235;
+    border-radius: 8px;
+    padding: 12px;
+  }
+
+  .mock-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid #3a3f44;
+    font-size: 11px;
+  }
+  .mock-row:last-child { border-bottom: none; }
+  .mock-name { color: #d1d2d3; }
+  .mock-level { font-weight: 700; padding: 1px 6px; border-radius: 3px; font-size: 9px; }
+  .mock-l0 { background: #2eb67d; color: white; }
+  .mock-l1 { background: #FFB627; color: #1a1d21; }
+  .mock-l2 { background: #e8762a; color: white; }
+  .mock-l3 { background: #e01e5a; color: white; }
+
+  /* Scan line animation effect */
+  .scan-line {
+    position: absolute;
+    left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent 0%, #e01e5a 50%, transparent 100%);
+    box-shadow: 0 0 20px #e01e5a;
+    animation: scan 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes scan {
+    0%, 100% { top: 10%; opacity: 0.8; }
+    50% { top: 90%; opacity: 0.4; }
+  }
+
+  /* RIGHT — the extracted JSON + health verdict */
+  .json-side {
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 1px solid #2e3235;
+    padding: 60px 60px 60px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .health-verdict {
+    background: linear-gradient(135deg, #e01e5a 0%, #8B1A1A 100%);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 10px 40px rgba(224, 30, 90, 0.4);
+  }
+
+  .verdict-icon {
+    width: 56px;
+    height: 56px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+  }
+
+  .verdict-text { flex: 1; }
+  .verdict-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 4px;
+  }
+  .verdict-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: white;
+    line-height: 1;
+  }
+
+  .json-block {
+    background: #0d0d0d;
+    border: 1px solid #2e3235;
+    border-radius: 12px;
+    padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #d1d2d3;
+  }
+
+  .json-key { color: #FF6B35; }
+  .json-string { color: #2eb67d; }
+  .json-number { color: #FFB627; }
+  .json-bool { color: #e01e5a; }
+  .json-punct { color: #ababad; }
+
+  .json-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #ababad;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .json-dot { width: 10px; height: 10px; border-radius: 50; }
+  .json-dot.red { background: #e01e5a; }
+  .json-dot.yellow { background: #FFB627; }
+  .json-dot.green { background: #2eb67d; }
+
+  .latency-tag {
+    position: absolute;
+    top: 60px;
+    right: 60px;
+    background: rgba(46, 182, 125, 0.15);
+    border: 1px solid #2eb67d;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: #2eb67d;
+  }
+
+  .corner-tag {
+    position: absolute;
+    top: 30px;
+    left: 70px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #ababad;
+    letter-spacing: 0.2em;
+    z-index: 3;
+  }
+</style>
+</head>
+<body>
+<div class="vlm-banner">
+
+  <div class="corner-tag">VIGIE · Z-AI VLM</div>
+
+  <!-- LEFT: Screenshot being analyzed -->
+  <div class="screenshot-side">
+    <div class="eyebrow">VISION LANGUAGE MODEL</div>
+    <div class="title">A second pair of eyes</div>
+    <div class="subtitle">Every 15 minutes, Vigie captures the dashboard screenshot and runs Z-AI vision analysis to catch anomalies invisible to text classifiers.</div>
+
+    <div class="screenshot-mock">
+      <div class="scan-line"></div>
+
+      <div class="mock-header">
+        <div class="mock-kpi">
+          <div class="mock-kpi-label">Coverage</div>
+          <div class="mock-kpi-value green">94%</div>
+        </div>
+        <div class="mock-kpi">
+          <div class="mock-kpi-label">Latency</div>
+          <div class="mock-kpi-value">7min</div>
+        </div>
+        <div class="mock-kpi">
+          <div class="mock-kpi-label">L2</div>
+          <div class="mock-kpi-value">2</div>
+        </div>
+        <div class="mock-kpi">
+          <div class="mock-kpi-label">L3</div>
+          <div class="mock-kpi-value red">1</div>
+        </div>
+      </div>
+
+      <div class="mock-table">
+        <div class="mock-row">
+          <span class="mock-name">B018 Monique B. · 91</span>
+          <span class="mock-level mock-l3">L3</span>
+        </div>
+        <div class="mock-row">
+          <span class="mock-name">B007 Lucien P. · 85</span>
+          <span class="mock-level mock-l2">L2</span>
+        </div>
+        <div class="mock-row">
+          <span class="mock-name">B012 Henri L. · 89</span>
+          <span class="mock-level mock-l2">L2</span>
+        </div>
+        <div class="mock-row">
+          <span class="mock-name">B023 Hélène M. · 82</span>
+          <span class="mock-level mock-l1">L1</span>
+        </div>
+        <div class="mock-row">
+          <span class="mock-name">B015 Jeanne D. · 83</span>
+          <span class="mock-level mock-l0">L0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Extracted JSON + health verdict -->
+  <div class="json-side">
+
+    <div class="latency-tag">⚡ 15.8s latency</div>
+
+    <div class="health-verdict">
+      <div class="verdict-icon">⚠</div>
+      <div class="verdict-text">
+        <div class="verdict-label">Dashboard health</div>
+        <div class="verdict-value">ALERT</div>
+      </div>
+    </div>
+
+    <div class="json-header">
+      <span class="json-dot red"></span>
+      <span class="json-dot yellow"></span>
+      <span class="json-dot green"></span>
+      <span>extracted_fields.json</span>
+    </div>
+
+    <div class="json-block">
+<span class="json-punct">{</span>
+  <span class="json-key">"COVERAGE_PERCENT"</span><span class="json-punct">:</span> <span class="json-number">94</span><span class="json-punct">,</span>
+  <span class="json-key">"AVG_LATENCY_MIN"</span><span class="json-punct">:</span> <span class="json-number">7</span><span class="json-punct">,</span>
+  <span class="json-key">"L2_COUNT"</span><span class="json-punct">:</span> <span class="json-number">2</span><span class="json-punct">,</span>
+  <span class="json-key">"L3_COUNT"</span><span class="json-punct">:</span> <span class="json-number">1</span><span class="json-punct">,</span>
+  <span class="json-key">"CRISIS_MSG_COUNT"</span><span class="json-punct">:</span> <span class="json-number">43</span><span class="json-punct">,</span>
+  <span class="json-key">"TOP_SECTORS"</span><span class="json-punct">:</span> <span class="json-punct">[</span>
+    <span class="json-string">"secteur-1"</span><span class="json-punct">,</span>
+    <span class="json-string">"secteur-2"</span><span class="json-punct">,</span>
+    <span class="json-string">"secteur-3"</span>
+  <span class="json-punct">]</span><span class="json-punct">,</span>
+  <span class="json-key">"ACTIVE_ALERTS"</span><span class="json-punct">:</span> <span class="json-punct">[</span>
+    <span class="json-punct">{</span><span class="json-key">"name"</span><span class="json-punct">:</span> <span class="json-string">"Monique B."</span><span class="json-punct">,</span> <span class="json-key">"level"</span><span class="json-punct">:</span> <span class="json-string">"L3"</span><span class="json-punct">}</span>
+  <span class="json-punct">]</span><span class="json-punct">,</span>
+  <span class="json-key">"DASHBOARD_HEALTH"</span><span class="json-punct">:</span> <span class="json-string">"ALERT"</span><span class="json-punct">,</span>
+  <span class="json-key">"SUMMARY"</span><span class="json-punct">:</span> <span class="json-string">"Cellule active, 1 cas critique SAMU en cours."</span>
+<span class="json-punct">}</span>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

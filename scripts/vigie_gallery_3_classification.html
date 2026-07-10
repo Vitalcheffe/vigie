@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Vigie — Gallery 3: Z-AI Classification</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1500px; height: 1000px; overflow: hidden; font-family: 'Inter', sans-serif; }
+
+  .classify-banner {
+    width: 1500px;
+    height: 1000px;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1d21 100%);
+    color: #fff;
+    padding: 70px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .classify-banner::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(46, 182, 125, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 50px;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #2eb67d;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 40px;
+    height: 2px;
+    background: #2eb67d;
+  }
+
+  .title {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .subtitle {
+    font-size: 20px;
+    color: #ababad;
+    margin-top: 16px;
+    max-width: 900px;
+    line-height: 1.4;
+  }
+
+  .levels-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .level-card {
+    border-radius: 16px;
+    padding: 28px 24px;
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .level-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+  }
+
+  .l0-card { background: linear-gradient(180deg, rgba(46, 182, 125, 0.15) 0%, rgba(46, 182, 125, 0.05) 100%); border: 1px solid rgba(46, 182, 125, 0.3); }
+  .l0-card::before { background: #2eb67d; }
+
+  .l1-card { background: linear-gradient(180deg, rgba(255, 182, 39, 0.15) 0%, rgba(255, 182, 39, 0.05) 100%); border: 1px solid rgba(255, 182, 39, 0.3); }
+  .l1-card::before { background: #FFB627; }
+
+  .l2-card { background: linear-gradient(180deg, rgba(232, 118, 42, 0.15) 0%, rgba(232, 118, 42, 0.05) 100%); border: 1px solid rgba(232, 118, 42, 0.3); }
+  .l2-card::before { background: #e8762a; }
+
+  .l3-card { background: linear-gradient(180deg, rgba(224, 30, 90, 0.15) 0%, rgba(224, 30, 90, 0.05) 100%); border: 1px solid rgba(224, 30, 90, 0.3); }
+  .l3-card::before { background: #e01e5a; }
+
+  .level-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    align-self: flex-start;
+  }
+  .l0-card .level-badge { background: #2eb67d; color: white; }
+  .l1-card .level-badge { background: #FFB627; color: #1a1d21; }
+  .l2-card .level-badge { background: #e8762a; color: white; }
+  .l3-card .level-badge { background: #e01e5a; color: white; }
+
+  .level-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .l0-card .level-title { color: #2eb67d; }
+  .l1-card .level-title { color: #FFB627; }
+  .l2-card .level-title { color: #e8762a; }
+  .l3-card .level-title { color: #e01e5a; }
+
+  .level-desc {
+    font-size: 14px;
+    color: #d1d2d3;
+    margin-bottom: 24px;
+    line-height: 1.4;
+    min-height: 60px;
+  }
+
+  .example-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #ababad;
+    margin-bottom: 10px;
+  }
+
+  .example-quote {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-style: italic;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #d1d2d3;
+    margin-bottom: 20px;
+    border-left: 3px solid;
+    flex: 1;
+  }
+  .l0-card .example-quote { border-color: #2eb67d; }
+  .l1-card .example-quote { border-color: #FFB627; }
+  .l2-card .example-quote { border-color: #e8762a; }
+  .l3-card .example-quote { border-color: #e01e5a; }
+
+  .action-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #ababad;
+    margin-bottom: 8px;
+  }
+
+  .action {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .action-icon {
+    display: inline-block;
+    margin-right: 6px;
+  }
+
+  .corner-tag {
+    position: absolute;
+    top: 60px;
+    right: 80px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #ababad;
+    letter-spacing: 0.2em;
+    z-index: 2;
+  }
+
+  .footer-stats {
+    position: absolute;
+    bottom: 50px;
+    left: 80px;
+    right: 80px;
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    z-index: 2;
+  }
+
+  .fstat {
+    text-align: center;
+  }
+
+  .fstat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 900;
+    color: #2eb67d;
+  }
+
+  .fstat-label {
+    font-size: 11px;
+    color: #ababad;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="classify-banner">
+
+  <div class="corner-tag">Z-AI · LLM CLASSIFICATION</div>
+
+  <div class="header">
+    <div class="eyebrow">4-LEVEL SEVERITY TRIAGE</div>
+    <div class="title">From volunteer note to SAMU</div>
+    <div class="subtitle">Z-AI's LLM doesn't just match keywords — it understands context. Each volunteer check-in is classified into one of 4 levels, with automatic escalation to the right responder.</div>
+  </div>
+
+  <div class="levels-grid">
+
+    <div class="level-card l0-card">
+      <span class="level-badge">L0 · OK</span>
+      <div class="level-title">Doing well</div>
+      <div class="level-desc">Everything is fine. No action needed.</div>
+      <div class="example-label">Volunteer note</div>
+      <div class="example-quote">"Hélène va bien aujourd'hui. On a discuté 10 minutes, elle a bu son thé. Pas de souci particulier."</div>
+      <div class="action-label">Action</div>
+      <div class="action"><span class="action-icon">✓</span>Log only</div>
+    </div>
+
+    <div class="level-card l1-card">
+      <span class="level-badge">L1 · WEAK SIGNAL</span>
+      <div class="level-title">Fatigued</div>
+      <div class="level-desc">Tired, medication request, mild concern. Monitor.</div>
+      <div class="example-label">Volunteer note</div>
+      <div class="example-quote">"Elle sonnait fatiguée, m'a demandé si elle devait prendre ses pilules pour la tension. Un peu seule ces jours-ci."</div>
+      <div class="action-label">Action</div>
+      <div class="action"><span class="action-icon">℞</span>Pharmacy lookup</div>
+    </div>
+
+    <div class="level-card l2-card">
+      <span class="level-badge">L2 · COORDINATOR</span>
+      <div class="level-title">No answer</div>
+      <div class="level-desc">Unreachable, confused, fall risk. Coordinator steps in.</div>
+      <div class="example-label">Volunteer note</div>
+      <div class="example-quote">"Pas de réponse à la porte. Ça fait 10 minutes que je sonne. La voisine dit qu'elle ne l'a pas vue aujourd'hui."</div>
+      <div class="action-label">Action</div>
+      <div class="action"><span class="action-icon">⚠</span>Coordinator dispatched</div>
+    </div>
+
+    <div class="level-card l3-card">
+      <span class="level-badge">L3 · SAMU</span>
+      <div class="level-title">Critical</div>
+      <div class="level-desc">Unconscious, on the ground, not breathing. SAMU-15 now.</div>
+      <div class="example-label">Volunteer note</div>
+      <div class="example-quote">"Je l'ai trouvée au sol, inconsciente. Elle ne répond pas. Je reste avec elle en attendant les secours."</div>
+      <div class="action-label">Action</div>
+      <div class="action"><span class="action-icon">🚨</span>SAMU-15 auto-triggered</div>
+    </div>
+
+  </div>
+
+  <div class="footer-stats">
+    <div class="fstat">
+      <div class="fstat-value">&lt;7min</div>
+      <div class="fstat-label">avg escalation</div>
+    </div>
+    <div class="fstat">
+      <div class="fstat-value">JSON</div>
+      <div class="fstat-label">structured output</div>
+    </div>
+    <div class="fstat">
+      <div class="fstat-value">fallback</div>
+      <div class="fstat-label">keyword classifier</div>
+    </div>
+    <div class="fstat">
+      <div class="fstat-value">100%</div>
+      <div class="fstat-label">audit logged</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

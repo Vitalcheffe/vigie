@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Vigie — Gallery 1: Slack Workspace</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1500px; height: 1000px; overflow: hidden; font-family: 'Lato', sans-serif; }
+
+  .slack-window {
+    width: 1500px;
+    height: 1000px;
+    display: grid;
+    grid-template-columns: 260px 1fr 380px;
+    background: #1a1d21;
+    color: #d1d2d3;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    background: #19171d;
+    border-right: 1px solid #2e3235;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .workspace-header {
+    padding: 16px 18px;
+    border-bottom: 1px solid #2e3235;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .workspace-icon {
+    width: 32px; height: 32px;
+    background: #FF6B35;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 16px; color: white;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .workspace-name {
+    font-size: 16px; font-weight: 700; color: #fff;
+  }
+  .workspace-user { font-size: 11px; color: #ababad; margin-top: 1px; }
+
+  .channels-section {
+    padding: 16px 12px;
+    flex: 1; overflow: hidden;
+  }
+
+  .section-label {
+    font-size: 11px; font-weight: 700; color: #ababad;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 8px 6px;
+  }
+
+  .channel {
+    padding: 5px 8px; border-radius: 4px;
+    font-size: 14px; color: #d1d2d3;
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 1px;
+  }
+
+  .channel.active { background: #1164A3; color: #fff; }
+  .channel .hash { color: #ababad; font-weight: 700; }
+  .channel.active .hash { color: #fff; }
+
+  .badge {
+    margin-left: auto;
+    background: #e01e5a;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+  }
+
+  .channel.active .badge { background: #fff; color: #1164A3; }
+
+  .red-dot {
+    margin-left: auto;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #e01e5a;
+  }
+
+  .dm-section { margin-top: 16px; }
+  .dm-bot {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 8px; border-radius: 4px;
+    background: rgba(255, 107, 53, 0.15);
+    border-left: 3px solid #FF6B35;
+  }
+  .dm-bot-avatar {
+    width: 28px; height: 28px;
+    background: #FF6B35;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; color: white; font-size: 13px;
+  }
+  .dm-bot-name { font-size: 14px; color: #fff; font-weight: 600; }
+
+  /* Main channel */
+  .main-channel {
+    display: flex; flex-direction: column;
+    background: #1a1d21;
+  }
+
+  .channel-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid #2e3235;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .channel-header .hash { color: #ababad; font-size: 18px; font-weight: 700; }
+  .channel-title { font-size: 16px; font-weight: 700; color: #fff; }
+  .channel-meta { font-size: 12px; color: #ababad; margin-left: 8px; }
+  .channel-divider { color: #2e3235; margin: 0 6px; }
+  .channel-desc { font-size: 13px; color: #ababad; }
+
+  .alert-banner {
+    background: linear-gradient(90deg, #e01e5a 0%, #c4154a 100%);
+    padding: 12px 20px;
+    display: flex; align-items: center; gap: 12px;
+    color: white;
+  }
+
+  .alert-icon {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .alert-text { flex: 1; }
+  .alert-title { font-size: 14px; font-weight: 700; }
+  .alert-sub { font-size: 12px; opacity: 0.9; margin-top: 2px; }
+
+  .messages { flex: 1; padding: 16px 20px; overflow: hidden; }
+
+  .message { margin-bottom: 16px; display: flex; gap: 12px; }
+  .avatar {
+    width: 36px; height: 36px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: white; font-size: 13px;
+  }
+  .avatar-vigie { background: #FF6B35; }
+  .avatar-camille { background: #4A154B; }
+  .avatar-lucien { background: #2eb67d; }
+
+  .msg-content { flex: 1; }
+  .msg-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 3px; }
+  .msg-author { font-size: 14px; font-weight: 700; color: #fff; }
+  .msg-bot-tag {
+    background: #FF6B35; color: white;
+    font-size: 9px; font-weight: 700;
+    padding: 1px 5px; border-radius: 3px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .msg-time { font-size: 11px; color: #ababad; }
+
+  .msg-text { font-size: 14px; line-height: 1.5; color: #d1d2d3; }
+  .msg-text strong { color: #fff; }
+
+  .escalation-card {
+    background: #2e1a1a;
+    border-left: 4px solid #e01e5a;
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-top: 6px;
+  }
+  .esc-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .esc-level {
+    background: #e01e5a; color: white;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 10px;
+  }
+  .esc-title { font-size: 14px; font-weight: 700; color: #fff; }
+  .esc-body { font-size: 13px; color: #d1d2d3; line-height: 1.5; margin-bottom: 10px; }
+  .esc-button {
+    display: inline-block;
+    background: #e01e5a; color: white;
+    padding: 6px 14px; border-radius: 4px;
+    font-size: 13px; font-weight: 700;
+    text-decoration: none;
+  }
+
+  /* Right panel — KPIs */
+  .right-panel {
+    background: #19171d;
+    border-left: 1px solid #2e3235;
+    padding: 16px;
+    overflow: hidden;
+  }
+
+  .panel-title {
+    font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: #ababad;
+    margin-bottom: 14px;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .kpi-card {
+    background: #2e3235;
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .kpi-label {
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: #ababad; margin-bottom: 6px;
+  }
+  .kpi-value {
+    font-size: 28px; font-weight: 900;
+    color: #fff; font-family: 'Inter', sans-serif;
+    line-height: 1;
+  }
+  .kpi-value.green { color: #2eb67d; }
+  .kpi-value.red { color: #e01e5a; }
+  .kpi-value.orange { color: #FFB627; }
+  .kpi-sub { font-size: 11px; color: #ababad; margin-top: 4px; }
+
+  .beneficiary-list { margin-top: 8px; }
+  .beneficiary {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: #2e3235;
+    margin-bottom: 6px;
+    font-size: 12px;
+  }
+  .b-name { color: #d1d2d3; font-weight: 600; flex: 1; }
+  .b-level {
+    font-size: 10px; font-weight: 700;
+    padding: 2px 6px; border-radius: 3px;
+  }
+  .l0 { background: #2eb67d; color: white; }
+  .l1 { background: #FFB627; color: #1a1d21; }
+  .l2 { background: #e8762a; color: white; }
+  .l3 { background: #e01e5a; color: white; }
+
+  .footer-bar {
+    padding: 12px 20px;
+    border-top: 1px solid #2e3235;
+    display: flex; align-items: center; gap: 12px;
+    background: #222529;
+  }
+  .input-bar {
+    flex: 1;
+    background: #1a1d21;
+    border: 1px solid #2e3235;
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: #ababad;
+    font-size: 13px;
+  }
+  .slash-cmd {
+    color: #FF6B35;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: rgba(255, 107, 53, 0.1);
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="slack-window">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="workspace-header">
+      <div class="workspace-icon">V</div>
+      <div>
+        <div class="workspace-name">Vigie — Paris</div>
+        <div class="workspace-user">Cellule de crise</div>
+      </div>
+    </div>
+
+    <div class="channels-section">
+      <div class="section-label">Canaux</div>
+      <div class="channel active">
+        <span class="hash">#</span>
+        <span>cellule-crise</span>
+        <span class="badge">43</span>
+      </div>
+      <div class="channel">
+        <span class="hash">#</span>
+        <span>secteur-1</span>
+        <span class="badge">12</span>
+      </div>
+      <div class="channel">
+        <span class="hash">#</span>
+        <span>secteur-2</span>
+        <span class="badge">8</span>
+      </div>
+      <div class="channel">
+        <span class="hash">#</span>
+        <span>secteur-3</span>
+        <span class="red-dot"></span>
+      </div>
+      <div class="channel">
+        <span class="hash">#</span>
+        <span>vigie-alertes</span>
+      </div>
+
+      <div class="section-label dm-section">Messages directs</div>
+      <div class="dm-bot">
+        <div class="dm-bot-avatar">V</div>
+        <div class="dm-bot-name">Vigie Bot</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main channel -->
+  <div class="main-channel">
+    <div class="channel-header">
+      <span class="hash">#</span>
+      <span class="channel-title">cellule-crise</span>
+      <span class="channel-meta">12 membres</span>
+      <span class="channel-divider">|</span>
+      <span class="channel-desc">Cellule de crise — coordination canicule</span>
+    </div>
+
+    <div class="alert-banner">
+      <div class="alert-icon">⚠</div>
+      <div class="alert-text">
+        <div class="alert-title">VIGILANCE ORANGE — CANICULE</div>
+        <div class="alert-sub">Paris 75 · 38°C max · Valable jusqu'au 18/07 23h00 · 47 personnes isolées à surveiller</div>
+      </div>
+    </div>
+
+    <div class="messages">
+      <div class="message">
+        <div class="avatar avatar-camille">CR</div>
+        <div class="msg-content">
+          <div class="msg-header">
+            <span class="msg-author">Camille R.</span>
+            <span class="msg-time">14:33</span>
+          </div>
+          <div class="msg-text">Le SAMU est avec Monique B. (B018). On garde le canal <strong>#secteur-3</strong> ouvert pour le suivi.</div>
+        </div>
+      </div>
+
+      <div class="message">
+        <div class="avatar avatar-vigie">V</div>
+        <div class="msg-content">
+          <div class="msg-header">
+            <span class="msg-author">Vigie</span>
+            <span class="msg-bot-tag">APP</span>
+            <span class="msg-time">14:34</span>
+          </div>
+          <div class="msg-text">🚨 <strong>Escalation L3 déclenchée</strong> — B018 Monique B., 91 ans, Secteur 3.</div>
+          <div class="escalation-card">
+            <div class="esc-header">
+              <span class="esc-level">L3 · CRITIQUE</span>
+              <span class="esc-title">Monique B. — Inconsciente</span>
+            </div>
+            <div class="esc-body">Bénéficiaire trouvée au sol, inconsciente. SAMU notifié à 14:21. Volontaire sur place. Voisin informé. Dossier médical transmis.</div>
+            <a href="#" class="esc-button">📞 Appeler le SAMU — 15</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="message">
+        <div class="avatar avatar-vigie">V</div>
+        <div class="msg-content">
+          <div class="msg-header">
+            <span class="msg-author">Vigie</span>
+            <span class="msg-bot-tag">APP</span>
+            <span class="msg-time">14:35</span>
+          </div>
+          <div class="msg-text">📋 <strong>Rapport quotidien généré</strong> — 17 juillet 2026.<br>
+          Check-ins: 44/47 · L0=31 · L1=10 · L2=5 (2 escalés) · L3=1 (SAMU) · Latence: 7min · Volontaires actifs: 12</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <div class="slash-cmd">/vigie status</div>
+      <div class="input-bar">Écrivez un message dans #cellule-crise…</div>
+    </div>
+  </div>
+
+  <!-- Right panel -->
+  <div class="right-panel">
+    <div class="panel-title">État de la cellule</div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Coverage</div>
+        <div class="kpi-value green">94%</div>
+        <div class="kpi-sub">44/47 contactés</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Latence</div>
+        <div class="kpi-value">7<span style="font-size:14px;">min</span></div>
+        <div class="kpi-sub">check-in moyen</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Escalations L2</div>
+        <div class="kpi-value orange">2</div>
+        <div class="kpi-sub">sans réponse</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Escalations L3</div>
+        <div class="kpi-value red">1</div>
+        <div class="kpi-sub">SAMU notifié</div>
+      </div>
+    </div>
+
+    <div class="panel-title">Bénéficiaires — Z-AI</div>
+
+    <div class="beneficiary-list">
+      <div class="beneficiary">
+        <span class="b-name">B018 Monique B. · 91</span>
+        <span class="b-level l3">L3</span>
+      </div>
+      <div class="beneficiary">
+        <span class="b-name">B007 Lucien P. · 85</span>
+        <span class="b-level l2">L2</span>
+      </div>
+      <div class="beneficiary">
+        <span class="b-name">B012 Henri L. · 89</span>
+        <span class="b-level l2">L2</span>
+      </div>
+      <div class="beneficiary">
+        <span class="b-name">B023 Hélène M. · 82</span>
+        <span class="b-level l1">L1</span>
+      </div>
+      <div class="beneficiary">
+        <span class="b-name">B003 Georges F. · 84</span>
+        <span class="b-level l1">L1</span>
+      </div>
+      <div class="beneficiary">
+        <span class="b-name">B015 Jeanne D. · 83</span>
+        <span class="b-level l0">L0</span>
+      </div>
+      <div class="beneficiary">
+        <span class="b-name">B009 André M. · 90</span>
+        <span class="b-level l0">L0</span>
+      </div>
+      <div class="beneficiary">
+        <span class="b-name">B021 Yvonne T. · 74</span>
+        <span class="b-level l0">L0</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
