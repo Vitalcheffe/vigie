@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Vigie — Devpost Thumbnail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 1500px;
+    height: 1000px;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .banner {
+    width: 1500px;
+    height: 1000px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    background: #0a0a0a;
+  }
+
+  /* ===== LEFT SIDE — The Tragedy ===== */
+  .tragedy {
+    background: linear-gradient(135deg, #1a0000 0%, #2d0808 30%, #4a0e0e 60%, #1a0000 100%);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 70px;
+    overflow: hidden;
+  }
+
+  /* Heat shimmer texture */
+  .tragedy::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 80%, rgba(139, 26, 26, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(74, 14, 14, 0.4) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* Subtle noise/grain */
+  .tragedy::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .tragedy-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #8B1A1A;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .tragedy-label::before {
+    content: '';
+    display: inline-block;
+    width: 40px;
+    height: 2px;
+    background: #8B1A1A;
+    vertical-align: middle;
+    margin-right: 16px;
+  }
+
+  .death-count {
+    font-family: 'Playfair Display', serif;
+    font-size: 200px;
+    font-weight: 900;
+    line-height: 0.9;
+    color: #f5e6d3;
+    letter-spacing: -0.04em;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 4px 30px rgba(0,0,0,0.5);
+  }
+
+  .death-context {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 26px;
+    font-weight: 400;
+    color: #c4a896;
+    margin-top: 24px;
+    line-height: 1.4;
+    max-width: 480px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .death-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #6b5550;
+    margin-top: 40px;
+    letter-spacing: 0.15em;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ===== RIGHT SIDE — The Solution ===== */
+  .solution {
+    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 40%, #FFB627 100%);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 70px 70px 60px 70px;
+    overflow: hidden;
+  }
+
+  /* Sun glow */
+  .solution::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255, 255, 200, 0.5) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Warm overlay */
+  .solution::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(255, 107, 53, 0.1) 100%);
+    pointer-events: none;
+  }
+
+  .vigie-header {
+    position: relative;
+    z-index: 2;
+  }
+
+  .vigie-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #4a1a00;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pulse-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #8B1A1A;
+    box-shadow: 0 0 0 0 rgba(139, 26, 26, 0.7);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(139, 26, 26, 0.7); }
+    70% { box-shadow: 0 0 0 12px rgba(139, 26, 26, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(139, 26, 26, 0); }
+  }
+
+  .vigie-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 140px;
+    font-weight: 900;
+    line-height: 0.9;
+    color: #1a0500;
+    letter-spacing: -0.03em;
+  }
+
+  .vigie-tagline {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 28px;
+    font-weight: 400;
+    color: #4a1a00;
+    margin-top: 16px;
+    line-height: 1.3;
+    max-width: 520px;
+  }
+
+  /* Metrics grid */
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .metric-card {
+    background: rgba(26, 5, 0, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(26, 5, 0, 0.2);
+    border-radius: 12px;
+    padding: 22px 24px;
+    position: relative;
+  }
+
+  .metric-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #4a1a00;
+    opacity: 0.8;
+    margin-bottom: 8px;
+  }
+
+  .metric-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 900;
+    color: #1a0500;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .metric-unit {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #4a1a00;
+    margin-left: 4px;
+  }
+
+  .metric-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #4a1a00;
+    opacity: 0.7;
+    margin-top: 6px;
+  }
+
+  /* Footer badges */
+  .footer-badges {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1.5px solid #1a0500;
+    color: #1a0500;
+  }
+
+  .badge-solid {
+    background: #1a0500;
+    color: #FFB627;
+  }
+
+  /* ===== CENTER DIVIDER ===== */
+  .divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: linear-gradient(180deg, transparent 0%, #f5e6d3 20%, #f5e6d3 80%, transparent 100%);
+    z-index: 10;
+    transform: translateX(-50%);
+  }
+
+  .divider-arrow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: #1a0500;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 11;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+
+  .divider-arrow svg {
+    width: 28px;
+    height: 28px;
+    fill: #FFB627;
+  }
+
+  /* Corner accent */
+  .corner-mark {
+    position: absolute;
+    bottom: 30px;
+    left: 70px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #6b5550;
+    letter-spacing: 0.2em;
+    z-index: 5;
+  }
+
+  .corner-mark-right {
+    position: absolute;
+    top: 30px;
+    right: 70px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #4a1a00;
+    opacity: 0.6;
+    letter-spacing: 0.2em;
+    z-index: 5;
+  }
+</style>
+</head>
+<body>
+  <div class="banner">
+
+    <!-- LEFT: The Tragedy -->
+    <div class="tragedy">
+      <div class="tragedy-label">Août 2003 · France</div>
+      <div class="death-count">14,802</div>
+      <div class="death-context">personnes sont mortes seules pendant la canicule.</div>
+      <div class="death-date">— MÉMOIRE · NEVER AGAIN</div>
+      <div class="corner-mark">VIGIE · 2026</div>
+    </div>
+
+    <!-- RIGHT: The Solution -->
+    <div class="solution">
+      <div class="corner-mark-right">DEVPOST · HACKATHON</div>
+
+      <div class="vigie-header">
+        <div class="vigie-eyebrow">
+          <span class="pulse-dot"></span>
+          <span>HEATWAVE ELDER WATCH</span>
+        </div>
+        <div class="vigie-name">Vigie</div>
+        <div class="vigie-tagline">Pour que la canicule ne tue plus en silence.</div>
+      </div>
+
+      <div class="metrics">
+        <div class="metric-card">
+          <div class="metric-label">Coverage</div>
+          <div class="metric-value">94<span class="metric-unit">%</span></div>
+          <div class="metric-sub">50 elders · 14 volunteers</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Check-in latency</div>
+          <div class="metric-value">7<span class="metric-unit">min</span></div>
+          <div class="metric-sub">avg escalation time</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Z-AI classification</div>
+          <div class="metric-value">L0<span class="metric-unit">→L3</span></div>
+          <div class="metric-sub">4-level severity triage</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">SAMU escalation</div>
+          <div class="metric-value">&lt;7<span class="metric-unit">min</span></div>
+          <div class="metric-sub">auto-triggered on L3</div>
+        </div>
+      </div>
+
+      <div class="footer-badges">
+        <span class="badge badge-solid">SLACK BOT</span>
+        <span class="badge">Z-AI VISION</span>
+        <span class="badge">MCP SERVER</span>
+        <span class="badge">RAILWAY</span>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="divider"></div>
+    <div class="divider-arrow">
+      <svg viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7" stroke="#FFB627" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+
+  </div>
+</body>
+</html>
