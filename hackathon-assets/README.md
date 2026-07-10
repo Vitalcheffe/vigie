@@ -25,3 +25,14 @@ Right-click → Save link as... on each file, or use:
 - Gallery 2: https://github.com/Vitalcheffe/vigie/raw/main/hackathon-assets/vigie_gallery_2_architecture.png
 - Gallery 3: https://github.com/Vitalcheffe/vigie/raw/main/hackathon-assets/vigie_gallery_3_classification.png
 - Gallery 4: https://github.com/Vitalcheffe/vigie/raw/main/hackathon-assets/vigie_gallery_4_vlm.png
+
+## Architecture diagrams (for Devpost submission — REQUIRED)
+
+Two versions available:
+
+- `vigie_architecture_technical.png` (115 KB) — detailed technical diagram with all 5 layers, data flows, and tech stack
+- `vigie_architecture_visual.png` (771 KB, 1500×1000, 3:2) — polished visual version for judges (RECOMMENDED)
+
+Download: right-click → Save link as... on each file, or use:
+- https://github.com/Vitalcheffe/vigie/raw/main/hackathon-assets/vigie_architecture_technical.png
+- https://github.com/Vitalcheffe/vigie/raw/main/hackathon-assets/vigie_architecture_visual.png
